@@ -14,19 +14,6 @@ void __stdcall Hooked_PaintTraverse(unsigned int vguiPanel, bool forceRepaint, b
 	static std::string HudZoom = str("HudZoom");
 	static std::string FocusOverlayPanel = str("FocusOverlayPanel");
 
-	static bool init = false;
-
-	static int ScreenSize2W = -1;
-	static int ScreenSize2H = -1;
-
-	if (!init || (ScreenSize2W != csgo->w || ScreenSize2H != csgo->h))
-	{
-		interfaces.engine->GetScreenSize(ScreenSize2W, ScreenSize2H);
-		csgo->w = ScreenSize2W;
-		csgo->h = ScreenSize2H;
-		init = true;
-	}
-
 	for (int i = 0; i < 4; i++)
 		for (int j = 0; j < 4; j++)
 			csgo->viewMatrix[i][j] = interfaces.engine->WorldToScreenMatrix()[i][j];
