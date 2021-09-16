@@ -1,4 +1,4 @@
-#include "protect/tcp_client.hpp"
+#include "includes\protect/tcp_client.hpp"
 #include <thread>
 #include <chrono>
 #include <filesystem>
@@ -8,10 +8,10 @@
 #include "netvar_manager.h"
 #include "EnginePrediction.h"
 #include "render.h"
-#include "protect/md5.hpp"
-#include "protect/cryptoc.hpp"
+#include "includes\protect/md5.hpp"
+#include "includes\protect/cryptoc.hpp"
 #include "server_api.hpp"
-#include "protect/config.h"
+#include "includes\protect/config.h"
 
 
 

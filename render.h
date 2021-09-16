@@ -6,10 +6,10 @@
 #include <d3dx9.h>
 #include <map>
 #include <vector>
-#include "ImGui\imgui.h"
-#include "ImGui\imgui_impl_dx9.h"
-#include "ImGui\imgui_impl_win32.h"
-#include "imgui\imgui_freetype.h"
+#include "includes\ImGui\imgui.h"
+#include "includes\ImGui\imgui_impl_dx9.h"
+#include "includes\ImGui\imgui_impl_win32.h"
+#include "includes\imgui\imgui_freetype.h"
 #include <vector>
 #include "Vector.h"
 #include "colors.h"

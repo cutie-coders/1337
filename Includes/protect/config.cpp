@@ -1,6 +1,6 @@
 #include "config.h"
 #include "protect.hpp"
-#include "../server_api.hpp"
+#include "../../server_api.hpp"
 #include <stdio.h>
 
 size_t hwid_raw_calc()

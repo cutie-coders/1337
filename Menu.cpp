@@ -10,13 +10,13 @@
 #include "menu_icons/skins.h"
 #include "menu_icons/visuals.h"
 
-#include "ragebot_icons/item_assaultsuit.h"
-#include "ragebot_icons/weapon_awp.h"
-#include "ragebot_icons/weapon_deagle.h"
-#include "ragebot_icons/weapon_glock.h"
-#include "ragebot_icons/weapon_m4a1.h"
-#include "ragebot_icons/weapon_scar20.h"
-#include "ragebot_icons/weapon_ssg08.h"
+#include "includes\ragebot_icons/item_assaultsuit.h"
+#include "includes\ragebot_icons/weapon_awp.h"
+#include "includes\ragebot_icons/weapon_deagle.h"
+#include "includes\ragebot_icons/weapon_glock.h"
+#include "includes\ragebot_icons/weapon_m4a1.h"
+#include "includes\ragebot_icons/weapon_scar20.h"
+#include "includes\ragebot_icons/weapon_ssg08.h"
 
 #pragma comment(lib, "d3d9.lib")
 #pragma comment(lib, "d3dx9.lib")
