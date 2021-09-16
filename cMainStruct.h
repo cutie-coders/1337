@@ -115,6 +115,8 @@ public:
 	
 	// meme
 	Vector last_shoot_pos;
+	Vector last_player_shot_pos;
+	float last_shoot_time;
 	int shift_amount;
 	bool need_recharge_rn;
 	bool is_local_alive;

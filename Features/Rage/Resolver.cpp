@@ -93,6 +93,19 @@ bool DoesHaveFakeAngles(IBasePlayer* player) {
 	return skip_ticks[idx] >= 16;
 }
 
+bool shot(IBasePlayer* p)
+{
+	if (!p->GetWeapon())
+		return false;
+
+	if (!csgo->local->isAlive())
+		return false;
+
+	if (p->GetWeapon()->LastShotTime() == p->GetSimulationTime())
+		return true;
+	return false;
+}
+
 void CResolver::Resolver(IBasePlayer* p)
 {
 	int i = p->EntIndex();
@@ -129,6 +142,15 @@ void CResolver::Resolver(IBasePlayer* p)
 	int side = FreestandSide[i];
 	string mode = ResolverMode[i];
 	int index = ResolverInfo[i].Index;
+
+	if (csgo->last_shoot_time == p->GetSimulationTime() || shot(p))
+	{
+		mode = "Onshot";
+		angle = last_yaw;
+		index = i;
+		return;
+	}
+
 	if (missed_shots < 2)
 	{
 		if (p->GetSequence() == 979 && p->GetVelocity().Length2D() < 0.1f)
@@ -214,8 +236,16 @@ void CResolver::Resolver(IBasePlayer* p)
 }
 
 bool CResolver::Do(IBasePlayer* player) {
-	Resolver(player);
-	return true;
+	try {
+		do {
+			Resolver(player);
+		} while (true);
+		return true;
+	}
+	catch (std::exception e)
+	{
+		return false;
+	}
 //	static int offresolver_ticks[65] = { 0 };
 //	static float last_velocity[65] = { 0.f };
 //	static int ticks_with_zero_pitch[65] = { 0.f };
