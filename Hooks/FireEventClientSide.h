@@ -256,7 +256,6 @@ void weapon_fire(IGameEvent* game_event) {
 	if (!csgo->local || !csgo->local->isAlive() || !game_event)
 		return;
 	csgo->last_shoot_pos = csgo->local->GetEyePosition();
-	csgo->last_shoot_time = csgo->curtime;
 
 	if (shot_snapshots.empty())
 		return;

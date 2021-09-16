@@ -111,7 +111,14 @@ void CResolver::Resolver(IBasePlayer* p)
 	int i = p->EntIndex();
 	CCSGOPlayerAnimState* state = p->GetPlayerAnimState();
 
-	if (!state || !vars.ragebot.resolver)
+	if (p->GetPlayerInfo().fakeplayer)
+	{
+		ResolverMode[i] = str("Bot");
+		ResolverInfo[i].Index = 0;
+		return;
+	}
+
+	if (!state || !vars.ragebot.resolver || !DoesHaveFakeAngles(p))
 	{
 		ResolverMode[i] = str("Disabled");
 		ResolverInfo[i].Index = 0;
@@ -131,19 +138,16 @@ void CResolver::Resolver(IBasePlayer* p)
 
 	int missed_shots = (csgo->actual_misses[i] + csgo->imaginary_misses[i] + add) % 4;
 
-	if (p->GetPlayerInfo().fakeplayer)
-	{
-		ResolverMode[i] = str("Bot");
-		return;
-	}
-
 	float last_yaw = ResolverInfo[i].ResolvedAngle;
 	float angle = ResolverInfo[i].ResolvedAngle;
 	int side = FreestandSide[i];
 	string mode = ResolverMode[i];
 	int index = ResolverInfo[i].Index;
 
-	if (csgo->last_shoot_time == p->GetSimulationTime() || shot(p))
+	if (shot(p))
+		csgo->last_shoot_time[i] == p->GetSimulationTime();
+
+	if (csgo->last_shoot_time[i] == p->GetSimulationTime() || shot(p))
 	{
 		mode = "Onshot";
 		angle = last_yaw;
@@ -236,16 +240,8 @@ void CResolver::Resolver(IBasePlayer* p)
 }
 
 bool CResolver::Do(IBasePlayer* player) {
-	try {
-		do {
-			Resolver(player);
-		} while (true);
-		return true;
-	}
-	catch (std::exception e)
-	{
-		return false;
-	}
+	Resolver(player);
+	return true;
 //	static int offresolver_ticks[65] = { 0 };
 //	static float last_velocity[65] = { 0.f };
 //	static int ticks_with_zero_pitch[65] = { 0.f };
