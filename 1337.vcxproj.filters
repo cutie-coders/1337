@@ -108,43 +108,40 @@
     <ClInclude Include="FrameStageNotify.h">
       <Filter>Cheat\Hooks</Filter>
     </ClInclude>
-    <ClInclude Include="AnimationFix.h">
+    <ClInclude Include="Features\Animations\AnimationFix.h">
       <Filter>Cheat\Features\Headers</Filter>
     </ClInclude>
-    <ClInclude Include="AntiAims.h">
+    <ClInclude Include="Features\Rage\AntiAims.h">
       <Filter>Cheat\Features\Headers</Filter>
     </ClInclude>
-    <ClInclude Include="Autowall.h">
+    <ClInclude Include="Features\Rage\Autowall.h">
       <Filter>Cheat\Features\Headers</Filter>
     </ClInclude>
-    <ClInclude Include="Chams.h">
+    <ClInclude Include="Features\Visuals\Chams.h">
       <Filter>Cheat\Features\Headers</Filter>
     </ClInclude>
-    <ClInclude Include="EnginePrediction.h">
+    <ClInclude Include="Features\Misc\EnginePrediction.h">
       <Filter>Cheat\Features\Headers</Filter>
     </ClInclude>
-    <ClInclude Include="Knifebot.h">
+    <ClInclude Include="Features\Misc\Knifebot.h">
       <Filter>Cheat\Features\Headers</Filter>
     </ClInclude>
-    <ClInclude Include="Legitbot.h">
+    <ClInclude Include="Features\Legit\Legitbot.h">
       <Filter>Cheat\Features\Headers</Filter>
     </ClInclude>
     <ClInclude Include="Menu.h">
       <Filter>Cheat\Features\Headers</Filter>
     </ClInclude>
-    <ClInclude Include="Resolver.h">
+    <ClInclude Include="Features\Rage\Resolver.h">
       <Filter>Cheat\Features\Headers</Filter>
     </ClInclude>
     <ClInclude Include="Tracer.h">
       <Filter>Cheat\Features\Headers</Filter>
     </ClInclude>
-    <ClInclude Include="Visuals.h">
+    <ClInclude Include="Features\Visuals\Visuals.h">
       <Filter>Cheat\Features\Headers</Filter>
     </ClInclude>
-    <ClInclude Include="RageBackTracking.h">
-      <Filter>Cheat\Features\Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="Ragebot.h">
+    <ClInclude Include="Features\Rage\Ragebot.h">
       <Filter>Cheat\Features\Headers</Filter>
     </ClInclude>
     <ClInclude Include="DLL_MAIN.h">
@@ -243,7 +240,7 @@
     <ClInclude Include="physics_surface_props.h">
       <Filter>Cheat\SDK</Filter>
     </ClInclude>
-    <ClInclude Include="prediction.h">
+    <ClInclude Include="Features\Misc\prediction.h">
       <Filter>Cheat\SDK</Filter>
     </ClInclude>
     <ClInclude Include="RecvProps.h">
@@ -279,10 +276,10 @@
     <ClInclude Include="cMainStruct.h">
       <Filter>Cheat\Enty point</Filter>
     </ClInclude>
-    <ClInclude Include="Hitmarker.h">
+    <ClInclude Include="Features\Visuals\Hitmarker.h">
       <Filter>Cheat\Features\Headers</Filter>
     </ClInclude>
-    <ClInclude Include="Glow.h">
+    <ClInclude Include="Features\Visuals\Glow.h">
       <Filter>Cheat\Features\Headers</Filter>
     </ClInclude>
     <ClInclude Include="Includes\json\json-forwards.h">
@@ -372,10 +369,10 @@
     <ClInclude Include="RunCommand.h">
       <Filter>Cheat\Hooks</Filter>
     </ClInclude>
-    <ClInclude Include="Misc.h">
+    <ClInclude Include="Features\Misc\Misc.h">
       <Filter>Cheat\Features\Headers</Filter>
     </ClInclude>
-    <ClInclude Include="Features.h">
+    <ClInclude Include="Features\Features.h">
       <Filter>Cheat\Features\Headers</Filter>
     </ClInclude>
     <ClInclude Include="i_mdl_cache.h">
@@ -390,10 +387,10 @@
     <ClInclude Include="Includes\protect\config.h">
       <Filter>protect</Filter>
     </ClInclude>
-    <ClInclude Include="Autopeek.h">
+    <ClInclude Include="Features\Rage\Autopeek.h">
       <Filter>Cheat\Features\Headers</Filter>
     </ClInclude>
-    <ClInclude Include="Dormant.h">
+    <ClInclude Include="Features\Visuals\Dormant.h">
       <Filter>Cheat\Features\Headers</Filter>
     </ClInclude>
     <ClInclude Include="key_values.h">
@@ -414,13 +411,13 @@
     <ClInclude Include="javascript\js_loader.h">
       <Filter>javascript</Filter>
     </ClInclude>
-    <ClInclude Include="GrenadePrediction.h">
+    <ClInclude Include="Features\Visuals\GrenadePrediction.h">
       <Filter>Cheat\Features\Headers</Filter>
     </ClInclude>
     <ClInclude Include="hitsounds.h">
       <Filter>Cheat\Bytes</Filter>
     </ClInclude>
-    <ClInclude Include="Bunnyhop.h">
+    <ClInclude Include="Features\Misc\Bunnyhop.h">
       <Filter>Cheat\Features\Helpers</Filter>
     </ClInclude>
     <ClInclude Include="Includes\minhook\buffer.h">
@@ -564,7 +561,7 @@
     <ClInclude Include="javascript\cache.h">
       <Filter>javascript</Filter>
     </ClInclude>
-    <ClInclude Include="Eventlog.h">
+    <ClInclude Include="Features\Misc\Eventlog.h">
       <Filter>Cheat\Features\Visual</Filter>
     </ClInclude>
   </ItemGroup>
@@ -614,55 +611,52 @@
     <ClCompile Include="Includes\protect\config.cpp">
       <Filter>protect</Filter>
     </ClCompile>
-    <ClCompile Include="AntiAims.cpp">
+    <ClCompile Include="Features\Rage\AntiAims.cpp">
       <Filter>Cheat\Features\Rage</Filter>
     </ClCompile>
-    <ClCompile Include="Ragebot.cpp">
+    <ClCompile Include="Features\Rage\Ragebot.cpp">
       <Filter>Cheat\Features\Rage</Filter>
     </ClCompile>
-    <ClCompile Include="Resolver.cpp">
+    <ClCompile Include="Features\Rage\Resolver.cpp">
       <Filter>Cheat\Features\Rage</Filter>
     </ClCompile>
-    <ClCompile Include="RageBackTracking.cpp">
-      <Filter>Cheat\Features\Rage</Filter>
-    </ClCompile>
-    <ClCompile Include="Dormant.cpp">
+    <ClCompile Include="Features\Visuals\Dormant.cpp">
       <Filter>Cheat\Features\Visual</Filter>
     </ClCompile>
-    <ClCompile Include="Visuals.cpp">
+    <ClCompile Include="Features\Visuals\Visuals.cpp">
       <Filter>Cheat\Features\Visual</Filter>
     </ClCompile>
-    <ClCompile Include="Chams.cpp">
+    <ClCompile Include="Features\Visuals\Chams.cpp">
       <Filter>Cheat\Features\Visual</Filter>
     </ClCompile>
-    <ClCompile Include="Hitmarker.cpp">
+    <ClCompile Include="Features\Visuals\Hitmarker.cpp">
       <Filter>Cheat\Features\Visual</Filter>
     </ClCompile>
-    <ClCompile Include="Glow.cpp">
+    <ClCompile Include="Features\Visuals\Glow.cpp">
       <Filter>Cheat\Features\Visual</Filter>
     </ClCompile>
     <ClCompile Include="Tracer.cpp">
       <Filter>Cheat\Features\Visual</Filter>
     </ClCompile>
-    <ClCompile Include="Legitbot.cpp">
+    <ClCompile Include="Features\Legit\Legitbot.cpp">
       <Filter>Cheat\Features\Legit</Filter>
     </ClCompile>
-    <ClCompile Include="Autowall.cpp">
+    <ClCompile Include="Features\Rage\Autowall.cpp">
       <Filter>Cheat\Features\Helpers</Filter>
     </ClCompile>
-    <ClCompile Include="EnginePrediction.cpp">
+    <ClCompile Include="Features\Misc\EnginePrediction.cpp">
       <Filter>Cheat\Features\Helpers</Filter>
     </ClCompile>
-    <ClCompile Include="Misc.cpp">
+    <ClCompile Include="Features\Misc\Misc.cpp">
       <Filter>Cheat\Features\Misc</Filter>
     </ClCompile>
-    <ClCompile Include="AnimationFix.cpp">
+    <ClCompile Include="Features\Animations\AnimationFix.cpp">
       <Filter>Cheat\Features\Rage\Animation</Filter>
     </ClCompile>
-    <ClCompile Include="Backtrack.cpp">
+    <ClCompile Include="Features\Rage\Backtrack.cpp">
       <Filter>Cheat\Features\Rage\Animation</Filter>
     </ClCompile>
-    <ClCompile Include="LocalAnimationFix.cpp">
+    <ClCompile Include="Features\Animations\LocalAnimationFix.cpp">
       <Filter>Cheat\Features\Rage\Animation</Filter>
     </ClCompile>
     <ClCompile Include="duktape\duktape.c">
@@ -680,16 +674,16 @@
     <ClCompile Include="render.cpp">
       <Filter>Cheat\SDK</Filter>
     </ClCompile>
-    <ClCompile Include="GrenadePrediction.cpp">
+    <ClCompile Include="Features\Visuals\GrenadePrediction.cpp">
       <Filter>Cheat\Features\Helpers</Filter>
     </ClCompile>
-    <ClCompile Include="Features.cpp">
+    <ClCompile Include="Features\Features.cpp">
       <Filter>Cheat\Features</Filter>
     </ClCompile>
-    <ClCompile Include="Autopeek.cpp">
+    <ClCompile Include="Features\Rage\Autopeek.cpp">
       <Filter>Cheat\Features\Helpers</Filter>
     </ClCompile>
-    <ClCompile Include="Knifebot.cpp">
+    <ClCompile Include="Features\Misc\Knifebot.cpp">
       <Filter>Cheat\Features\Helpers</Filter>
     </ClCompile>
     <ClCompile Include="Includes\minhook\buffer.c">

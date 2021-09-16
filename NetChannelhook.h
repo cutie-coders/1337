@@ -1,8 +1,8 @@
 #pragma once
 #include "Hooks.h"
 #include "iBaseClientDLL.h"
-#include "EnginePrediction.h"
-#include "Dormant.h"
+#include "Features/Misc/EnginePrediction.h"
+#include "Features/Visuals/Dormant.h"
 
 void __fastcall Hooked_PacketStart(void* ecx, void*, int incoming, int outgoing) {
     static auto original_fn = g_pClientStateAdd->GetOriginal<PacketStartFn>(g_HookIndices[fnva1(hs::Hooked_PacketStart.s().c_str())]);

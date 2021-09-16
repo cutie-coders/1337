@@ -4,8 +4,8 @@
 #include "VMT_Manager.h"
 #include "hooker.h"
 #include "Variables.h"
-#include "Chams.h"
-#include "Glow.h"
+#include "Features/Visuals/Chams.h"
+#include "Features/Visuals/Glow.h"
 #include "javascript/js_handler.h"
 
 

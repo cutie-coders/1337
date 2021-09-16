@@ -4,8 +4,8 @@
 #include "includes\imgui\imgui_impl_win32.h"
 #include "includes\imgui\imgui_freetype.h"
 #include <d3dx9tex.h>
-#include "AntiAims.h"
-#include "Eventlog.h"
+#include "Features/Rage/AntiAims.h"
+#include "Features/Misc/Eventlog.h"
 #include "includes\protect/encoding.hpp"
 #include <chrono>
 #include "manrope_meduim_ttf.h"

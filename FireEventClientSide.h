@@ -1,9 +1,9 @@
 #pragma once
 #include "Hooks.h"
-#include "Hitmarker.h"
-#include "AutoPeek.h"
+#include "Features/Visuals/Hitmarker.h"
+#include "Features/Rage/AutoPeek.h"
 #include "hitsounds.h"
-#include "Dormant.h"
+#include "Features/Visuals/Dormant.h"
 #pragma comment(lib,"Winmm.lib")
 
 extern std::vector<IGameEventListener2*> g_pGameEventManager;

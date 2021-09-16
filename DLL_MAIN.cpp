@@ -4,9 +4,9 @@
 #include <filesystem>
 #include "DLL_MAIN.h"
 #include "Hooks.h"
-#include "Features.h"
+#include "Features/Features.h"
 #include "netvar_manager.h"
-#include "EnginePrediction.h"
+#include "Features/Misc/EnginePrediction.h"
 #include "render.h"
 #include "includes\protect/md5.hpp"
 #include "includes\protect/cryptoc.hpp"

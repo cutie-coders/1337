@@ -19,7 +19,7 @@
 #include "view_render_beams.h"
 #include "physics_surface_props.h"
 #include "c_movehelper.h"
-#include "prediction.h"
+#include "Features/Misc/prediction.h"
 #include "memalloc.h"
 
 class c_model_interfaces
