@@ -9,6 +9,35 @@ bool CanExploit() {
 		&& !csgo->need_to_recharge;
 }
 
+void CAntiAim::is_lby_update()
+{
+	CUserCmd* cmd = csgo->cmd;
+	float cur_time = csgo->curtime;
+	CCSGOPlayerAnimState* animstate = csgo->local->GetPlayerAnimState();
+	IBasePlayer* local = csgo->local;
+	if (!(local->GetFlags() & FL_ONGROUND))
+		return;
+
+	if (local->GetVelocity().Length2D() > 0.1f) {
+		next_break = cur_time + .22f;
+		return; // well we dont break lby when moving :kappa:
+	}
+
+	if (next_break <= cur_time)
+	{
+		Currently_Breaking = true;
+		next_break = cur_time + .22f;
+		return;
+	}
+	else
+	{
+		Pre_Breaking = true;
+		next_break = cur_time - .22f;
+		return;
+	}
+
+}
+
 IBasePlayer* GetNearestTarget(bool check = false)
 {
 	int y, x;

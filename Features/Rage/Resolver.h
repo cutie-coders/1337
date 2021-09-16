@@ -46,6 +46,7 @@ public:
 	float GetAwayAngle(IBasePlayer* player);
 	float GetBackwardYaw(IBasePlayer*);
 	bool Do(IBasePlayer*);
+	void Resolver(IBasePlayer* p);
 	void StoreAntifreestand();
 };
 extern std::string ResolverMode[65];

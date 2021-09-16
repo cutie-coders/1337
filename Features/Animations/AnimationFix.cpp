@@ -174,7 +174,7 @@ void animation::build_unresolved_bones(IBasePlayer* player)
 
 	float desync_angle = delta;
 
-	bool resolver_disabled = ResolverMode[idx] == str("OFF") || ResolverMode[idx].find('o') != -1 || g_Resolver->ResolverInfo[idx].Index == 0;
+	bool resolver_disabled = ResolverMode[idx] == str("Disabled") || ResolverMode[idx].find('d') != -1 || g_Resolver->ResolverInfo[idx].Index == 0;
 
 	if (ResolverMode[idx].find('l') != -1) // low delta
 		desync_angle = low_delta; // half of max desync delta

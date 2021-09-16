@@ -8,6 +8,10 @@ class CAntiAim
 private:
 	void Yaw(bool legit_aa);
 	void Pitch(bool legit_aa);
+	void is_lby_update();
+	bool Currently_Breaking;
+	bool Pre_Breaking;
+	float next_break;
 public:
 	bool override_off_yaw;
 	bool override_off_pitch;

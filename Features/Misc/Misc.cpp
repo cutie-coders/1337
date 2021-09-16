@@ -519,7 +519,7 @@ void CMisc::Clantag()
 		{
 			if (flNextTimeUpdate <= flCurTime || flNextTimeUpdate - flCurTime > 1.f)
 			{
-				switch (int(interfaces.global_vars->curtime * 2.4) % 10) {
+				switch (int(interfaces.global_vars->curtime * 3.1) % 41) {
 				case 0: SetClanTag(hs::clantag1.s().c_str(), hs::weave_su.s().c_str()); break;
 				case 1: SetClanTag(hs::clantag2.s().c_str(), hs::weave_su.s().c_str()); break;
 				case 2: SetClanTag(hs::clantag3.s().c_str(), hs::weave_su.s().c_str()); break;
@@ -530,6 +530,37 @@ void CMisc::Clantag()
 				case 7: SetClanTag(hs::clantag8.s().c_str(), hs::weave_su.s().c_str()); break;
 				case 8: SetClanTag(hs::clantag9.s().c_str(), hs::weave_su.s().c_str()); break;
 				case 9: SetClanTag(hs::clantag10.s().c_str(), hs::weave_su.s().c_str()); break;
+				case 10: SetClanTag(hs::clantag11.s().c_str(), hs::weave_su.s().c_str()); break;
+				case 11: SetClanTag(hs::clantag12.s().c_str(), hs::weave_su.s().c_str()); break;
+				case 12: SetClanTag(hs::clantag13.s().c_str(), hs::weave_su.s().c_str()); break;
+				case 13: SetClanTag(hs::clantag14.s().c_str(), hs::weave_su.s().c_str()); break;
+				case 14: SetClanTag(hs::clantag15.s().c_str(), hs::weave_su.s().c_str()); break;
+				case 15: SetClanTag(hs::clantag16.s().c_str(), hs::weave_su.s().c_str()); break;
+				case 16: SetClanTag(hs::clantag17.s().c_str(), hs::weave_su.s().c_str()); break;
+				case 17: SetClanTag(hs::clantag18.s().c_str(), hs::weave_su.s().c_str()); break;
+				case 18: SetClanTag(hs::clantag19.s().c_str(), hs::weave_su.s().c_str()); break;
+				case 19: SetClanTag(hs::clantag20.s().c_str(), hs::weave_su.s().c_str()); break;
+				case 20: SetClanTag(hs::clantag21.s().c_str(), hs::weave_su.s().c_str()); break;
+				case 21: SetClanTag(hs::clantag22.s().c_str(), hs::weave_su.s().c_str()); break;
+				case 22: SetClanTag(hs::clantag23.s().c_str(), hs::weave_su.s().c_str()); break;
+				case 23: SetClanTag(hs::clantag24.s().c_str(), hs::weave_su.s().c_str()); break;
+				case 24: SetClanTag(hs::clantag25.s().c_str(), hs::weave_su.s().c_str()); break;
+				case 25: SetClanTag(hs::clantag26.s().c_str(), hs::weave_su.s().c_str()); break;
+				case 26: SetClanTag(hs::clantag27.s().c_str(), hs::weave_su.s().c_str()); break;
+				case 27: SetClanTag(hs::clantag28.s().c_str(), hs::weave_su.s().c_str()); break;
+				case 28: SetClanTag(hs::clantag29.s().c_str(), hs::weave_su.s().c_str()); break;
+				case 29: SetClanTag(hs::clantag30.s().c_str(), hs::weave_su.s().c_str()); break;
+				case 30: SetClanTag(hs::clantag31.s().c_str(), hs::weave_su.s().c_str()); break;
+				case 31: SetClanTag(hs::clantag32.s().c_str(), hs::weave_su.s().c_str()); break;
+				case 32: SetClanTag(hs::clantag33.s().c_str(), hs::weave_su.s().c_str()); break;
+				case 33: SetClanTag(hs::clantag34.s().c_str(), hs::weave_su.s().c_str()); break;
+				case 34: SetClanTag(hs::clantag35.s().c_str(), hs::weave_su.s().c_str()); break;
+				case 35: SetClanTag(hs::clantag36.s().c_str(), hs::weave_su.s().c_str()); break;
+				case 36: SetClanTag(hs::clantag37.s().c_str(), hs::weave_su.s().c_str()); break;
+				case 37: SetClanTag(hs::clantag38.s().c_str(), hs::weave_su.s().c_str()); break;
+				case 38: SetClanTag(hs::clantag39.s().c_str(), hs::weave_su.s().c_str()); break;
+				case 39: SetClanTag(hs::clantag40.s().c_str(), hs::weave_su.s().c_str()); break;
+				case 40: SetClanTag(hs::clantag41.s().c_str(), hs::weave_su.s().c_str()); break;
 				}
 			}
 			iLastTime = int(interfaces.global_vars->curtime * 2 + latency);
@@ -605,18 +636,18 @@ void CMisc::ProcessMissedShots()
 			if (vars.visuals.eventlog & 4) {
 				if (!spread && !sp_spread) {
 					if (snapshot.record.safepoints && !snapshot.resolver_info.LowDelta)
-						Msg(str("Missed shot due to unknown reason"), vars.visuals.eventlog_color);
+						Msg(str("CSGO shit itself causing you to miss."), vars.visuals.eventlog_color);
 					else
 					{
 						g_Resolver->RemoveHitInfo(snapshot.entity);
-						Msg(str("Missed shot due to animation desync"), vars.visuals.eventlog_color);
+						Msg(str("Missed shot because you are a fucking monkey."), vars.visuals.eventlog_color);
 					}
 				}
 				else {
 					if (snapshot.hitchance == 1.f)
-						Msg(str("Missed shot due to prediction error"), vars.visuals.eventlog_color);
+						Msg(str("Prediction system was unable to predict that player."), vars.visuals.eventlog_color);
 					else
-						Msg(str("Missed shot due to spread"), vars.visuals.eventlog_color);
+						Msg(str("Nice config retard."), vars.visuals.eventlog_color);
 				}
 			}
 

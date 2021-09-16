@@ -358,16 +358,47 @@ namespace hs {
 	_(weave_su, "1337.gang");
 	_(weave_logo, "1337.gang");
 
-	_(clantag1, "1337");
-	_(clantag2, "1337");
-	_(clantag3, "1337");
-	_(clantag4, "1337");
-	_(clantag5, "1337");
-	_(clantag6, "1337");
-	_(clantag7, "1337");
-	_(clantag8, "1337");
-	_(clantag9, "1337");
-	_(clantag10,"1337");
+	_(clantag1, "");
+	_(clantag2, "|");
+	_(clantag3, "");
+	_(clantag4, "|");
+	_(clantag5, "1");
+	_(clantag6, "1 ");
+	_(clantag7, "1| ");
+	_(clantag8, "1 ");
+	_(clantag9, "1| ");
+	_(clantag10,"13");
+	_(clantag11,"13 ");
+	_(clantag12,"13| ");
+	_(clantag13,"13 ");
+	_(clantag14,"13| ");
+	_(clantag15,"133");
+	_(clantag16,"133 ");
+	_(clantag17,"133| ");
+	_(clantag18,"133 ");
+	_(clantag19,"133| ");
+	_(clantag20,"133| ");
+	_(clantag21,"1337 ");
+	_(clantag22,"1337| ");
+	_(clantag23,"1337 ");
+	_(clantag24,"1337| ");
+	_(clantag25,"1337 ");
+	_(clantag26,"1337| ");
+	_(clantag27,"133");
+	_(clantag28,"133|");
+	_(clantag29,"133");
+	_(clantag30,"133|");
+	_(clantag31,"13");
+	_(clantag32,"13|");
+	_(clantag33,"13");
+	_(clantag34,"13|");
+	_(clantag35,"13|");
+	_(clantag36,"1");
+	_(clantag37,"1|");
+	_(clantag38,"1");
+	_(clantag39,"");
+	_(clantag40,"|");
+	_(clantag41,"");
 
 	// netvar tables
 	_(DT_BaseEntity, "DT_BaseEntity"); // DT_BaseEntity
