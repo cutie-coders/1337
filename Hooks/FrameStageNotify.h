@@ -1,12 +1,12 @@
 #pragma once
 #include "Hooks.h"
-#include "Features/Misc/Misc.h"
-#include "Features/Rage/Resolver.h"
-#include "Features/Animations/AnimationFix.h"
+#include "../Features/Misc/Misc.h"
+#include "../Features/Rage/Resolver.h"
+#include "../Features/Animations/AnimationFix.h"
 #include "SetupAnimation.h"
 #include <intrin.h>
 #include <random>
-#include "Features/Rage/Ragebot.h"
+#include "../Features/Rage/Ragebot.h"
 
 std::string GetModel(int team) {
 	static const std::vector<std::string> models = {

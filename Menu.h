@@ -1,7 +1,7 @@
 #pragma once
 #include "includes\imgui/imgui.h"
 #include "includes\imgui/imgui_internal.h"
-#include "Hooks.h"
+#include "Hooks/Hooks.h"
 
 enum tab_t : short {
 	undefined = -1,

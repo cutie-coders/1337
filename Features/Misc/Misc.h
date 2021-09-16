@@ -1,5 +1,5 @@
 #pragma once
-#include "../../Hooks.h"
+#include "../../Hooks/hooks.h"
 class CMisc {
 public:
 	bool in_doubletap = false;

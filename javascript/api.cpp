@@ -1,7 +1,7 @@
 #include "api.h"
 #include "js_loader.h"
 #include "../Features/Features.h"
-#include "../Hooks.h"
+#include "../Hooks/Hooks.h"
 #include "../GUI/gui.h"
 #include "cache.h"
 

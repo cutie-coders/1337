@@ -1,4 +1,4 @@
-﻿#include "../../hooks.h"
+﻿#include "../../Hooks/hooks.h"
 #include "AnimationFix.h"
 #include "../Rage/Resolver.h"
 #include "../Features.h"

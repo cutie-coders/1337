@@ -1,6 +1,6 @@
 #include "js_loader.h"
 #include "js_handler.h"
-#include "../Hooks.h"
+#include "../Hooks/Hooks.h"
 #include "../GUI/gui.h"
 #include "cache.h"
 

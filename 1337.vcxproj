@@ -20,7 +20,7 @@
     <ClInclude Include="Features\Rage\AntiAims.h" />
     <ClInclude Include="Features\Rage\Autopeek.h" />
     <ClInclude Include="Features\Rage\Autowall.h" />
-    <ClInclude Include="BeginFrame.h" />
+    <ClInclude Include="Hooks\BeginFrame.h" />
     <ClInclude Include="bspflags.h" />
     <ClInclude Include="Features\Misc\Bunnyhop.h" />
     <ClInclude Include="CacheSystem.h" />
@@ -31,7 +31,7 @@
     <ClInclude Include="colorpicker_bg.h" />
     <ClInclude Include="colors.h" />
     <ClInclude Include="common.h" />
-    <ClInclude Include="Createmove.h" />
+    <ClInclude Include="Hooks\Createmove.h" />
     <ClInclude Include="cvar.h" />
     <ClInclude Include="c_movehelper.h" />
     <ClInclude Include="c_trace.h" />
@@ -39,21 +39,21 @@
     <ClInclude Include="d3dfont.h" />
     <ClInclude Include="debug_overlay.h" />
     <ClInclude Include="DLL_MAIN.h" />
-    <ClInclude Include="DoPostScreenEffects.h" />
+    <ClInclude Include="Hooks\DoPostScreenEffects.h" />
     <ClInclude Include="Features\Visuals\Dormant.h" />
-    <ClInclude Include="DrawModelExecuted.h" />
+    <ClInclude Include="Hooks\DrawModelExecuted.h" />
     <ClInclude Include="duktape\duktape.h" />
     <ClInclude Include="duktape\duk_config.h" />
-    <ClInclude Include="EndScene.h" />
+    <ClInclude Include="Hooks\EndScene.h" />
     <ClInclude Include="engine.h" />
-    <ClInclude Include="EngineHook.h" />
+    <ClInclude Include="Hooks\EngineHook.h" />
     <ClInclude Include="Features\Misc\EnginePrediction.h" />
     <ClInclude Include="engine_trace.h" />
     <ClInclude Include="entlist.h" />
     <ClInclude Include="Features\Misc\Eventlog.h" />
     <ClInclude Include="Features\Features.h" />
-    <ClInclude Include="FireEventClientSide.h" />
-    <ClInclude Include="FrameStageNotify.h" />
+    <ClInclude Include="Hooks\FireEventClientSide.h" />
+    <ClInclude Include="Hooks\FrameStageNotify.h" />
     <ClInclude Include="game_event.h" />
     <ClInclude Include="global_vars.h" />
     <ClInclude Include="Features\Visuals\Glow.h" />
@@ -80,8 +80,8 @@
     <ClInclude Include="GUI\window.h" />
     <ClInclude Include="Features\Visuals\Hitmarker.h" />
     <ClInclude Include="hitsounds.h" />
-    <ClInclude Include="hooker.h" />
-    <ClInclude Include="Hooks.h" />
+    <ClInclude Include="Hooks\hooker.h" />
+    <ClInclude Include="Hooks\Hooks.h" />
     <ClInclude Include="iBaseClientDLL.h" />
     <ClInclude Include="Includes\imgui\imconfig.h" />
     <ClInclude Include="Includes\imgui\imgui.h" />
@@ -130,10 +130,10 @@
     <ClInclude Include="Features\Misc\Misc.h" />
     <ClInclude Include="model_info.h" />
     <ClInclude Include="model_render.h" />
-    <ClInclude Include="NetChannelhook.h" />
+    <ClInclude Include="Hooks\NetChannelhook.h" />
     <ClInclude Include="netvar_manager.h" />
-    <ClInclude Include="OverRideView.h" />
-    <ClInclude Include="PaintTraverse.h" />
+    <ClInclude Include="Hooks\OverRideView.h" />
+    <ClInclude Include="Hooks\PaintTraverse.h" />
     <ClInclude Include="physics_surface_props.h" />
     <ClInclude Include="Features\Misc\prediction.h" />
     <ClInclude Include="Includes\protect\config.h" />
@@ -160,10 +160,10 @@
     <ClInclude Include="render.h" />
     <ClInclude Include="render_view.h" />
     <ClInclude Include="Features\Rage\Resolver.h" />
-    <ClInclude Include="RunCommand.h" />
-    <ClInclude Include="SceneEnd.h" />
+    <ClInclude Include="Hooks\RunCommand.h" />
+    <ClInclude Include="Hooks\SceneEnd.h" />
     <ClInclude Include="server_api.hpp" />
-    <ClInclude Include="SetupAnimation.h" />
+    <ClInclude Include="Hooks\SetupAnimation.h" />
     <ClInclude Include="studio_render.h" />
     <ClInclude Include="surface.h" />
     <ClInclude Include="Tracer.h" />
@@ -175,8 +175,8 @@
     <ClInclude Include="Features\Visuals\Visuals.h" />
     <ClInclude Include="VMT_Manager.h" />
     <ClInclude Include="vpanel.h" />
-    <ClInclude Include="WndProc.h" />
-    <ClInclude Include="WriteUsercmdDeltaToBuffer.h" />
+    <ClInclude Include="Hooks\WndProc.h" />
+    <ClInclude Include="Hooks\WriteUsercmdDeltaToBuffer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Features\Animations\AnimationFix.cpp" />
@@ -216,7 +216,7 @@
     <ClCompile Include="GUI\text.cpp" />
     <ClCompile Include="GUI\window.cpp" />
     <ClCompile Include="Features\Visuals\Hitmarker.cpp" />
-    <ClCompile Include="Hooks.cpp" />
+    <ClCompile Include="Hooks\Hooks.cpp" />
     <ClCompile Include="Includes\imgui\imgui.cpp" />
     <ClCompile Include="Includes\imgui\imgui_demo.cpp" />
     <ClCompile Include="Includes\imgui\imgui_draw.cpp" />

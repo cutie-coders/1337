@@ -1,4 +1,4 @@
-#include "Features.h"
+#include "Features/Features.h"
 #include "GUI/gui.h"
 #include "javascript/js_loader.h"
 

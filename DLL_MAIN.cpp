@@ -3,7 +3,7 @@
 #include <chrono>
 #include <filesystem>
 #include "DLL_MAIN.h"
-#include "Hooks.h"
+#include "Hooks/Hooks.h"
 #include "Features/Features.h"
 #include "netvar_manager.h"
 #include "Features/Misc/EnginePrediction.h"

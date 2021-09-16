@@ -1,5 +1,5 @@
  #include "Hooks.h"
-#include "netvar_manager.h"
+#include "../netvar_manager.h"
 
 // Include hooks
 #include "PaintTraverse.h"
@@ -15,7 +15,6 @@
 #include "DrawModelExecuted.h"
 #include "SetupAnimation.h"
 #include "EngineHook.h"
-#include "TraceRay.h"
 
 #include "hooker.h"
 #include <thread>

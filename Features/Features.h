@@ -21,6 +21,7 @@
 #include "../CacheSystem.h"
 #include "../menu.h"
 #include "../Utils.h"
+#include "Visuals/Glow.h"
 
 extern CCacheSystem*		g_Cache;
 extern CVisuals*			g_Visuals;

@@ -1,5 +1,5 @@
 #pragma once
-#include "../../Hooks.h"
+#include "../../Hooks/hooks.h"
 #include "../../GUI/gui.h"
 
 class CMessage

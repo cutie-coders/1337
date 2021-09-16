@@ -1,4 +1,6 @@
 #pragma once
+#include "../i_base_player.h"
+#include "Hooks.h"
 
 void WriteUsercmd(bf_write* buf, CUserCmd* in, CUserCmd* out)
 {

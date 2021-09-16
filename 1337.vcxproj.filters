@@ -84,28 +84,28 @@
     <ClInclude Include="colorpicker_bg.h">
       <Filter>Cheat\Bytes</Filter>
     </ClInclude>
-    <ClInclude Include="BeginFrame.h">
+    <ClInclude Include="Hooks\BeginFrame.h">
       <Filter>Cheat\Hooks</Filter>
     </ClInclude>
-    <ClInclude Include="Createmove.h">
+    <ClInclude Include="Hooks\Createmove.h">
       <Filter>Cheat\Hooks</Filter>
     </ClInclude>
-    <ClInclude Include="DoPostScreenEffects.h">
+    <ClInclude Include="Hooks\DoPostScreenEffects.h">
       <Filter>Cheat\Hooks</Filter>
     </ClInclude>
-    <ClInclude Include="DrawModelExecuted.h">
+    <ClInclude Include="Hooks\DrawModelExecuted.h">
       <Filter>Cheat\Hooks</Filter>
     </ClInclude>
-    <ClInclude Include="EndScene.h">
+    <ClInclude Include="Hooks\EndScene.h">
       <Filter>Cheat\Hooks</Filter>
     </ClInclude>
-    <ClInclude Include="EngineHook.h">
+    <ClInclude Include="Hooks\EngineHook.h">
       <Filter>Cheat\Hooks</Filter>
     </ClInclude>
-    <ClInclude Include="FireEventClientSide.h">
+    <ClInclude Include="Hooks\FireEventClientSide.h">
       <Filter>Cheat\Hooks</Filter>
     </ClInclude>
-    <ClInclude Include="FrameStageNotify.h">
+    <ClInclude Include="Hooks\FrameStageNotify.h">
       <Filter>Cheat\Hooks</Filter>
     </ClInclude>
     <ClInclude Include="Features\Animations\AnimationFix.h">
@@ -150,7 +150,7 @@
     <ClInclude Include="common.h">
       <Filter>Cheat\Enty point</Filter>
     </ClInclude>
-    <ClInclude Include="Hooks.h">
+    <ClInclude Include="Hooks\Hooks.h">
       <Filter>Cheat\Hooks</Filter>
     </ClInclude>
     <ClInclude Include="bspflags.h">
@@ -288,22 +288,22 @@
     <ClInclude Include="Includes\json\json.h">
       <Filter>json</Filter>
     </ClInclude>
-    <ClInclude Include="SetupAnimation.h">
+    <ClInclude Include="Hooks\SetupAnimation.h">
       <Filter>Cheat\Hooks</Filter>
     </ClInclude>
-    <ClInclude Include="PaintTraverse.h">
+    <ClInclude Include="Hooks\PaintTraverse.h">
       <Filter>Cheat\Hooks</Filter>
     </ClInclude>
-    <ClInclude Include="OverRideView.h">
+    <ClInclude Include="Hooks\OverRideView.h">
       <Filter>Cheat\Hooks</Filter>
     </ClInclude>
-    <ClInclude Include="SceneEnd.h">
+    <ClInclude Include="Hooks\SceneEnd.h">
       <Filter>Cheat\Hooks</Filter>
     </ClInclude>
-    <ClInclude Include="WndProc.h">
+    <ClInclude Include="Hooks\WndProc.h">
       <Filter>Cheat\Hooks</Filter>
     </ClInclude>
-    <ClInclude Include="NetChannelhook.h">
+    <ClInclude Include="Hooks\NetChannelhook.h">
       <Filter>Cheat\Hooks</Filter>
     </ClInclude>
     <ClInclude Include="Includes\protect\protect.hpp">
@@ -363,10 +363,10 @@
     <ClInclude Include="manrope_meduim_ttf.h">
       <Filter>Cheat\Bytes</Filter>
     </ClInclude>
-    <ClInclude Include="WriteUsercmdDeltaToBuffer.h">
+    <ClInclude Include="Hooks\WriteUsercmdDeltaToBuffer.h">
       <Filter>Cheat\Hooks</Filter>
     </ClInclude>
-    <ClInclude Include="RunCommand.h">
+    <ClInclude Include="Hooks\RunCommand.h">
       <Filter>Cheat\Hooks</Filter>
     </ClInclude>
     <ClInclude Include="Features\Misc\Misc.h">
@@ -444,7 +444,7 @@
     <ClInclude Include="Includes\minhook\trampoline.h">
       <Filter>Cheat\minhook</Filter>
     </ClInclude>
-    <ClInclude Include="hooker.h">
+    <ClInclude Include="Hooks\hooker.h">
       <Filter>Cheat\minhook</Filter>
     </ClInclude>
     <ClInclude Include="CacheSystem.h">
@@ -572,7 +572,7 @@
     <ClCompile Include="DLL_MAIN.cpp">
       <Filter>Cheat\Enty point</Filter>
     </ClCompile>
-    <ClCompile Include="Hooks.cpp">
+    <ClCompile Include="Hooks\Hooks.cpp">
       <Filter>Cheat\Hooks</Filter>
     </ClCompile>
     <ClCompile Include="checksum_crc.cpp">

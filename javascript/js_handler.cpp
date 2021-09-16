@@ -1,5 +1,5 @@
 #include "api.h"
-#include "../Hooks.h"
+#include "../Hooks/Hooks.h"
 
 std::vector<std::string> get_array_string(duk_context* ctx, duk_idx_t idx) {
     std::vector<std::string> result;

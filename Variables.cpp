@@ -1,5 +1,5 @@
 #include "Variables.h"
-#include "Hooks.h"
+#include "Hooks/Hooks.h"
 #include <sstream>
 #include "GUI/element.h"
 #include <filesystem>

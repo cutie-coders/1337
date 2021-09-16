@@ -1,6 +1,6 @@
 #pragma once
 #include <deque>
-#include "Hooks.h"
+#include "Hooks/Hooks.h"
 
 class CBulletTracer
 {

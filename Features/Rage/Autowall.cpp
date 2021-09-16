@@ -1,4 +1,5 @@
-#include "../../hooks.h"
+
+#include "../../Hooks/hooks.h"
 #include "Autowall.h"
 
 ReturnInfo_t CAutoWall::Think(Vector pos, IBasePlayer* target, int specific_hitgroup, Vector eye_pos, IBasePlayer* start_ent)

@@ -1,5 +1,5 @@
 #pragma once
-#include "Hooks.h"
+#include "Hooks/Hooks.h"
 #include "netvar_manager.h"
 
 unsigned int FindInDataMap(datamap_t *pMap, const char *name);

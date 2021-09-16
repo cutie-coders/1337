@@ -1,4 +1,5 @@
-#include "../../hooks.h"
+
+#include "../../Hooks/hooks.h"
 #include "../Features.h"
 
 animation* CLegit::GetAimAnimation() {

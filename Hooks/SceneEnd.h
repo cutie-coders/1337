@@ -1,5 +1,5 @@
 #include "Hooks.h"
-#include "Features/Visuals/Glow.h"
+#include "../Features/Visuals/Glow.h"
 
 void __fastcall Hooked_SceneEnd(void* thisptr, void* edx)
 {

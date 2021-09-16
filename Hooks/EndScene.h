@@ -1,18 +1,18 @@
 #include "Hooks.h"
-#include "Menu.h"
-#include "includes\imgui\imgui_impl_dx9.h"
-#include "includes\imgui\imgui_impl_win32.h"
-#include "includes\imgui\imgui_freetype.h"
+#include "../Menu.h"
+#include "../includes\imgui\imgui_impl_dx9.h"
+#include "../includes\imgui\imgui_impl_win32.h"
+#include "../includes\imgui\imgui_freetype.h"
 #include <d3dx9tex.h>
-#include "Features/Rage/AntiAims.h"
-#include "Features/Misc/Eventlog.h"
-#include "includes\protect/encoding.hpp"
+#include "../Features/Rage/AntiAims.h"
+#include "../Features/Misc/Eventlog.h"
+#include "../includes\protect/encoding.hpp"
 #include <chrono>
-#include "manrope_meduim_ttf.h"
-#include "includes\fonts/SMALLEST_PIXEL-7.c"
-#include "includes\fonts/OpenSans-SemiBold.c"
-#include "includes\fonts/OpenSans-Bold.c"
-#include "includes\fonts/undefeated.h"
+#include "../manrope_meduim_ttf.h"
+#include "../includes\fonts/SMALLEST_PIXEL-7.c"
+#include "../includes\fonts/OpenSans-SemiBold.c"
+#include "../includes\fonts/OpenSans-Bold.c"
+#include "../includes\fonts/undefeated.h"
 
 
 

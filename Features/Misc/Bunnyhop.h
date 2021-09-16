@@ -1,5 +1,6 @@
 #pragma once
-#include "../../hooks.h"
+#include "../../Hooks/hooks.h"
+#include "../../Math.h"
 
 #define M_PI2	1.57079632679489661923
 #define M_PI4	0.785398163397448309616

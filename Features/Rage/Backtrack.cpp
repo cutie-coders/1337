@@ -1,4 +1,5 @@
-#include "../../Hooks.h"
+
+#include "../../Hooks/hooks.h"
 #include "../Features.h"
 
 bool animation::is_valid(float range = .2f, float max_unlag = .2f)
