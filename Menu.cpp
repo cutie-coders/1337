@@ -535,6 +535,7 @@ namespace visuals_tab
 					str("Fake duck"),
 					str("Distance"),
 					str("Position"),
+					str("Resolver Info"),
 				}, enable_esp));
 
 			settings->add_element(new c_colorpicker(&vars.visuals.flags_color, true,

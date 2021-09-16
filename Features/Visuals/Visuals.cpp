@@ -985,6 +985,7 @@ void CVisuals::Draw()
 				bool fake_ducking = (vars.visuals.flags & 16) && info.fake_duck;
 				bool draw_distance = (vars.visuals.flags & 32) && info.player_distance > 0.f;
 				bool draw_last_place = (vars.visuals.flags & 64);
+				bool draw_resolver = (vars.visuals.flags * 128) && !ResolverMode[info.player->EntIndex()].empty();
 
 				std::string dist_to_target = std::to_string(info.player_distance) + str("u");
 
@@ -1008,6 +1009,9 @@ void CVisuals::Draw()
 
 				flags_info.emplace_back(Flags_t(info.last_place,
 					draw_last_place, clr));
+
+				flags_info.emplace_back(Flags_t(ResolverMode[info.player->EntIndex()],
+					draw_resolver, clr));
 
 				float step = 0.f;
 
