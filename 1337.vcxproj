@@ -305,13 +305,13 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(ProjectDir)d3d9;$(SolutionDir)\cheat\freetype\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(ProjectDir)d3d9;$(SolutionDir)\cheat\freetype\objs;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(SolutionDir)\detour\minhook;$(SolutionDir)\includes\freetype\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib\x86;$(SolutionDir)\includes\freetype\objs;$(SolutionDir)\includes\minhook;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(ProjectDir)d3d9;$(SolutionDir)\detour;$(SolutionDir)\freetype\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(ProjectDir)d3d9;C:\Users\ne\Desktop\v2\freetype\objs;$(SolutionDir)\cheat\detour;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(SolutionDir)\detour\minhook;$(SolutionDir)\includes\freetype\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib\x86;$(SolutionDir)\includes\freetype\objs;$(SolutionDir)\includes\minhook;$(LibraryPath)</LibraryPath>
     <TargetName>cheat</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Beta|Win32'">
