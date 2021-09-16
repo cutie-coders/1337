@@ -19,14 +19,12 @@ void __stdcall Hooked_PaintTraverse(unsigned int vguiPanel, bool forceRepaint, b
 	static int ScreenSize2W = -1;
 	static int ScreenSize2H = -1;
 
-	if (!init
-		|| (ScreenSize2W != csgo->w
-			|| ScreenSize2H != csgo->h))
+	if (!init || (ScreenSize2W != csgo->w || ScreenSize2H != csgo->h))
 	{
-		init = true;
 		interfaces.engine->GetScreenSize(ScreenSize2W, ScreenSize2H);
 		csgo->w = ScreenSize2W;
 		csgo->h = ScreenSize2H;
+		init = true;
 	}
 
 	for (int i = 0; i < 4; i++)
