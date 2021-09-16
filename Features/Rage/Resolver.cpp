@@ -118,7 +118,7 @@ void CResolver::Resolver(IBasePlayer* p)
 		return;
 	}
 
-	if (!state || !vars.ragebot.resolver || !DoesHaveFakeAngles(p))
+	if (!state || !vars.ragebot.resolver)
 	{
 		ResolverMode[i] = str("Disabled");
 		ResolverInfo[i].Index = 0;

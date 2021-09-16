@@ -1687,9 +1687,9 @@ void CRagebot::Run()
 
 					// вот эту хуйню расскоменчивать когда надо тест анимфикса + сейфпоинтов, чтоб видеть куда рейдж стреляет
 
-					//DrawCapsule(best_anims->player, best_anims->unresolved_bones, color_t(255, 255, 255, 127));
-					//DrawCapsule(best_anims->player, best_anims->right_side_bone, color_t(255, 35, 35, 127));
-					//DrawCapsule(best_anims->player, best_anims->left_side_bone, color_t(35, 255, 35, 127));
+					DrawCapsule(best_anims->player, best_anims->unresolved_bones, color_t(255, 255, 255, 127));
+					/*DrawCapsule(best_anims->player, best_anims->right_side_bone, color_t(255, 35, 35, 127));
+					DrawCapsule(best_anims->player, best_anims->left_side_bone, color_t(35, 255, 35, 127));*/
 					g_Chams->AddHitmatrix(best_anims);
 				}
 				if (!vars.ragebot.silent)
