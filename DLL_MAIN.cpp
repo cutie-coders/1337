@@ -139,10 +139,11 @@ DWORD WINAPI CheatMain(LPVOID lpThreadParameter)
 	xs64_reset_seed();
 	
 	load_cfg();
-
 	I::Setup();
 	g_Chams->Init();
 	InitializeNetvars();
+
+
 	H::Hook();
 
 	while (!csgo->DoUnload)

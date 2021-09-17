@@ -233,40 +233,6 @@ void CAntiAim::Yaw(bool legit_aa)
 
 	int side = csgo->SwitchAA ? 1 : -1;
 
-	if (vars.antiaim.desync_direction == 3) {
-		side = sw ? -1 : 1;
-	}
-	else if (vars.antiaim.desync_direction != 0) {
-		static int last_side = -1;
-		auto best_ent = GetNearestTarget();
-		if (best_ent) {
-			Vector ang{};
-			interfaces.engine->GetViewAngles(ang);
-
-			Vector src, dst, sc1, sc2, fw1;
-
-			src = csgo->local->GetBonePos(csgo->local->GetBoneCache().Base(), 8);
-			Math::AngleVectors(Vector(0, ang.y - 90.f, 0), &fw1);
-
-			Vector left_side = src + (fw1 * 40);
-			Vector right_side = src - (fw1 * 40);
-
-			side = last_side;
-
-			float damage_left = g_AutoWall->Think(left_side, csgo->local, HITGROUP_HEAD, best_ent->GetEyePosition(), best_ent).m_damage;
-			float damage_right = g_AutoWall->Think(right_side, csgo->local, HITGROUP_HEAD, best_ent->GetEyePosition(), best_ent).m_damage;
-
-			if (abs(damage_left - damage_right) > 10) {
-				if (damage_left > damage_right)
-					side = vars.antiaim.desync_direction == 1 ? -1 : 1;
-				else if (damage_left < damage_right)
-					side = vars.antiaim.desync_direction == 1 ? 1 : -1;
-
-				last_side = side;
-			}
-		}
-	}
-
 	if (legit_aa)
 		side *= -1;
 
@@ -276,45 +242,24 @@ void CAntiAim::Yaw(bool legit_aa)
 
 	if (vars.antiaim.enable) {
 
-		float Desync = csgo->local->GetDSYDelta() / 100 * csgo->desync_angle + 30.0f;
-		float MM = 1.10f;
-		float m_flDesyncAmount = 58.f;
-		if (side)
-			Desync = -Desync;
-
-		if (csgo->cmd->buttons & IN_DUCK)
-			MM *= 3;
-
-		if (csgo->cmd->tick_count % 2)
-			MM = -MM;
-
-		static float LBY = 0;
-
-		if (interfaces.global_vars->curtime < LBY && csgo->cmd->sidemove < 4 && csgo->cmd->sidemove - 4)
-			csgo->cmd->sidemove = MM;
-
 		if (!csgo->send_packet)
 		{
-			if (interfaces.global_vars->curtime >= LBY && csgo->local->GetVelocity().Length() < 4)
+			if (csgo->local->GetVelocity().Length2D() > 0.1f)
 			{
-
-				csgo->cmd->viewangles.y += 180.f;
-				LBY = interfaces.global_vars->curtime + 0.22f;
+				csgo->cmd->viewangles.y += 120.f * side;
+				next_break = csgo->curtime + 0.22f;
 			}
 			else
 			{
-				csgo->cmd->viewangles.y += Desync;
+				if (Currently_Breaking || next_break == csgo->curtime)
+				{
+					csgo->cmd->viewangles.y += 180.f * side;
+				}
 			}
 		}
-
-		m_flDesyncAmount = Desync / 2;
-
-		csgo->cmd->viewangles.y -= 180.f;
+		else
+			csgo->cmd->viewangles.y += 120.f * side;
 	}
-
-	// смысл делать свитч, если анти-аим один? (@opai)
-	/*if (vars.antiaim.yaw == 1)
-		csgo->cmd->viewangles.y += body_lean + 60.f;*/
 
 	if (!legit_aa) {
 		csgo->cmd->viewangles.y += vars.antiaim.jitter_angle * (sw ? 1 : -1);

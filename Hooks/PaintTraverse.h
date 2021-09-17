@@ -4,6 +4,14 @@ void __stdcall Hooked_PaintTraverse(unsigned int vguiPanel, bool forceRepaint, b
 {
 	static auto PaintTraverse = g_pPanelHook->GetOriginal< PaintTraverseFn >(g_HookIndices[fnva1(hs::Hooked_PaintTraverse.s().c_str())]);
 
+	static bool init = false;
+
+	static int ScreenSize2W = -1;
+	static int ScreenSize2H = -1;
+
+	static int previousWidth = 0;
+	static int previousHeight = 0;
+
 	if (csgo->DoUnload) {
 		interfaces.v_panel->SetMouseInputEnabled(vguiPanel, 0);
 		return PaintTraverse(interfaces.v_panel, vguiPanel, forceRepaint, allowForce);
@@ -20,6 +28,16 @@ void __stdcall Hooked_PaintTraverse(unsigned int vguiPanel, bool forceRepaint, b
 
 	if (panel_name == HudZoom && vars.visuals.remove & 8)
 		return;
+
+	int width, height;
+	interfaces.engine->GetScreenSize(width, height);
+	if (width != previousWidth || height != previousHeight)
+	{
+		previousHeight = height;
+		previousWidth = width;
+		csgo->w = width;
+		csgo->h = height;
+	}
 
 	PaintTraverse(interfaces.v_panel, vguiPanel, forceRepaint, allowForce);
 
