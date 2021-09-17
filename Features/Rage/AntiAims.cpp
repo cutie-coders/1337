@@ -242,12 +242,39 @@ void CAntiAim::Yaw(bool legit_aa)
 
 	if (vars.antiaim.enable) {
 
+<<<<<<< HEAD
 		if (!csgo->send_packet)
 		{
 			if (csgo->local->GetVelocity().Length2D() > 0.1f)
 			{
 				csgo->cmd->viewangles.y += 120.f * side;
 				next_break = csgo->curtime + 0.22f;
+=======
+		float Desync = csgo->local->GetDSYDelta() / 100 * csgo->desync_angle + 30.0f;
+		float MM = 1.10f;
+		float m_flDesyncAmount = 58.f;
+		if (side)
+			Desync = -Desync;
+
+		if (csgo->cmd->buttons & IN_DUCK)
+			MM *= 3;
+
+		if (csgo->cmd->tick_count % 2)
+			MM = -MM;
+
+		static float LBY = 0;
+
+		if (!Currently_Breaking && csgo->cmd->sidemove < 4 && csgo->cmd->sidemove - 4)
+			csgo->cmd->sidemove = MM;
+
+		if (!csgo->send_packet)
+		{
+			if (Currently_Breaking && csgo->local->GetVelocity().Length() < 4)
+			{
+
+				csgo->cmd->viewangles.y += 180.f;
+				next_break = interfaces.global_vars->curtime + 0.22f;
+>>>>>>> affddd6ae2439bcb3b316df269e33ad56034f9af
 			}
 			else
 			{
