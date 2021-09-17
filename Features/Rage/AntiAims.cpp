@@ -290,16 +290,16 @@ void CAntiAim::Yaw(bool legit_aa)
 
 		static float LBY = 0;
 
-		if (interfaces.global_vars->curtime < LBY && csgo->cmd->sidemove < 4 && csgo->cmd->sidemove - 4)
+		if (!Currently_Breaking && csgo->cmd->sidemove < 4 && csgo->cmd->sidemove - 4)
 			csgo->cmd->sidemove = MM;
 
 		if (!csgo->send_packet)
 		{
-			if (interfaces.global_vars->curtime >= LBY && csgo->local->GetVelocity().Length() < 4)
+			if (Currently_Breaking && csgo->local->GetVelocity().Length() < 4)
 			{
 
 				csgo->cmd->viewangles.y += 180.f;
-				LBY = interfaces.global_vars->curtime + 0.22f;
+				next_break = interfaces.global_vars->curtime + 0.22f;
 			}
 			else
 			{
@@ -311,10 +311,6 @@ void CAntiAim::Yaw(bool legit_aa)
 
 		csgo->cmd->viewangles.y -= 180.f;
 	}
-
-	// смысл делать свитч, если анти-аим один? (@opai)
-	/*if (vars.antiaim.yaw == 1)
-		csgo->cmd->viewangles.y += body_lean + 60.f;*/
 
 	if (!legit_aa) {
 		csgo->cmd->viewangles.y += vars.antiaim.jitter_angle * (sw ? 1 : -1);
