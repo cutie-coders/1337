@@ -49,6 +49,7 @@ namespace render {
 		centered_y = 1 << 2,
 		dropshadow = 1 << 3,
 	};
+	void Render3DCircle(IDirect3DDevice9* dev, Vector center, float radius, color_t outer, color_t inner);
 }
 
 class ImGuiRendering {

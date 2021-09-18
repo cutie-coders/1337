@@ -180,6 +180,10 @@ HRESULT __stdcall Hooked_EndScene(IDirect3DDevice9* device)
 
 			g_Eventlog->Draw();
 			g_Menu->render();
+
+			if (interfaces.engine->IsConnected() && csgo->local->isAlive())
+				render::Render3DCircle(device, csgo->local->GetOrigin(), 5.f, color_t(255, 255, 255), color_t(0, 0, 255));
+
 		}
 	}
 	ImGui::EndFrame();

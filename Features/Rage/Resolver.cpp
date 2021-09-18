@@ -171,9 +171,15 @@ bool CResolver::Do(IBasePlayer* p) {
 		mode += "Last yaw";
 	} while (time_since_0_pitch[i] == csgo->curtime);
 
-	if (missed_shots != 2)
+	if (ResolverInfo[i].ResolvedAngle == record.LastKnownYaw[i])
+	{
+		mode += "Last yaw";
+	}
+
+	bool HighDeltaDesync[64] = { p->GetSequence() == 979 && p->GetFlags() & FL_ONGROUND && p->GetVelocity().Length2D() <= 0.1f };
+
+	if (HighDeltaDesync)
 	{
 
 	}
-
 }

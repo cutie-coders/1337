@@ -564,6 +564,7 @@
     <ClInclude Include="Features\Misc\Eventlog.h">
       <Filter>Cheat\Features\Visual</Filter>
     </ClInclude>
+    <ClInclude Include="Features\Rage\RageBackTracking.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Menu.cpp">
@@ -785,6 +786,7 @@
     <ClCompile Include="javascript\cache.cpp">
       <Filter>javascript</Filter>
     </ClCompile>
+    <ClCompile Include="Features\Rage\RageBackTracking.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="server_api.lib">

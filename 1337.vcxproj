@@ -20,6 +20,7 @@
     <ClInclude Include="Features\Rage\AntiAims.h" />
     <ClInclude Include="Features\Rage\Autopeek.h" />
     <ClInclude Include="Features\Rage\Autowall.h" />
+    <ClInclude Include="Features\Rage\RageBackTracking.h" />
     <ClInclude Include="Hooks\BeginFrame.h" />
     <ClInclude Include="bspflags.h" />
     <ClInclude Include="Features\Misc\Bunnyhop.h" />
@@ -185,6 +186,7 @@
     <ClCompile Include="Features\Rage\Autowall.cpp" />
     <ClCompile Include="Features\Rage\Backtrack.cpp" />
     <ClCompile Include="CacheSystem.cpp" />
+    <ClCompile Include="Features\Rage\RageBackTracking.cpp" />
     <ClCompile Include="Features\Visuals\Chams.cpp" />
     <ClCompile Include="checksum_crc.cpp" />
     <ClCompile Include="checksum_md5.cpp" />

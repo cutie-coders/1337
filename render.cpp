@@ -155,3 +155,41 @@ void ImGuiRendering::CircleFilled(float x1, float y1, float radius, color_t col,
 {
 	_drawList->AddCircleFilled(ImVec2(x1, y1), radius, col.u32(), segments);
 }
+
+void render::Render3DCircle(IDirect3DDevice9* dev, Vector center, float radius, color_t outer, color_t inner) {
+
+
+
+	vertex vert[68] = {};
+	bool render = false;
+
+	for (auto i = 1; i <= 64; i++)
+	{
+		Vector Point3D = Vector(std::sin(2.f * D3DX_PI * (i / static_cast<float>(64))), std::cos(2.f * D3DX_PI * (i / static_cast<float>(64))), 0.f) * radius;
+		Vector Point2D;
+		if (Math::WorldToScreen(center + Point3D, Point2D)) {
+			render = true;
+		}
+		vert[i] =
+		{
+			Point2D.x,
+			Point2D.y,
+			0.0f,
+			1.0f,
+			outer.u32()
+		};
+	}
+	if (!render)
+		return;
+	Vector Point2D;
+	Math::WorldToScreen(center, Point2D);
+
+	vert[0] = { Point2D.x, Point2D.y, 0.0f, 1.0f, inner.u32() };
+	vert[65] = vert[1];
+
+	dev->SetRenderState(D3DRS_ANTIALIASEDLINEENABLE, true);
+	dev->SetTexture(0, nullptr);
+	dev->DrawPrimitiveUP(D3DPT_TRIANGLEFAN, 64, &vert, sizeof vertex);
+	dev->SetRenderState(D3DRS_ANTIALIASEDLINEENABLE, false);
+
+}
