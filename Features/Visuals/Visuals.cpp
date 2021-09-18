@@ -681,6 +681,14 @@ void CVisuals::Draw()
 				|| !info.is_valid)
 				continue;
 
+			if (vars.visuals.resolver_flag)
+			{
+				ImGui::PushFont(fonts::esp_info); //info.box.x + info.box.w + 3, (info.box.y - 2) + step
+
+				g_Render->DrawString(info.box.x + info.box.w + 3, (info.box.y - 2) + 5, color_t(255, 255, 255),
+					render::outline, fonts::esp_info, ResolverMode[info.player->EntIndex()].c_str());
+			}
+
 			if (vars.visuals.zeus_warning) {
 				if (info.zeuser_stages != none) {
 					color_t warning_clr = [&]() {
@@ -1009,9 +1017,6 @@ void CVisuals::Draw()
 
 				flags_info.emplace_back(Flags_t(info.last_place,
 					draw_last_place, clr));
-
-				flags_info.emplace_back(Flags_t(ResolverMode[info.player->EntIndex()],
-					draw_resolver, clr));
 
 				float step = 0.f;
 

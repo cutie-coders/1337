@@ -1596,6 +1596,9 @@ namespace misc_tab {
 			settings->add_element(new c_checkbox(str("Ragdoll force"),
 				&vars.visuals.ragdoll_force));
 
+			settings->add_element(new c_checkbox(str("Resolver Information"),
+				&vars.visuals.resolver_flag));
+
 			settings->add_element(new c_checkbox(str("Clantag changer"),
 				&vars.visuals.clantagspammer));
 

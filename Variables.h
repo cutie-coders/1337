@@ -253,6 +253,7 @@ struct CGlobalVariables
 				color_t color;
 			} weapons;
 		} world;
+		bool resolver_flag;
 	} visuals;
 
 	struct
