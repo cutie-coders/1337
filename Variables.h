@@ -93,7 +93,10 @@ struct CGlobalVariables
 		bool resolver;
 
 		bool dt_teleport;
+		bool dt_backwards_teleport;
+		bool dt_defensive;
 		int recharge_time;
+		int dt_tickammount;
 		bool zeusbot;
 		int zeuschance;
 

@@ -270,12 +270,23 @@ namespace ragebot_tab
 					return enable_rage() && (g_Binds[bind_double_tap].key > 0 || g_Binds[bind_double_tap].active);
 					}));
 
+				settings->add_element(new c_checkbox(str("Teleport backwards"), &vars.ragebot.dt_backwards_teleport, []() {
+					return enable_rage() && (g_Binds[bind_double_tap].key > 0 || g_Binds[bind_double_tap].active);
+					})); //Ghetto fix for scout autopeek
+
+				settings->add_element(new c_checkbox(str("Defensive DT"), &vars.ragebot.dt_defensive, []() {
+					return enable_rage() && (g_Binds[bind_double_tap].key > 0 || g_Binds[bind_double_tap].active);
+					}));
+
 				settings->add_element(new c_keybind(str("Hide-shots"), &g_Binds[bind_hide_shots], []() {
 					return vars.ragebot.enable && vars.misc.restrict_type == 1;
 					}));
 
 				settings->add_element(new c_slider(str("Charge delay"), &vars.ragebot.recharge_time,
 					0, 14));
+
+				settings->add_element(new c_slider(str("DT Tickbase"), &vars.ragebot.dt_tickammount,
+					13, 30));
 
 
 				settings->add_element(new c_text(str("Please toggle aimbot before setup!"), 0, []() { return !enable_rage(); }));
@@ -1477,8 +1488,11 @@ namespace misc_tab {
 			settings->add_element(new c_checkbox(str("Auto strafe"),
 				&vars.misc.autostrafe));
 
-			settings->add_element(new c_checkbox(str("Slide walk"),
-				&vars.misc.slidewalk));
+			settings->add_element(new c_combo(str("Slidewalk Mode"), &vars.misc.slidewalk, {
+			str("Off"),
+			str("On"),
+			str("Jitter"),
+				}, nullptr));
 
 			settings->add_element(new c_keybind(str("Peek assistance"), &g_Binds[bind_peek_assist]));
 

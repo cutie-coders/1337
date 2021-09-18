@@ -118,6 +118,7 @@ public:
 	Vector last_player_shot_pos;
 	float last_shoot_time[64];
 	int shift_amount;
+	int shift_timer;
 	bool need_recharge_rn;
 	bool is_local_alive;
 	int w;

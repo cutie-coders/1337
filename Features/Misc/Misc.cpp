@@ -188,7 +188,7 @@ void CMisc::SlideWalk()
 	if (!(csgo->local->GetFlags() & FL_ONGROUND))
 		return;
 
-	if (g_AntiAim->ShouldAA() && !vars.misc.slidewalk)
+	if (g_AntiAim->ShouldAA() && (vars.misc.slidewalk == 2 && rand() % 3 != 0 || vars.misc.slidewalk == 0))
 		csgo->cmd->buttons &= ~(IN_FORWARD | IN_BACK | IN_MOVERIGHT | IN_MOVELEFT);
 }
 
@@ -231,6 +231,9 @@ void CMisc::CopyCommand(CUserCmd* cmd, int tickbase_shift)
 		Math::VectorAngles(vMove, vMove2);
 		vMove2.Normalize();
 		flYaw = DEG2RAD(cmd->viewangles.y - csgo->original.y + vMove2.y);
+		if (vars.ragebot.dt_backwards_teleport) { // ghetto scout dt autopeek fix, idk what math to use to teleport to autopeek spot
+			flSpeed = -flSpeed * 10;
+		}
 		cmd->forwardmove = cos(flYaw) * flSpeed;
 		cmd->sidemove = sin(flYaw) * flSpeed;
 	}
@@ -374,11 +377,18 @@ bool CMisc::Doubletap()
 		return false;
 	}
 
-	if (csgo->skip_ticks <= 8) {
+	if (vars.ragebot.dt_defensive) // we sould add a peek check but it already works fine
+	{
+		if (++csgo->shift_timer >= 14)
+			csgo->shift_timer = 0;
+
+		csgo->shift_amount = csgo->shift_timer > 0 ? 16 : 0;
+	} else if (csgo->skip_ticks <= 8) {
 		ResetValue();
 		csgo->need_to_recharge = true;
 		return false;
 	}
+
 
 	auto max_tickbase_shift = csgo->weapon->GetMaxTickbaseShift();
 	bool can_dt =
@@ -389,15 +399,21 @@ bool CMisc::Doubletap()
 
 	bool is_firing = csgo->cmd->buttons & IN_ATTACK;
 
-	if (can_dt && is_firing)
+	if (can_dt && is_firing || ((csgo->cmd->buttons & IN_ATTACK || csgo->cmd->buttons & IN_ATTACK2) && csgo->weapon->IsKnife()))
 	{
+
 		auto next_command_number = csgo->cmd->command_number + 1;
 		auto user_cmd = interfaces.input->GetUserCmd(next_command_number);
 
 		memcpy(user_cmd, csgo->cmd, sizeof(CUserCmd));
 		user_cmd->command_number = next_command_number;
 
-		CopyCommand(user_cmd, max_tickbase_shift);
+		if (vars.ragebot.dt_moreticks && csgo->weapon->isSniper()) {
+			CopyCommand(user_cmd, vars.ragebot.dt_tickammount);
+		}
+		else {
+			CopyCommand(user_cmd, max_tickbase_shift);
+		}
 
 		recharge_double_tap = true;
 		double_tap_enabled = false;
@@ -406,8 +422,6 @@ bool CMisc::Doubletap()
 		last_doubletap = csgo->fixed_tickbase;
 		dt_bullets++;
 	}
-	else if (can_dt)
-		csgo->shift_amount = max_tickbase_shift;
 
 	return true;
 }

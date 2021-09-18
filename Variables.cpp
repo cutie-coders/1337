@@ -54,6 +54,7 @@ void CConfig::ResetToDefault()
 	g_Binds[bind_hide_shots].type = 1;
 
 	vars.ragebot.recharge_time = 7;
+	vars.ragebot.dt_tickammount = 17;
 
 	for (auto& a : vars.ragebot.weapon) {
 		a.enable = false;
