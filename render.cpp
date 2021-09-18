@@ -160,7 +160,7 @@ void render::Render3DCircle(IDirect3DDevice9* dev, Vector center, float radius, 
 
 
 
-	vertex vert[68] = {};
+	vertex vert[66] = {};
 	bool render = false;
 
 	for (auto i = 1; i <= 64; i++)

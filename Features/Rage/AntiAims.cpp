@@ -238,11 +238,6 @@ void CAntiAim::Yaw(bool legit_aa)
 	static bool twice = false;
 
 	bool inverted = g_Binds[bind_aa_inverter].active;
-	/*if (!twice)
-	{
-		if (inverted)
-			Msg("Inverting!", color_t(255, 255, 0, 255));
-	}*/
 
 	int side = csgo->SwitchAA ? 1 : -1;
 
@@ -261,9 +256,14 @@ void CAntiAim::Yaw(bool legit_aa)
 			{
 				if (Currently_Breaking) {
 					csgo->cmd->viewangles.y += (vars.antiaim.desync_amount * 2) * side;
+					if (!once)
+					{
+						Msg("Breaking lby", color_t(255, 255, 255));
+						once = true;
+					}
 				}
 				else
-					csgo->cmd->viewangles.y += delay * (vars.antiaim.desync_amount * 2) * side / 100; // this is supposed to sway, but the breaker is retarded and made in like 2 seconds so its not good at all.
+					csgo->cmd->viewangles.y += (vars.antiaim.desync_amount / 2) * side;
 			}
 		}
 		csgo->cmd->viewangles.y -= vars.antiaim.yaw_offset;

@@ -166,7 +166,6 @@ bool CResolver::Do(IBasePlayer* p) {
 
 	int missed_shots = (csgo->actual_misses[i] + csgo->imaginary_misses[i] + add) % 4;
 	float time_since_0_pitch[64];
-	std::string& mode = ResolverMode[i];
 
 	while (p->GetEyeAngles().x == 0.f)
 	{
@@ -176,13 +175,13 @@ bool CResolver::Do(IBasePlayer* p) {
 	do {
 		record.LastKnownYaw[i] = state->m_abs_yaw;
 		ResolverInfo[i].Index = i;
-		mode += "Last yaw";
+		ResolverMode[i] += "Last yaw";
 		return false;
 	} while (time_since_0_pitch[i] == csgo->curtime);
 
 	if (ResolverInfo[i].ResolvedAngle == record.LastKnownYaw[i])
 	{
-		mode += "Last yaw";
+		ResolverMode[i] += "Last yaw";
 	}
 
 	bool HighDeltaDesync[64] = { p->GetSequence() == 979 && p->GetFlags() & FL_ONGROUND && p->GetVelocity().Length2D() <= 0.1f };
@@ -191,7 +190,7 @@ bool CResolver::Do(IBasePlayer* p) {
 	{
 		if (HighDeltaDesync)
 		{
-			mode += "High Delta";
+			ResolverMode[i] += "High Delta";
 			ResolverInfo[i].Index = i;
 			ResolverInfo[i].ResolvedAngle += record.LastKnownYaw[i] + 58.f * side;
 			record.IsExtending[i] = true;
@@ -208,7 +207,7 @@ bool CResolver::Do(IBasePlayer* p) {
 					lby_timer[i] = csgo->curtime + .22f;
 				if (!(p->GetFlags() & FL_ONGROUND))
 				{
-					mode += "In air";
+					ResolverMode[i] += "In air";
 					ResolverInfo[i].Index = i;
 					ResolverInfo[i].ResolvedAngle = record.LastKnownYaw[i];
 					record.IsExtending[i] = false;
@@ -223,6 +222,7 @@ bool CResolver::Do(IBasePlayer* p) {
 						ResolverInfo[i].ResolvedAngle = record.LastKnownYaw[i] + (58.f /*max*/ * side /*freestand side*/ / 2.4f /*sway timer*/);
 						record.IsSwaying[i] = true;
 						record.IsExtending[i] = false;
+						ResolverMode[i] += "LBY";
 						return true;
 					}
 					else // they cant break lby, so we'll just go for low delta?
@@ -231,6 +231,7 @@ bool CResolver::Do(IBasePlayer* p) {
 						ResolverInfo[i].ResolvedAngle = record.LastKnownYaw[i] + (58.f * side - 28.f);
 						record.IsExtending[i] = false;
 						record.IsSwaying[i] = false;
+						ResolverMode[i] += "Low delta";
 						return true;
 					}
 				}
