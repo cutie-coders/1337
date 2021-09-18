@@ -149,7 +149,7 @@ namespace js_variables {
 		bools[str("misc.autostrafe")] = &vars.misc.autostrafe;
 		bools[str("misc.knifebot")] = &vars.misc.knifebot;
 		bools[str("misc.antiuntrusted")] = &vars.misc.antiuntrusted;
-		bools[str("misc.slidewalk")] = &vars.misc.slidewalk;
+		ints[str("misc.slidewalk")] = &vars.misc.slidewalk;
 
 		ints[str("misc.restrict_type")] = &vars.misc.restrict_type;
 		ints[str("misc.viewmodelfov")] = &vars.misc.viewmodelfov;
