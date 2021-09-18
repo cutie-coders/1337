@@ -7,6 +7,12 @@ struct ResolverInfo_t {
 	float ResolvedAngle;
 };
 
+struct Record {
+	float LastKnownYaw[64];
+	bool IsExtending[64];
+	bool IsSwaying[64];
+};
+
 class CResolver
 {
 private:
@@ -14,6 +20,7 @@ private:
 	int ResolverStages[64];
 
 	int FreestandSide[64];
+	Record record;
 
 	float GetLeftYaw(IBasePlayer*);
 	float GetRightYaw(IBasePlayer*);

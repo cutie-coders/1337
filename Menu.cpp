@@ -1210,9 +1210,9 @@ namespace visuals_tab
 
 			settings->add_element(new c_checkbox(str("Watermark"), &vars.visuals.watermark));
 			settings->add_element(new c_checkbox(str("Keybind states"), &vars.visuals.indicators));
-			/*settings->add_element(new c_checkbox(str("Indicators"), &vars.visuals.indicators));
+			settings->add_element(new c_checkbox(str("Indicators"), &vars.visuals.indicators));
 			settings->add_element(new c_checkbox(str("Ragebot only"), &vars.visuals.indicators_rage,
-				[]() { return vars.visuals.indicators; }));*/
+				[]() { return vars.visuals.indicators; }));
 
 			settings->add_element(new c_combo(str("Taser range"), &vars.visuals.taser_range, { str("Off"), str("Rainbow"), str("Default") }));
 

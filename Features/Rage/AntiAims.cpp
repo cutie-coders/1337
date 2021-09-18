@@ -238,11 +238,11 @@ void CAntiAim::Yaw(bool legit_aa)
 	static bool twice = false;
 
 	bool inverted = g_Binds[bind_aa_inverter].active;
-	if (!twice)
+	/*if (!twice)
 	{
 		if (inverted)
 			Msg("Inverting!", color_t(255, 255, 0, 255));
-	}
+	}*/
 
 	int side = csgo->SwitchAA ? 1 : -1;
 

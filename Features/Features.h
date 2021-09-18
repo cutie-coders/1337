@@ -22,6 +22,7 @@
 #include "../menu.h"
 #include "../Utils.h"
 #include "Visuals/Glow.h"
+#include "Rage/RageBackTracking.h"
 
 extern CCacheSystem*		g_Cache;
 extern CVisuals*			g_Visuals;
@@ -41,6 +42,7 @@ extern CBulletTracer*		g_BulletTracer;
 extern CRagebot*			g_Ragebot;
 extern CGlow*				g_Glow;
 extern CHitMarker*			g_Hitmarker;
+extern CBacktracking* g_Backtrack;
 extern CGrenadePrediction*	g_GrenadePrediction;
 extern CKnifebot*			g_Knifebot;
 extern CLegit*				g_Legit;

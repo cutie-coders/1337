@@ -16,6 +16,7 @@ CEnginePrediction*	g_EnginePrediction	= new CEnginePrediction();
 CBulletTracer*		g_BulletTrañer		= new CBulletTracer();
 CRagebot*			g_Ragebot			= new CRagebot();
 CHitMarker*			g_Hitmarker			= new CHitMarker();
+CBacktracking*      g_Backtrack         = new CBacktracking();
 CGrenadePrediction* g_GrenadePrediction = new CGrenadePrediction();
 CKnifebot*			g_Knifebot			= new CKnifebot();
 CLegit*				g_Legit				= new CLegit();
