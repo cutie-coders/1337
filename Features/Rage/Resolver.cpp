@@ -111,16 +111,9 @@ void CResolver::Resolver(IBasePlayer* p)
 	int i = p->EntIndex();
 	CCSGOPlayerAnimState* state = p->GetPlayerAnimState();
 
-	if (p->GetPlayerInfo().fakeplayer)
+	if (!vars.ragebot.resolver || p->GetPlayerInfo().fakeplayer)
 	{
-		ResolverMode[i] = str("Bot");
-		ResolverInfo[i].Index = 0;
-		return;
-	}
-
-	if (!vars.ragebot.resolver)
-	{
-		ResolverMode[i] = str("Disabled");
+		ResolverMode[i] = p->GetPlayerInfo().fakeplayer ? str("Bot") : str("Disabled");
 		ResolverInfo[i].Index = 0;
 		return;
 	}
@@ -150,7 +143,7 @@ void CResolver::Resolver(IBasePlayer* p)
 	if (csgo->last_shoot_time[i] == p->GetSimulationTime() || shot(p))
 	{
 		mode = "Onshot";
-		angle = last_yaw;
+		ResolverInfo[i].ResolvedAngle = state->m_eye_yaw; // idfk abs yaw is bullshit imo but this shit uses that so whatever.
 		index = i;
 		return;
 	}
