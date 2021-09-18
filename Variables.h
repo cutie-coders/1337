@@ -126,7 +126,7 @@ struct CGlobalVariables
 		int min, max;
 
 		int jitter_angle;
-
+		int yaw_offset;
 	} antiaim;
 	struct
 	{
@@ -273,6 +273,7 @@ struct CGlobalVariables
 		bool slidewalk;
 
 		int agents_t, agents_ct;
+		int clantag_speed;
 	} misc;
 
 	struct

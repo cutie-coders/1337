@@ -23,16 +23,18 @@ void CAntiAim::is_lby_update()
 		return; // well we dont break lby when moving :kappa:
 	}
 
-	if (next_break <= cur_time)
+	if (next_break == cur_time)
 	{
 		Currently_Breaking = true;
 		next_break = cur_time + .22f;
+		csgo->should_sidemove = false;
 		return;
 	}
 	else
 	{
 		Pre_Breaking = true;
 		next_break = cur_time - .22f;
+		csgo->should_sidemove = true;
 		return;
 	}
 
@@ -227,29 +229,44 @@ void CAntiAim::Yaw(bool legit_aa)
 			csgo->cmd->viewangles.y = Math::CalculateAngle(csgo->local->GetOrigin(), best_ent->GetOrigin()).y;
 	}
 
+	is_lby_update();
+
 	static bool sw = false;
 	static bool avoid_overlap_side = false;
 	static float last_angle = 0.f;
+	static bool once = false;
+	static bool twice = false;
+
+	bool inverted = g_Binds[bind_aa_inverter].active;
+	if (!twice)
+	{
+		if (inverted)
+			Msg("Inverting!", color_t(255, 255, 0, 255));
+	}
 
 	int side = csgo->SwitchAA ? 1 : -1;
+
 
 	if (legit_aa)
 		side *= -1;
 
 	const float desync_amount = legit_aa ? 60.f : 60.f * (vars.antiaim.desync_amount / 100.f);
 
-	csgo->should_sidemove = true;
+
+	float delay = csgo->curtime + (4.2 * 4);
 
 	if (vars.antiaim.enable) {
-		if (!csgo->send_packet)
-		{
-			if (Currently_Breaking)
-				csgo->cmd->viewangles.y += 180.f * side;
-			else
-				csgo->cmd->viewangles.y += 180.f * -side;
+		if (vars.antiaim.desync) {
+			if (!csgo->send_packet)
+			{
+				if (Currently_Breaking) {
+					csgo->cmd->viewangles.y += (vars.antiaim.desync_amount * 2) * side;
+				}
+				else
+					csgo->cmd->viewangles.y += delay * (vars.antiaim.desync_amount * 2) * side / 100; // this is supposed to sway, but the breaker is retarded and made in like 2 seconds so its not good at all.
+			}
 		}
-		else
-			csgo->cmd->viewangles.y += 120.f * side;
+		csgo->cmd->viewangles.y -= vars.antiaim.yaw_offset;
 	}
 
 	if (!legit_aa) {
@@ -331,7 +348,7 @@ void CAntiAim::Run()
 		speed /= 3.4f;
 		float min_speed = (float)(sqrt(pow(csgo->cmd->forwardmove, 2) + pow(csgo->cmd->sidemove, 2) + pow(csgo->cmd->upmove, 2)));
 
-		if (min_speed > speed && min_speed > 0.f)
+		if (min_speed > 0.f)
 		{
 			float ratio = speed / min_speed;
 			csgo->cmd->forwardmove *= ratio;

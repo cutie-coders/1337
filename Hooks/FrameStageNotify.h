@@ -51,7 +51,10 @@ std::string GetModel(int team) {
 		str("models/player/custom_player/legacy/tm_professional_varg.mdl"),
 		str("models/player/custom_player/legacy/tm_professional_varh.mdl"),
 		str("models/player/custom_player/legacy/tm_professional_vari.mdl"),
-		str("models/player/custom_player/legacy/tm_professional_varj.mdl")
+		str("models/player/custom_player/legacy/tm_professional_varj.mdl"),
+		str("models/player/custom_player/legacy/tm_jumpsuit_varianta.mdl"),
+		str("models/player/custom_player/legacy/tm_jumpsuit_variantb.mdl"),
+		str("models/player/custom_player/legacy/tm_jumpsuit_variantc.mdl")
 	};
 
 	switch (team) {

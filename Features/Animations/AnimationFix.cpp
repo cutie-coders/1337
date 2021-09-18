@@ -115,14 +115,12 @@ void animation::build_inversed_bones(IBasePlayer* player) {
 
 	float desync_angle = delta;
 
-	bool resolver_disabled = ResolverMode[idx] == str("OFF") || ResolverMode[idx].find('o') != -1 || g_Resolver->ResolverInfo[idx].Index == 0;
+	bool resolver_disabled = ResolverMode[idx] == str("Disabled") || ResolverMode[idx].find('d') != -1 || g_Resolver->ResolverInfo[idx].Index == 0;
 
 	if (ResolverMode[idx].find('l') != -1) // low delta
 		desync_angle = low_delta; // half of max desync delta
 
-	if (resolver_disabled)
-		g_Animfix->IS_Animstate[idx]->m_abs_yaw = Math::NormalizeYaw(player->GetEyeAngles().y - desync_angle); // setup inversed side
-	else
+	if (!resolver_disabled)
 		g_Animfix->IS_Animstate[idx]->m_abs_yaw = Math::NormalizeYaw(Math::NormalizeYaw(angle + (desync_angle * -g_Resolver->ResolverInfo[idx].Index)));
 
 	player->UpdateAnimationState(g_Animfix->IS_Animstate[idx], player->GetEyeAngles());

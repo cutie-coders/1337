@@ -515,11 +515,11 @@ void CMisc::Clantag()
 		static int iLastTime;
 
 		float latency = interfaces.engine->GetNetChannelInfo()->GetLatency(FLOW_INCOMING) + interfaces.engine->GetNetChannelInfo()->GetLatency(FLOW_OUTGOING);
-		if (int(interfaces.global_vars->curtime * 2 + latency) != iLastTime)
+		if (int(interfaces.global_vars->curtime * vars.misc.clantag_speed + latency) != iLastTime)
 		{
 			if (flNextTimeUpdate <= flCurTime || flNextTimeUpdate - flCurTime > 1.f)
 			{
-				switch (int(interfaces.global_vars->curtime * 3.1) % 41) {
+				switch (int(interfaces.global_vars->curtime * vars.misc.clantag_speed) % 41) {
 				case 0: SetClanTag(hs::clantag1.s().c_str(), hs::weave_su.s().c_str()); break;
 				case 1: SetClanTag(hs::clantag2.s().c_str(), hs::weave_su.s().c_str()); break;
 				case 2: SetClanTag(hs::clantag3.s().c_str(), hs::weave_su.s().c_str()); break;
@@ -563,7 +563,7 @@ void CMisc::Clantag()
 				case 40: SetClanTag(hs::clantag41.s().c_str(), hs::weave_su.s().c_str()); break;
 				}
 			}
-			iLastTime = int(interfaces.global_vars->curtime * 2 + latency);
+			iLastTime = int(interfaces.global_vars->curtime * vars.misc.clantag_speed + latency);
 		}
 	}
 	else
@@ -573,10 +573,10 @@ void CMisc::Clantag()
 			static int iLastTime;
 
 			float latency = interfaces.engine->GetNetChannelInfo()->GetLatency(FLOW_INCOMING) + interfaces.engine->GetNetChannelInfo()->GetLatency(FLOW_OUTGOING);
-			if (int(interfaces.global_vars->curtime * 2 + latency) != iLastTime)
+			if (int(interfaces.global_vars->curtime * vars.misc.clantag_speed + latency) != iLastTime)
 			{
 				SetClanTag(str(""), str(""));
-				iLastTime = int(interfaces.global_vars->curtime * 2 + latency);
+				iLastTime = int(interfaces.global_vars->curtime * vars.misc.clantag_speed + latency);
 			}
 			Reset = true;
 		}
@@ -636,18 +636,18 @@ void CMisc::ProcessMissedShots()
 			if (vars.visuals.eventlog & 4) {
 				if (!spread && !sp_spread) {
 					if (snapshot.record.safepoints && !snapshot.resolver_info.LowDelta)
-						Msg(str("CSGO shit itself causing you to miss."), vars.visuals.eventlog_color);
+						Msg(str("Missed shot due to gay walls."), vars.visuals.eventlog_color);
 					else
 					{
 						g_Resolver->RemoveHitInfo(snapshot.entity);
-						Msg(str("Missed shot because you are a fucking monkey."), vars.visuals.eventlog_color);
+						Msg(str("Missed due to spread."), vars.visuals.eventlog_color);
 					}
 				}
 				else {
 					if (snapshot.hitchance == 1.f)
-						Msg(str("Prediction system was unable to predict that player."), vars.visuals.eventlog_color);
+						Msg(str("Missed shot due to fuck."), vars.visuals.eventlog_color);
 					else
-						Msg(str("Nice config retard."), vars.visuals.eventlog_color);
+						Msg(str("Missed shot due to RNG."), vars.visuals.eventlog_color);
 				}
 			}
 

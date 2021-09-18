@@ -287,19 +287,14 @@ namespace ragebot_tab
 
 				settings->add_element(new c_checkbox(str("Enable"), &vars.antiaim.enable));
 
-				settings->add_element(new c_checkbox(str("On use"), &vars.antiaim.aa_on_use,
-					[]() { return enable_antiaim(); }));
-
-				settings->add_element(new c_combo(str("Pitch direction"), &vars.antiaim.pitch, {
+				settings->add_element(new c_combo(str("Pitch"), &vars.antiaim.pitch, {
 					str("Disabled"),
 					str("Down"),
 					str("Ideal down"),
 				}, []() { return enable_antiaim(); }));
-
-				settings->add_element(new c_combo(str("Yaw direction"), &vars.antiaim.yaw, {
-					str("Disabled"),
-					str("Backwards"),
-				}, []() { return enable_antiaim(); }));
+				settings->add_element(new c_slider(str("Yaw Offset"),
+					&vars.antiaim.yaw_offset,
+					-180, 180, []() { return vars.antiaim.enable; }));
 
 				settings->add_element(new c_separator([]() { return enable_antiaim(); }));
 				settings->add_element(new c_text(str("DESYNC"), 25, []() { return enable_antiaim(); }, color_t(127, 127, 127)));
@@ -307,19 +302,10 @@ namespace ragebot_tab
 				settings->add_element(new c_checkbox(str("Enable"), &vars.antiaim.desync,
 					[]() { return enable_antiaim(); }));
 
-				settings->add_element(new c_combo(str("Type"), &vars.antiaim.desync_direction,
-					{
-						str("Manual"),
-						str("Peek real"),
-						str("Peek desync"),
-						str("Jitter")
-					},
-					[]() { return enable_antiaim() && vars.antiaim.desync; }));
-
 				settings->add_element(new c_keybind(str("Inverter"), &g_Binds[bind_aa_inverter],
 					[]() { return enable_antiaim() && vars.antiaim.desync_direction == 0 && vars.antiaim.desync; }));
 
-				settings->add_element(new c_slider(str("Amount"), &vars.antiaim.desync_amount, 0, 100,
+				settings->add_element(new c_slider(str("Amount"), &vars.antiaim.desync_amount, -60, 60,
 					[]() { return enable_antiaim() && vars.antiaim.desync; }));
 
 				settings->add_element(new c_separator([]() { return enable_antiaim(); }));
@@ -1593,6 +1579,10 @@ namespace misc_tab {
 			settings->add_element(new c_checkbox(str("Clantag changer"),
 				&vars.visuals.clantagspammer));
 
+			settings->add_element(new c_slider(str("Clantag speed (DEBUG)"),
+				&vars.misc.clantag_speed,
+				0, 100, []() { return vars.visuals.clantagspammer; }));
+
 			settings->add_element(new c_checkbox(str("Knife-bot"),
 				&vars.misc.knifebot));
 
@@ -1709,6 +1699,9 @@ namespace skins_tab {
 			str("Little Kev"),
 			str("Number K"),
 			str("Getaway Sally"),
+			str("Jumpsuit A"),
+			str("Jumpsuit B"),
+			str("Jumpsuit C")
 
 		};
 		switch (current_subtab)
