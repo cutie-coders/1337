@@ -103,6 +103,7 @@ struct CGlobalVariables
 		CWeaponConfig weapon[7];
 
 		int active_index;
+		bool more_ticks;
 	} ragebot;
 	struct
 	{
@@ -273,7 +274,7 @@ struct CGlobalVariables
 			unsigned int misc;
 		}autobuy;
 
-		bool slidewalk;
+		int slidewalk;
 
 		int agents_t, agents_ct;
 		int clantag_speed;

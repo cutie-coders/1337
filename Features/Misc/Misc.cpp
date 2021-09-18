@@ -408,7 +408,7 @@ bool CMisc::Doubletap()
 		memcpy(user_cmd, csgo->cmd, sizeof(CUserCmd));
 		user_cmd->command_number = next_command_number;
 
-		if (vars.ragebot.dt_moreticks && csgo->weapon->isSniper()) {
+		if (vars.ragebot.more_ticks && csgo->weapon->isSniper()) {
 			CopyCommand(user_cmd, vars.ragebot.dt_tickammount);
 		}
 		else {

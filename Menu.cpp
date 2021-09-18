@@ -285,8 +285,14 @@ namespace ragebot_tab
 				settings->add_element(new c_slider(str("Charge delay"), &vars.ragebot.recharge_time,
 					0, 14));
 
+				settings->add_element(new c_checkbox(str("Custom Tickbase"), &vars.ragebot.more_ticks, []() {
+					return enable_rage() && (g_Binds[bind_double_tap].key > 0 || g_Binds[bind_double_tap].active);
+					}));
+
 				settings->add_element(new c_slider(str("DT Tickbase"), &vars.ragebot.dt_tickammount,
-					13, 30));
+					13, 30, []() {
+						return enable_rage() && vars.ragebot.more_ticks;
+					}));
 
 
 				settings->add_element(new c_text(str("Please toggle aimbot before setup!"), 0, []() { return !enable_rage(); }));
@@ -1595,7 +1601,7 @@ namespace misc_tab {
 
 			settings->add_element(new c_slider(str("Clantag speed (DEBUG)"),
 				&vars.misc.clantag_speed,
-				0, 100, []() { return vars.visuals.clantagspammer; }));
+				0, 30, []() { return vars.visuals.clantagspammer; }));
 
 			settings->add_element(new c_checkbox(str("Knife-bot"),
 				&vars.misc.knifebot));

@@ -103,7 +103,7 @@ next_cmd:
 
 	return true;
 }
-*/
+*/ // :flushed:
 
 void WriteUsercmd(bf_write* buf, CUserCmd* in, CUserCmd* out)
 {
