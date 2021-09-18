@@ -106,39 +106,47 @@ bool shot(IBasePlayer* p)
 	return false;
 }
 
-void CResolver::Resolver(IBasePlayer* p)
-{
-	int i = p->EntIndex();
-	CCSGOPlayerAnimState* state = p->GetPlayerAnimState();
-
-	if (!vars.ragebot.resolver || p->GetPlayerInfo().fakeplayer)
-	{
-		ResolverMode[i] = p->GetPlayerInfo().fakeplayer ? str("Bot") : str("Disabled");
-		ResolverInfo[i].Index = 0;
-		return;
-	}
-
-	int add = 0;
-	if (!shot_snapshots.empty()) {
-		const auto& snapshot = shot_snapshots.front();
-		const bool& dt_ready = !csgo->need_to_recharge && g_Misc->dt_bullets <= 1 && csgo->weapon->isAutoSniper();
-		if (dt_ready && snapshot.hitbox == 0 && snapshot.intended_damage > p->GetHealth()) {
-			add = g_Misc->dt_bullets;
-		}
-	}
-
-	bool max_desync[64] = { false };
-
-	int missed_shots = (csgo->actual_misses[i] + csgo->imaginary_misses[i] + add) % 4;
-
-	
-}
+//void CResolver::Resolver(IBasePlayer* p)
+//{
+//	int i = p->EntIndex();
+//	CCSGOPlayerAnimState* state = p->GetPlayerAnimState();
+//
+//	if (!vars.ragebot.resolver || p->GetPlayerInfo().fakeplayer)
+//	{
+//		ResolverMode[i] = p->GetPlayerInfo().fakeplayer ? str("Bot") : str("Disabled");
+//		ResolverInfo[i].Index = 0;
+//		return;
+//	}
+//
+//	int add = 0;
+//	if (!shot_snapshots.empty()) {
+//		const auto& snapshot = shot_snapshots.front();
+//		const bool& dt_ready = !csgo->need_to_recharge && g_Misc->dt_bullets <= 1 && csgo->weapon->isAutoSniper();
+//		if (dt_ready && snapshot.hitbox == 0 && snapshot.intended_damage > p->GetHealth()) {
+//			add = g_Misc->dt_bullets;
+//		}
+//	}
+//
+//	bool max_desync[64] = { false };
+//
+//	int missed_shots = (csgo->actual_misses[i] + csgo->imaginary_misses[i] + add) % 4;
+//
+//	
+//}
 
 bool CResolver::Do(IBasePlayer* p) {
 	int i = p->EntIndex();
+	int side = FreestandSide[i];
 	CCSGOPlayerAnimState* state = p->GetPlayerAnimState();
 
-	if (!vars.ragebot.resolver || p->GetPlayerInfo().fakeplayer)
+	if (shot(p) || csgo->last_shoot_time[i] == csgo->curtime) {
+		ResolverMode[i] += "Onshot";
+		record.LastKnownYaw[i] = state->m_abs_yaw;
+		ResolverInfo[i].Index = i;
+		return false;
+	}
+
+	if (!vars.ragebot.resolver || p->GetPlayerInfo().fakeplayer || !DoesHaveFakeAngles(p))
 	{
 		ResolverMode[i] = p->GetPlayerInfo().fakeplayer ? str("Bot") : str("Disabled");
 		ResolverInfo[i].Index = 0;
@@ -169,6 +177,7 @@ bool CResolver::Do(IBasePlayer* p) {
 		record.LastKnownYaw[i] = state->m_abs_yaw;
 		ResolverInfo[i].Index = i;
 		mode += "Last yaw";
+		return false;
 	} while (time_since_0_pitch[i] == csgo->curtime);
 
 	if (ResolverInfo[i].ResolvedAngle == record.LastKnownYaw[i])
@@ -178,8 +187,74 @@ bool CResolver::Do(IBasePlayer* p) {
 
 	bool HighDeltaDesync[64] = { p->GetSequence() == 979 && p->GetFlags() & FL_ONGROUND && p->GetVelocity().Length2D() <= 0.1f };
 
-	if (HighDeltaDesync)
+	if (missed_shots <= 2)
 	{
-
+		if (HighDeltaDesync)
+		{
+			mode += "High Delta";
+			ResolverInfo[i].Index = i;
+			ResolverInfo[i].ResolvedAngle += record.LastKnownYaw[i] + 58.f * side;
+			record.IsExtending[i] = true;
+			record.IsSwaying[i] = false;
+			return true;
+		}
+		else
+		{
+			if (record.LastKnownYaw[i] != state->m_abs_yaw)
+			{
+				// sway possibly?
+				float lby_timer[64];
+				if (p->GetVelocity().Length2D() > 0.1f)
+					lby_timer[i] = csgo->curtime + .22f;
+				if (!(p->GetFlags() & FL_ONGROUND))
+				{
+					mode += "In air";
+					ResolverInfo[i].Index = i;
+					ResolverInfo[i].ResolvedAngle = record.LastKnownYaw[i];
+					record.IsExtending[i] = false;
+					record.IsSwaying[i] = false;
+					return true;
+				}
+				else
+				{
+					if (lby_timer[i] == csgo->curtime) // they can break lby rn
+					{
+						ResolverInfo[i].Index = i;
+						ResolverInfo[i].ResolvedAngle = record.LastKnownYaw[i] + (58.f /*max*/ * side /*freestand side*/ / 2.4f /*sway timer*/);
+						record.IsSwaying[i] = true;
+						record.IsExtending[i] = false;
+						return true;
+					}
+					else // they cant break lby, so we'll just go for low delta?
+					{
+						ResolverInfo[i].Index = i;
+						ResolverInfo[i].ResolvedAngle = record.LastKnownYaw[i] + (58.f * side - 28.f);
+						record.IsExtending[i] = false;
+						record.IsSwaying[i] = false;
+						return true;
+					}
+				}
+			}
+		}
+		record.LastKnownYaw[i] = state->m_abs_yaw;
 	}
+	else // lets just run a simple bruteforce, dont need anything special here;
+	{
+		switch (missed_shots % 5)
+		{
+		case 3:
+			ResolverInfo[i].Index = i;
+			ResolverInfo[i].ResolvedAngle = record.LastKnownYaw[i] * side;
+			ResolverMode[i] += "Bruteforce shot 1";
+			return true;
+			break;
+		case 4:
+			ResolverInfo[i].Index = i;
+			ResolverInfo[i].ResolvedAngle = record.LastKnownYaw[i] * side - 15.f;
+			ResolverMode[i] += "Bruteforce shot 2";
+			return true;
+			break;
+		}
+	}
+	return false;
 }
