@@ -223,24 +223,24 @@ void CMisc::CopyCommand(CUserCmd* cmd, int tickbase_shift)
 	static auto cl_forwardspeed = interfaces.cvars->FindVar(str("cl_forwardspeed"));
 	static auto cl_sidespeed = interfaces.cvars->FindVar(str("cl_sidespeed"));
 
-	if (vars.ragebot.dt_teleport)
-	{
-		Vector vMove(cmd->forwardmove, cmd->sidemove, cmd->upmove);
-		float flSpeed = sqrt(vMove.x * vMove.x + vMove.y * vMove.y), flYaw;
-		Vector vMove2;
-		Math::VectorAngles(vMove, vMove2);
-		vMove2.Normalize();
-		flYaw = DEG2RAD(cmd->viewangles.y - csgo->original.y + vMove2.y);
-		if (vars.ragebot.dt_backwards_teleport) { // ghetto scout dt autopeek fix, idk what math to use to teleport to autopeek spot
-			flSpeed = -flSpeed * 10;
-		}
-		cmd->forwardmove = cos(flYaw) * flSpeed;
-		cmd->sidemove = sin(flYaw) * flSpeed;
-	}
-	else {
-		cmd->forwardmove = 0.0f;
-		cmd->sidemove = 0.0f;
-	}
+	//if (vars.ragebot.dt_teleport)
+	//{
+	//	Vector vMove(cmd->forwardmove, cmd->sidemove, cmd->upmove);
+	//	float flSpeed = sqrt(vMove.x * vMove.x + vMove.y * vMove.y), flYaw;
+	//	Vector vMove2;
+	//	Math::VectorAngles(vMove, vMove2);
+	//	vMove2.Normalize();
+	//	flYaw = DEG2RAD(cmd->viewangles.y - csgo->original.y + vMove2.y);
+	//	if (vars.ragebot.dt_backwards_teleport) { // ghetto scout dt autopeek fix, idk what math to use to teleport to autopeek spot
+	//		flSpeed = -flSpeed * 10;
+	//	}
+	//	cmd->forwardmove = cos(flYaw) * flSpeed;
+	//	cmd->sidemove = sin(flYaw) * flSpeed;
+	//}
+	//else {
+	//	cmd->forwardmove = 0.0f;
+	//	cmd->sidemove = 0.0f;
+	//}
 
 	if (g_Binds[bind_peek_assist].active)
 		g_Ragebot->FastStop();
