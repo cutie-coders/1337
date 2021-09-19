@@ -54,7 +54,8 @@ void CConfig::ResetToDefault()
 	g_Binds[bind_hide_shots].type = 1;
 
 	vars.ragebot.recharge_time = 7;
-	vars.ragebot.dt_tickammount = 17;
+	vars.ragebot.dt_tickammount = 14;
+	vars.ragebot.dt_defensive = false;
 
 	for (auto& a : vars.ragebot.weapon) {
 		a.enable = false;
@@ -328,6 +329,11 @@ void CConfig::Save(string cfg_name, bool create)
 		ragebot[str("resolver")] = vars.ragebot.resolver;
 		ragebot[str("dt_teleport")] = vars.ragebot.dt_teleport;
 		ragebot[str("recharge_time")] = vars.ragebot.recharge_time;
+		ragebot[str("custom_ticks")] = vars.ragebot.more_ticks;
+		ragebot[str("ticks")] = vars.ragebot.dt_tickammount;
+		ragebot[str("dt_defensive")] = vars.ragebot.dt_defensive;
+		ragebot[str("dt_teleport")] = vars.ragebot.dt_backwards_teleport;
+
 
 		SaveBind(&g_Binds[bind_override_dmg], str("override_dmg"), &ragebot);
 		SaveBind(&g_Binds[bind_double_tap], str("double_tap"), &ragebot);
@@ -363,6 +369,8 @@ void CConfig::Save(string cfg_name, bool create)
 		antiaim[str("pitch")] = vars.antiaim.pitch;
 		antiaim[str("yaw")] = vars.antiaim.yaw;
 		antiaim[str("desync")] = vars.antiaim.desync;
+		antiaim[str("desync_amount")] = vars.antiaim.desync_amount;
+		antiaim[str("yaw_offset")] = vars.antiaim.yaw_offset;
 		antiaim[str("jitter_angle")] = vars.antiaim.jitter_angle;
 		antiaim[str("at_target")] = vars.antiaim.attarget;
 		antiaim[str("attarget_off_when_offsreen")] = vars.antiaim.attarget_off_when_offsreen;
@@ -639,6 +647,7 @@ void CConfig::Save(string cfg_name, bool create)
 		misc[str("knifebot")] = vars.misc.knifebot;
 		misc[str("restrict_type")] = vars.misc.restrict_type;
 		misc[str("clantag")] = vars.visuals.clantagspammer;
+		misc[str("clantag_speed")] = vars.misc.clantag_speed;
 
 		misc[str("autobuy")][str("enable")] = vars.misc.autobuy.enable;
 		misc[str("autobuy")][str("main")] = vars.misc.autobuy.main;
