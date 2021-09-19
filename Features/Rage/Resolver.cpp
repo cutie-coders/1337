@@ -138,19 +138,25 @@ bool CResolver::Do(IBasePlayer* p) {
 	int i = p->EntIndex();
 	int side = FreestandSide[i];
 	CCSGOPlayerAnimState* state = p->GetPlayerAnimState();
-
-	if (!vars.ragebot.resolver || p->GetPlayerInfo().fakeplayer || !DoesHaveFakeAngles(p))
+	ResolverMode[i] = "";
+	if (!vars.ragebot.resolver)
 	{
-		ResolverMode[i] = p->GetPlayerInfo().fakeplayer ? str("Bot") : str("Disabled");
+		ResolverMode[i] += "Disabled";
 		ResolverInfo[i].Index = 0;
 		return false;
 	}
 
-	if (shot(p) || csgo->last_shoot_time[i] == csgo->curtime) {
-		ResolverMode[i] = "Onshot";
+	if (p->GetPlayerInfo().fakeplayer)
+	{
+		ResolverMode[i] += "Bot";
+		ResolverInfo[i].Index = 0;
+		return false;
+	}
+
+	if (shot(p)) {
+		ResolverMode[i] += "Onshot";
 		record.LastKnownYaw[i] = state->m_abs_yaw;
 		ResolverInfo[i].Index = i;
-		return false;
 	}
 
 	int add = 0;
@@ -172,26 +178,19 @@ bool CResolver::Do(IBasePlayer* p) {
 		time_since_0_pitch[i] = csgo->curtime;
 	}
 
-	do {
-		record.LastKnownYaw[i] = state->m_abs_yaw;
-		ResolverInfo[i].Index = i;
-		return false;
-	} while (time_since_0_pitch[i] == csgo->curtime);
-
-	bool HighDeltaDesync[64] = { p->GetSequence() == 979 && p->GetFlags() & FL_ONGROUND && p->GetVelocity().Length2D() <= 0.1f };
+	// bool HighDeltaDesync[64] = { p->GetSequence() == 979 && p->GetFlags() & FL_ONGROUND && p->GetVelocity().Length2D() <= 0.1f };
 
 	if (missed_shots <= 2)
 	{
-		if (HighDeltaDesync)
+		/*if (HighDeltaDesync)
 		{
-			ResolverMode[i] = "High Delta";
+			ResolverMode[i] += "High Delta";
 			ResolverInfo[i].Index = i;
-			ResolverInfo[i].ResolvedAngle += record.LastKnownYaw[i] + 58.f * side;
+			ResolverInfo[i].ResolvedAngle -= record.LastKnownYaw[i] + 58.f * side;
 			record.IsExtending[i] = true;
 			record.IsSwaying[i] = false;
-			return true;
 		}
-		else
+		else*/
 		{
 			if (record.LastKnownYaw[i] != state->m_abs_yaw)
 			{
@@ -201,12 +200,11 @@ bool CResolver::Do(IBasePlayer* p) {
 					lby_timer[i] = csgo->curtime + .22f;
 				if (!(p->GetFlags() & FL_ONGROUND))
 				{
-					ResolverMode[i] = "In air";
+					ResolverMode[i] += "In air";
 					ResolverInfo[i].Index = i;
 					ResolverInfo[i].ResolvedAngle = record.LastKnownYaw[i];
 					record.IsExtending[i] = false;
 					record.IsSwaying[i] = false;
-					return true;
 				}
 				else
 				{
@@ -216,8 +214,7 @@ bool CResolver::Do(IBasePlayer* p) {
 						ResolverInfo[i].ResolvedAngle = record.LastKnownYaw[i] + (58.f /*max*/ * side /*freestand side*/ / 2.4f /*sway timer*/);
 						record.IsSwaying[i] = true;
 						record.IsExtending[i] = false;
-						ResolverMode[i] = "LBY";
-						return true;
+						ResolverMode[i] += "LBY";
 					}
 					else // they cant break lby, so we'll just go for low delta?
 					{
@@ -225,8 +222,7 @@ bool CResolver::Do(IBasePlayer* p) {
 						ResolverInfo[i].ResolvedAngle = record.LastKnownYaw[i] + (58.f * side - 28.f);
 						record.IsExtending[i] = false;
 						record.IsSwaying[i] = false;
-						ResolverMode[i] = "Low delta";
-						return true;
+						ResolverMode[i] += "Low delta";
 					}
 				}
 			}
@@ -240,16 +236,14 @@ bool CResolver::Do(IBasePlayer* p) {
 		case 3:
 			ResolverInfo[i].Index = i;
 			ResolverInfo[i].ResolvedAngle = record.LastKnownYaw[i] * side;
-			ResolverMode[i] = "Bruteforce shot 1";
-			return true;
+			ResolverMode[i] += "Bruteforce shot 1";
 			break;
 		case 4:
 			ResolverInfo[i].Index = i;
 			ResolverInfo[i].ResolvedAngle = record.LastKnownYaw[i] * side - 15.f;
-			ResolverMode[i] = "Bruteforce shot 2";
-			return true;
+			ResolverMode[i] += "Bruteforce shot 2";
 			break;
 		}
 	}
-	return false;
+	return true;
 }
