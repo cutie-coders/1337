@@ -41,8 +41,6 @@ void __stdcall Hooked_PaintTraverse(unsigned int vguiPanel, bool forceRepaint, b
 
 	PaintTraverse(interfaces.v_panel, vguiPanel, forceRepaint, allowForce);
 
-	csgo->local->DrawServerHitboxes();
-
 	if (panel_name == FocusOverlayPanel) {
 
 		if (interfaces.engine->IsInGame() && interfaces.engine->IsConnected() && csgo->local)
