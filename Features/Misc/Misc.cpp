@@ -379,10 +379,7 @@ bool CMisc::Doubletap()
 
 	if (vars.ragebot.dt_defensive) // we sould add a peek check but it already works fine
 	{
-		if (++csgo->shift_timer >= 14)
-			csgo->shift_timer = 0;
-
-		csgo->shift_amount = csgo->shift_timer > 0 ? 16 : 0;
+		csgo->shift_amount = csgo->tickcount % 16 > 0 ? 16 : 0;
 	} else if (csgo->skip_ticks <= 8) {
 		ResetValue();
 		csgo->need_to_recharge = true;
