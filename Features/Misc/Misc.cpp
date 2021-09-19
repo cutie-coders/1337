@@ -402,12 +402,12 @@ bool CMisc::Doubletap()
 		user_cmd->command_number = next_command_number;
 
 		if (vars.ragebot.more_ticks && csgo->weapon->isSniper()) {
-			CopyCommand(user_cmd, vars.ragebot.dt_tickammount);
 			csgo->cl_move_shift = vars.ragebot.dt_tickammount;
+			//CopyCommand(user_cmd, vars.ragebot.dt_tickammount);
 		}
 		else
 		{
-			CopyCommand(user_cmd, max_tickbase_shift);
+			//CopyCommand(user_cmd, max_tickbase_shift);
 			csgo->cl_move_shift = max_tickbase_shift;
 		}
 
