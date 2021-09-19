@@ -213,7 +213,9 @@ void CAnimationFix::animation_info::UpdateAnims(animation* record, animation* fr
 	else
 	{
 		int ticks_to_simulate = TIME_TO_TICKS(record->sim_time - from->sim_time);
-		if (ticks_to_simulate > 31) ticks_to_simulate = 1;
+
+		if (ticks_to_simulate > 31)
+			ticks_to_simulate = 1;
 
 		// did the player shoot?
 		const float& came_from_dormant_time = record->player->CameFromDormantTime();
