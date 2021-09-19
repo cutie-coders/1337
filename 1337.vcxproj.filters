@@ -477,9 +477,6 @@
     <ClInclude Include="Includes\imgui\imstb_truetype.h">
       <Filter>GUI\ImGui</Filter>
     </ClInclude>
-    <ClInclude Include="undefeated.h">
-      <Filter>Cheat\Bytes</Filter>
-    </ClInclude>
     <ClInclude Include="GUI\button.h">
       <Filter>GUI\Wrapper\headers</Filter>
     </ClInclude>

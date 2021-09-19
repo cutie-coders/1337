@@ -109,17 +109,17 @@ void CResolver::Resolver(IBasePlayer* p)
 {
 	int i = p->EntIndex();
 	CCSGOPlayerAnimState* state = p->GetPlayerAnimState();
-
+	ResolverMode[i] = "";
 	if (p->GetPlayerInfo().fakeplayer)
 	{
-		ResolverMode[i] = str("Bot");
+		ResolverMode[i] += str("Bot");
 		ResolverInfo[i].Index = 0;
 		return;
 	}
 
 	if (!vars.ragebot.resolver)
 	{
-		ResolverMode[i] = str("Disabled");
+		ResolverMode[i] += str("Disabled");
 		ResolverInfo[i].Index = 0;
 		return;
 	}
@@ -140,7 +140,7 @@ void CResolver::Resolver(IBasePlayer* p)
 	float last_yaw = ResolverInfo[i].ResolvedAngle;
 	float angle = ResolverInfo[i].ResolvedAngle;
 	int side = FreestandSide[i];
-	string mode = ResolverMode[i];
+	string mode = "";
 	int index = ResolverInfo[i].Index;
 
 	if (shot(p))
@@ -236,6 +236,7 @@ void CResolver::Resolver(IBasePlayer* p)
 			break;
 		}
 	}
+	ResolverMode[i] += mode;
 }
 
 bool CResolver::Do(IBasePlayer* player) {
