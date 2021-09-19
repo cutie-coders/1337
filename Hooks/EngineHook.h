@@ -1,6 +1,7 @@
 #pragma once
 #include "Hooks.h"
 #include <intrin.h>
+#include "../cMainStruct.h"
 
 bool __fastcall Hooked_IsPaused(void* ecx, void* edx) {
 	static auto IsPaused = g_pEngineHook->GetOriginal< IsPausedFn >(g_HookIndices[fnva1(hs::Hooked_IsPaused.s().c_str())]);
@@ -54,6 +55,7 @@ void __fastcall Hooked_PhysicsSimulate(IBasePlayer* ecx, void* edx) {
 }
 
 // to-do : шифтить через этот хук + телепорт после речарджа адекватный (@opai)
+// original CL_Move hook
 void __vectorcall Hooked_CLMove(float flAccumulatedExtraSamples, bool bFinalTick)
 {
 	static auto original = hooker::h.original(&Hooked_CLMove);
@@ -68,3 +70,36 @@ void __vectorcall Hooked_CLMove(float flAccumulatedExtraSamples, bool bFinalTick
 
 	original(flAccumulatedExtraSamples, bFinalTick);
 }
+
+//void __vectorcall Hooked_CLMove(float flAccumulatedExtraSamples, bool bFinalTick)
+//{
+//	//static auto original = hooker::h.original(&Hooked_CLMove);
+//
+//	//if (!csgo->local->isAlive())
+//	//	return original(flAccumulatedExtraSamples, bFinalTick);
+//
+//	//while (csgo->cl_move_shift > 0)
+//	//{
+//	//	original(flAccumulatedExtraSamples, bFinalTick);
+//	//	csgo->cl_move_shift--;
+//	//}
+//
+//	// Recharge every other tick when available, allows movement and shooting while recharging
+//	if (rechargeRequired > 0 && g_Globals->tickcount % 2) {
+//		recharge--;
+//	}
+//	else {
+//		clmove_original(args);
+//
+//		// shift
+//		for (int i = 0; i < CCheatVars::cl_move_shift; i++) {
+//			isShifting = true;
+//			clmove_original(args);
+//			rechargeRequired++;
+//		}
+//
+//		isShifting = false;
+//		ticksToShift = 0;
+//
+//		original(flAccumulatedExtraSamples, bFinalTick);
+//}
