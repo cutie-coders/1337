@@ -284,14 +284,10 @@ void CMisc::CopyCommand(CUserCmd* cmd, int tickbase_shift)
 
 	interfaces.prediction->PreviousAckHadErrors = true;
 	interfaces.prediction->CommandsPredicted = 0;
+
 }
 
-// to-do: все таки понять принцип работы эксплоитов 
-// а то так мы никуда и не продвинемся ;)
-// @opai
 
-// за себя говори, я всё понимаю, просто лень чет думать
-// @ekzi
 
 __forceinline void ResetValue()
 {
@@ -407,9 +403,12 @@ bool CMisc::Doubletap()
 
 		if (vars.ragebot.more_ticks && csgo->weapon->isSniper()) {
 			CopyCommand(user_cmd, vars.ragebot.dt_tickammount);
+			csgo->cl_move_shift = vars.ragebot.dt_tickammount;
 		}
-		else {
+		else
+		{
 			CopyCommand(user_cmd, max_tickbase_shift);
+			csgo->cl_move_shift = max_tickbase_shift;
 		}
 
 		recharge_double_tap = true;

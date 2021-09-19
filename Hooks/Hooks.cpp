@@ -525,7 +525,7 @@ void H::Hook()
 	hooker::h.create_hook(Hooked_IsUsingStaticPropDebugModes, dwIsUsingStaticPropDebugModes);
 //	hooker::h.create_hook(Hooked_PhysicsSimulate, dwPhysicsSimulate);
 	hooker::h.create_hook(Hooked_ModifyEyePosition, dwEyePos);
-//	hooker::h.create_hook(Hooked_CLMove, dwCLMove);
+	hooker::h.create_hook(Hooked_CLMove, dwCLMove);
 
 	hooker::h.enable();
 

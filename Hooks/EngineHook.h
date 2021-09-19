@@ -57,5 +57,14 @@ void __fastcall Hooked_PhysicsSimulate(IBasePlayer* ecx, void* edx) {
 void __vectorcall Hooked_CLMove(float flAccumulatedExtraSamples, bool bFinalTick)
 {
 	static auto original = hooker::h.original(&Hooked_CLMove);
+
+	if (!csgo->local->isAlive())
+		return original(flAccumulatedExtraSamples, bFinalTick);
+	while (csgo->cl_move_shift > 0)
+	{
+		original(flAccumulatedExtraSamples, bFinalTick);
+		csgo->cl_move_shift--;
+	}
+
 	original(flAccumulatedExtraSamples, bFinalTick);
 }

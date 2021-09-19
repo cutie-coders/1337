@@ -8,17 +8,25 @@
 
 bool __stdcall Hooked_CreateMove(float a, CUserCmd* cmd) {
 	static auto CreateMove = g_pClientModeHook->GetOriginal< CreateMoveFn >(g_HookIndices[fnva1(hs::Hooked_CreateMove.s().c_str())]);
+
 	csgo->updatelocalplayer();
 
 	if (!cmd || !cmd->command_number || !csgo->local || csgo->DoUnload)
 		return CreateMove(interfaces.client_mode, a, cmd);
 
+	uintptr_t* pebp;
+	__asm mov pebp, ebp;
+
+	if (csgo->cl_move_shift > 0) {
+		*(bool*)(*pebp - 0x1C) = false;
+		return false;
+	}
+
 	csgo->in_cm = true;
 	csgo->cmd = cmd;
 	csgo->original = cmd->viewangles;
 
-	uintptr_t* pebp;
-	__asm mov pebp, ebp;
+
 
 	csgo->send_packet = true;
 	csgo->shift_amount = 0;
@@ -176,7 +184,7 @@ bool __stdcall Hooked_CreateMove(float a, CUserCmd* cmd) {
 					csgo->FakeAngle = interfaces.input->m_pCommands[csgo->m_shot_command_number % 150].viewangles;
 				else
 					csgo->VisualAngle = interfaces.input->m_pCommands[csgo->m_shot_command_number % 150].viewangles;
-				//if (!g_Misc->hs_shot)
+				if (!g_Misc->hs_shot)
 					csgo->CurAngle = interfaces.input->m_pCommands[csgo->m_shot_command_number % 150].viewangles;
 			}
 			else {
