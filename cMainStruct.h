@@ -202,6 +202,7 @@ public:
 	//int skip_ticks;
 	bool can_charge_on_shot;
 	int skip_ticks;
+	bool is_shifting;
 	bool need_to_recharge;
 	bool disable_dt;
 	bool scoped;

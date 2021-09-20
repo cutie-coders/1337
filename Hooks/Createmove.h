@@ -30,6 +30,11 @@ bool __stdcall Hooked_CreateMove(float a, CUserCmd* cmd) {
 
 	csgo->send_packet = true;
 	csgo->shift_amount = 0;
+	if (!g_Misc->IsFinalTick()) {
+		cmd->buttons &= ~IN_ATTACK; // Prevent shooting during our teleport-shift commands
+		//csgo->send_packet = false;
+		//return false;
+	}
 	g_Misc->Clantag();
 	g_Misc->ProcessMissedShots();
 	g_Misc->FixMouseInput();

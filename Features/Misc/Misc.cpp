@@ -422,6 +422,25 @@ bool CMisc::Doubletap()
 	return true;
 }
 
+bool CMisc::IsFinalTick()
+{
+	if (!interfaces.engine->IsInGame() || !interfaces.engine->IsConnected())
+		return true;
+
+	if (!csgo->local
+		|| !csgo->is_connected
+		|| !csgo->is_local_alive
+		|| csgo->game_rules->IsFreezeTime()
+		|| csgo->local->HasGunGameImmunity()
+		|| csgo->local->GetFlags() & FL_FROZEN)
+		return true;
+
+	if ((csgo->shift_amount == 1 || csgo->shift_amount == 0) && !csgo->is_shifting)
+		return true;
+
+	return false;
+}
+
 void CMisc::Hideshots()
 {
 	hs_shot = false;
