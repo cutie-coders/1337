@@ -108,6 +108,7 @@ struct CGlobalVariables
 	struct
 	{
 		bool enable;
+		bool enable1;
 		int pitch;
 		int yaw;
 		bool attarget;

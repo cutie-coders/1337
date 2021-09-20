@@ -30,6 +30,7 @@ void InitRender(IDirect3DDevice9* pDevice)
 		ImGuiStyle& style = ImGui::GetStyle();
 		style.AntiAliasedFill = false;
 		style.AntiAliasedLines = false;
+		style.ChildRounding = 10.f;
 
 		ImFontConfig cfg;
 		cfg.OversampleH = 3;
@@ -127,6 +128,25 @@ void DrawTaserRange() {
 	}
 }
 
+void render_rage()
+{
+	ImGui::BeginChild("##RageSettings1", ImVec2(500.f, 450.f), true);
+	{
+		ImGui::Columns(2);
+		ImGui::Text("Main-Settings");
+		ImGui::Spacing();
+
+		ImGui::Checkbox("Enable", &vars.ragebot.enable);
+
+		ImGui::NextColumn();
+		ImGui::Text("AntiAim");
+		ImGui::Spacing();
+		
+		ImGui::Checkbox("Enable", &vars.antiaim.enable1);
+	}
+	ImGui::EndChild(true);
+}
+
 HRESULT __stdcall Hooked_EndScene(IDirect3DDevice9* device)
 {
 	static auto EndScene = g_pDirectHook->GetOriginal<EndSceneFn>(g_HookIndices[fnva1(hs::Hooked_EndScene.s().c_str())]);
@@ -180,6 +200,46 @@ HRESULT __stdcall Hooked_EndScene(IDirect3DDevice9* device)
 
 			g_Eventlog->Draw();
 			g_Menu->render();
+			static int tab = 0;
+			bool open = true;
+			if (vars.menu.open)
+			{
+				ImGui::Begin("Test", &open, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoTitleBar);
+				{
+					ImGui::PushFont(fonts::menu_main);
+					if (ImGui::Button("Ragebot"))
+						tab = 0;
+					ImGui::SameLine();
+					if (ImGui::Button("Legitbot"))
+						tab = 1;
+					ImGui::SameLine();
+					if (ImGui::Button("Visuals"))
+						tab = 2;
+					ImGui::PopFont();
+
+					switch (tab)
+					{
+					case 0:
+						render_rage();
+						break;
+					case 1:
+						ImGui::BeginChild("##LegitBot1");
+						{
+							ImGui::Text("legit settings");
+						}
+						ImGui::EndChild(true);
+						break;
+					case 2:
+						ImGui::BeginChild("##VisualsBot1");
+						{
+							ImGui::Text("visual settings");
+						}
+						ImGui::EndChild(true);
+						break;
+					}
+				}
+				ImGui::End(true);
+			}
 
 			/*if (interfaces.engine->IsConnected() && csgo->local->isAlive())
 				render::Render3DCircle(device, csgo->local->GetOrigin(), 30.f, color_t(255, 255, 255), color_t(0, 0, 255));*/

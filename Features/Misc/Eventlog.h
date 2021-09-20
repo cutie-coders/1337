@@ -25,8 +25,8 @@ public:
 	std::vector<CMessage> messages;
 	void Draw()
 	{
-		constexpr float showtime = 5.f;
-		constexpr float animation_time = 0.175f;
+		constexpr float showtime = 1.5f;
+		constexpr float animation_time = 2.0f;
 
 		if (messages.empty())
 			return;

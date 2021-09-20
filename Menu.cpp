@@ -274,9 +274,9 @@ namespace ragebot_tab
 					return enable_rage() && (g_Binds[bind_double_tap].key > 0 || g_Binds[bind_double_tap].active);
 					})); //Ghetto fix for scout autopeek
 
-				settings->add_element(new c_checkbox(str("Defensive DT"), &vars.ragebot.dt_defensive, []() {
+				/*settings->add_element(new c_checkbox(str("Defensive DT"), &vars.ragebot.dt_defensive, []() {
 					return enable_rage() && (g_Binds[bind_double_tap].key > 0 || g_Binds[bind_double_tap].active);
-					}));
+					}));*/
 
 				settings->add_element(new c_keybind(str("Hide-shots"), &g_Binds[bind_hide_shots], []() {
 					return vars.ragebot.enable && vars.misc.restrict_type == 1;
