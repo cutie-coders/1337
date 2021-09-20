@@ -1559,9 +1559,10 @@ void CRagebot::Run()
 			hitbox = current_hitbox;
 		}
 	}
-
+	csgo->rage_target = nullptr;
 	if (hitbox != -1 && target_index != -1 && best_anims && current_aim_position != Vector(0, 0, 0))
 	{
+		csgo->rage_target = interfaces.ent_list->GetClientEntity(target_index);
 		ShouldWork = true;
 		bool can_shoot_if_fakeduck = true;
 

@@ -102,15 +102,50 @@ bool shot(IBasePlayer* p)
 
 	if (p->GetWeapon()->LastShotTime() == p->GetSimulationTime())
 		return true;
+
 	return false;
+}
+
+void CResolver::lby_checks(IBasePlayer* p)
+{
+	auto index = p->EntIndex();
+
+	if (!index)
+		return;
+	CCSGOPlayerAnimState* state = p->GetPlayerAnimState();
+
+	if (!state)
+		return;
+
+	auto layers = p->GetAnimOverlays();
+
+	bool max_right = layers[3].m_flWeight <= 0.1f && layers[3].m_nSequence == 0.0f ? true : false;
+	bool max_left = layers[6].m_flWeight <= 0.1f && layers[6].m_nSequence == 0.0f ? true : false;
+
+	if (max_right)
+	{
+		record.side[index] = 1;
+		record.IsExtending[index] = true;
+		return;
+	}
+	if (max_left)
+	{
+		record.side[index] = -1;
+		record.IsExtending[index] = true;
+		return;
+	}
+	return; // no values were found to be true so they arent max desync :shrug:
 }
 
 void CResolver::Resolver(IBasePlayer* p)
 {
-	int i = p->EntIndex();
-	CCSGOPlayerAnimState* state = p->GetPlayerAnimState();
+	int i = csgo->rage_target->EntIndex();
+	IBasePlayer* player = csgo->rage_target;
+	if (!player || player == nullptr)
+		return;
+	CCSGOPlayerAnimState* state = player->GetPlayerAnimState();
 	ResolverMode[i] = "";
-	if (p->GetPlayerInfo().fakeplayer)
+	if (player->GetPlayerInfo().fakeplayer)
 	{
 		ResolverMode[i] += str("Bot");
 		ResolverInfo[i].Index = 0;
@@ -128,12 +163,10 @@ void CResolver::Resolver(IBasePlayer* p)
 	if (!shot_snapshots.empty()) {
 		const auto& snapshot = shot_snapshots.front();
 		const bool& dt_ready = !csgo->need_to_recharge && g_Misc->dt_bullets <= 1 && csgo->weapon->isAutoSniper();
-		if (dt_ready && snapshot.hitbox == 0 && snapshot.intended_damage > p->GetHealth()) {
+		if (dt_ready && snapshot.hitbox == 0 && snapshot.intended_damage > player->GetHealth()) {
 			add = g_Misc->dt_bullets;
 		}
 	}
-
-	bool max_desync[64] = { false };
 
 	int missed_shots = (csgo->actual_misses[i] + csgo->imaginary_misses[i] + add) % 4;
 
@@ -144,107 +177,171 @@ void CResolver::Resolver(IBasePlayer* p)
 	int index = ResolverInfo[i].Index;
 
 	if (shot(p))
-		csgo->last_shoot_time[i] == p->GetSimulationTime();
+		csgo->last_shoot_time[i] == player->GetSimulationTime();
 
-	if (csgo->last_shoot_time[i] == p->GetSimulationTime() || shot(p))
+	if (csgo->last_shoot_time[i] == player->GetSimulationTime() || shot(p))
 	{
 		mode = "Onshot";
 		angle = last_yaw;
-		index = i;
 		return;
 	}
 
-	if (missed_shots < 2)
+	while (last_yaw != state->m_abs_yaw)
 	{
-		if (p->GetSequence() == 979 && p->GetVelocity().Length2D() < 0.1f)
-			max_desync[i] = true;
+		record.IsSwaying[i] = true;
+	} // scuffed as fuck but whatever.
 
-		if (side != 0)
+	switch (csgo->actual_misses[i] % 5)
+	{
+	case 0:
+		while (!(player->GetFlags() & FL_ONGROUND))
 		{
-			mode = "Resolved ";
-			if (max_desync[i])
+			mode = "In air";
+			record.LastKnownYaw[i] = state->m_eye_yaw; // should be accurate **IF** the sdk is right.
+		}
+		if (player->GetVelocity().Length2D() < 0.1f)
+		{
+			if (record.IsExtending[i])
 			{
-				angle = 60.f * side;
-				mode += "max desync";
-				index = i;
+				mode = "Max delta | side: %i", record.side[i];
+				angle = state->m_eye_yaw + 58.f * record.side[i];
 			}
 			else
 			{
-				auto cur_abs_yaw = g_Animfix->IS_Animstate[i]->m_abs_yaw;
-				if (cur_abs_yaw != last_yaw)
+				if (record.IsSwaying[i])
 				{
-					mode += "sway";
-					angle = cur_abs_yaw - last_yaw;
-					index = i;
-				}
-				else
-				{
-					if (cur_abs_yaw == last_yaw && p->GetVelocity().Length2D() < 0.1f)
-					{
-						// possible lby breaking low delta (scary shit);
-
-						mode = "low delta";
-						angle = cur_abs_yaw + 30.f * side;
-						index = i;
-
-					}
+					mode = "Sway [test] | side: %i", record.side[i];
+					angle = state->m_eye_yaw - state->m_abs_yaw * record.side[i];
 				}
 			}
+		}
+		if (player->GetVelocity().Length2D() >= 30.f && player->GetVelocity().Length2D() < 60.f)
+		{
+			record.LastKnownYaw[i] = state->m_abs_yaw;
+			mode = "Slowwalking | side: %i", record.side[i];
+			angle = state->m_eye_yaw - record.LastKnownYaw[i] * record.side[i];
+		}
+		else if (player->GetVelocity().Length2D() > 60.f)
+		{
+			mode = "Running | side: %s", record.side[i];
+			angle = state->m_eye_yaw * record.side[i];
 		}
 		else
 		{
-			if (last_yaw != 0)
-			{
-				mode = "Bruteforce shot ";
-				switch (missed_shots % 2)
-				{
-				case 0:
-					angle = last_yaw + 10.f * side;
-					mode += "1";
-					index = i;
-					break;
-				case 1:
-					angle = last_yaw + 25.f * side;
-					mode += "2";
-					index = i;
-					break;
-				}
-			}
-			else
-				mode = "Unresolved";
+			mode = "Unk | side: %i", record.side[i];
+			angle = angle;
 		}
+		break;
+	case 2:
+		angle += state->m_eye_yaw + 58.f * record.side[i];
+		mode = "Bruteforce 1 | side: %i", record.side[i];
+		break;
+	case 3:
+		angle += state->m_eye_yaw + 28.f * record.side[i];
+		mode = "Bruteforce 2 | side: %i", record.side[i];
+		break;
+	case 4:
+		angle += state->m_eye_yaw + 15.f * record.side[i];
+		mode = "Bruteforce 3 | side: %i", record.side[i];
+		break;
 	}
-	else
-	{
-		mode = "Bruteforce shot ";
-		switch (missed_shots % 5) // yes i know... 5??? first 2 are skipped because of the unresolved shit from above^
-		{
-		case 2:
-			mode += "3";
-			angle = angle + 25.f * side;
-			index = i;
-			break;
-		case 3:
-			mode += "4";
-			angle = angle + 15.f * side;
-			index = i;
-			break;
-		case 4:
-			mode += "5";
-			angle = angle + 10.f * side;
-			index = i;
-			break;
-		}
-	}
-	ResolverMode[i] += mode;
+	index = i;
+
+	//if (missed_shots < 2)
+	//{
+	//	if (p->GetSequence() == 979 && p->GetVelocity().Length2D() < 0.1f)
+	//		max_desync[i] = true;
+
+	//	if (side != 0)
+	//	{
+	//		mode = "Resolved ";
+	//		if (max_desync[i])
+	//		{
+	//			angle = 60.f * side;
+	//			mode += "max desync";
+	//			index = i;
+	//		}
+	//		else
+	//		{
+	//			auto cur_abs_yaw = g_Animfix->IS_Animstate[i]->m_abs_yaw;
+	//			if (cur_abs_yaw != last_yaw)
+	//			{
+	//				mode += "sway";
+	//				angle = cur_abs_yaw - last_yaw;
+	//				index = i;
+	//			}
+	//			else
+	//			{
+	//				if (cur_abs_yaw == last_yaw && p->GetVelocity().Length2D() < 0.1f)
+	//				{
+	//					// possible lby breaking low delta (scary shit);
+
+	//					mode = "low delta";
+	//					angle = cur_abs_yaw + 30.f * side;
+	//					index = i;
+
+	//				}
+	//			}
+	//		}
+	//	}
+	//	else
+	//	{
+	//		if (last_yaw != 0)
+	//		{
+	//			mode = "Bruteforce shot ";
+	//			switch (missed_shots % 2)
+	//			{
+	//			case 0:
+	//				angle = last_yaw + 10.f * side;
+	//				mode += "1";
+	//				index = i;
+	//				break;
+	//			case 1:
+	//				angle = last_yaw + 25.f * side;
+	//				mode += "2";
+	//				index = i;
+	//				break;
+	//			}
+	//		}
+	//		else
+	//			mode = "Unresolved";
+	//	}
+	//}
+	//else
+	//{
+	//	mode = "Bruteforce shot ";
+	//	switch (missed_shots % 5) // yes i know... 5??? first 2 are skipped because of the unresolved shit from above^
+	//	{
+	//	case 2:
+	//		mode += "3";
+	//		angle = angle + 25.f * side;
+	//		index = i;
+	//		break;
+	//	case 3:
+	//		mode += "4";
+	//		angle = angle + 15.f * side;
+	//		index = i;
+	//		break;
+	//	case 4:
+	//		mode += "5";
+	//		angle = angle + 10.f * side;
+	//		index = i;
+	//		break;
+	//	}
+	//}
+	//ResolverMode[i] += mode;
 }
 
 bool CResolver::Do(IBasePlayer* player) {
-	if (player->GetPlayerInfo().fakeplayer)
+	/*if (csgo->rage_target == nullptr || !csgo->rage_target)
+		return false;*/
+	/*if (csgo->rage_target->GetPlayerInfo().fakeplayer)
+		return false;*/
+	if (!csgo->local->isAlive() || interfaces.engine->IsConnected())
 		return false;
 	else
 	{
-		Resolver(player);
+		Resolver(csgo->rage_target);
 		return true;
 	}
 

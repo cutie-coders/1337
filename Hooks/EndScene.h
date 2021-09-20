@@ -217,6 +217,7 @@ HRESULT __stdcall Hooked_EndScene(IDirect3DDevice9* device)
 						tab = 2;
 					ImGui::PopFont();
 
+					ImGui::PushFont(fonts::menu_desc);
 					switch (tab)
 					{
 					case 0:
@@ -237,6 +238,7 @@ HRESULT __stdcall Hooked_EndScene(IDirect3DDevice9* device)
 						ImGui::EndChild(true);
 						break;
 					}
+					ImGui::PopFont();
 				}
 				ImGui::End(true);
 			}

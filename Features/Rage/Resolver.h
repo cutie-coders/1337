@@ -11,6 +11,7 @@ struct Record {
 	float LastKnownYaw[64];
 	bool IsExtending[64];
 	bool IsSwaying[64];
+	int side[64]; // will be 1 or -1 depending on side.
 };
 
 class CResolver
@@ -21,6 +22,7 @@ private:
 
 	int FreestandSide[64];
 	Record record;
+	void lby_checks(IBasePlayer* p);
 
 	float GetLeftYaw(IBasePlayer*);
 	float GetRightYaw(IBasePlayer*);

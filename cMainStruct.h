@@ -120,6 +120,7 @@ public:
 	int cl_move_shift;
 	bool isShifting;
 	int shift_amount;
+	IBasePlayer* rage_target;
 	int shift_timer;
 	bool need_recharge_rn;
 	bool is_local_alive;
