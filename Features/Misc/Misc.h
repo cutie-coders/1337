@@ -14,6 +14,7 @@ public:
 	bool IsChatOpened();
 	void CopyCommand(CUserCmd* cmd, int tickbase_shift);
 	bool Doubletap();
+	bool IsFinalTick();
 	void Hideshots();
 	void PreverseKillFeed(bool roundStart);
 	void FixMovement(CUserCmd* cmd, Vector& ang);

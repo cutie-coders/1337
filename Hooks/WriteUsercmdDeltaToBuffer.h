@@ -175,6 +175,7 @@ bool __fastcall Hooked_WriteUsercmdDeltaToBuffer(void* ecx, void*, int slot, bf_
 
 	for (int i = new_commands; i <= total_new_commands; i++)
 	{
+		csgo->is_shifting = 1;
 		WriteUsercmd(buf, &to_cmd, &from_cmd);
 		memcpy(&from_cmd, &to_cmd, sizeof(CUserCmd));
 		to_cmd.command_number--;
@@ -182,6 +183,7 @@ bool __fastcall Hooked_WriteUsercmdDeltaToBuffer(void* ecx, void*, int slot, bf_
 		from_cmd.command_number++;
 		from_cmd.tick_count++;
 	}
+	csgo->is_shifting = 0;
 
 	return true;
 }
