@@ -347,7 +347,7 @@ namespace hs {
 	_(update_clientside_anim_p, "55 8B EC 51 56 8B F1 80 BE ?? ?? 00 00 00 74 36 8B 06 FF 90 ?? ?? 00 00"); // 55 8B EC 51 56 8B F1 80 BE ?? ?? 00 00 00 74 36 8B 06 FF 90 ?? ?? 00 00
 	_(debp_p, "55 8B EC 83 E4 F8 81 EC ? ? ? ? 53 56 8B F1 57 89 74 24 1C"); // 55 8B EC 83 E4 F8 81 EC ? ? ? ? 53 56 8B F1 57 89 74 24 1C
 	_(standard_blending_rules_p, "55 8B EC 83 E4 F0 B8 ? ? ? ? E8 ? ? ? ? 56 8B 75 08 57 8B F9 85 F6"); // 55 8B EC 83 E4 F0 B8 ? ? ? ? E8 ? ? ? ? 56 8B 75 08 57 8B F9 85 F6
-	_(should_skip_anim_frame_p, "57 8B F9 8B 07 8B 80 ? ? ? ? FF D0 84 C0 75 02 5F C3"); // 57 8B F9 8B 07 8B 80 ? ? ? ? FF D0 84 C0 75 02 5F C3
+	_(should_skip_anim_frame_p, "57 8B F9 8B 07 8B 80 ? ? ? ? FF D0 84 C0 75 02"); // 57 8B F9 8B 07 8B 80 ? ? ? ? FF D0 84 C0 75 02
 	_(get_foreign_fall_back_name_p, "80 3D ? ? ? ? ? 74 06 B8"); // 80 3D ? ? ? ? ? 74 06 B8
 	_(setup_bones_p, "55 8B EC 83 E4 F0 B8 D8"); // 55 8B EC 83 E4 F0 B8 D8
 	_(effects_p, "8B 35 ? ? ? ? 85 F6 0F 84 ? ? ? ? 0F"); // 8B 35 ? ? ? ? 85 F6 0F 84 ? ? ? ? 0F
@@ -655,7 +655,7 @@ namespace hs {
 	_(update_animstate, "55 8B EC 83 E4 F8 83 EC 18 56 57 8B F9 F3 0F 11 54 24"); // 55 8B EC 83 E4 F8 83 EC 18 56 57 8B F9 F3 0F 11 54 24
 	_(post_think, "55 8B EC 83 E4 F8 81 EC ? ? ? ? 53 8B D9"); // 55 8B EC 83 E4 F8 81 EC ? ? ? ? 53 8B D9
 	_(simulate_player, "56 8B F1 57 8B BE ? ? ? ? 83 EF 01 78 72"); // 56 8B F1 57 8B BE ? ? ? ? 83 EF 01 78 72
-	_(physics_run_think, "55 8B EC 83 EC 10 53 56 57 8B F9 8B 87"); // 55 8B EC 83 EC 10 53 56 57 8B F9 8B 87
+	_(physics_run_think, "55 8B EC 83 EC 10 53 56 57 8B F9 8B 87 ? ? ? ? C1 E8 16"); // E8 ? ? ? ? 84 C0 74 0A 8B 06 8B                                             <-- fixed
 	_(set_abs_angles, "55 8B EC 83 E4 F8 83 EC 64 53 56 57 8B F1 E8"); // 55 8B EC 83 E4 F8 83 EC 64 53 56 57 8B F1 E8
 	_(set_abs_origin, "55 8B EC 83 E4 F8 51 53 56 57 8B F1 E8"); // 55 8B EC 83 E4 F8 51 53 56 57 8B F1 E8
 	_(unk_func, "55 8B EC 56 57 8B F9 8B B7 ? ? ? ? 8B C6"); // 55 8B EC 56 57 8B F9 8B B7 ? ? ? ? 8B C6
@@ -680,7 +680,7 @@ namespace hs {
 	_(game_rules, "A1 ? ? ? ? 8B 0D ? ? ? ? 6A 00 68 ? ? ? ? C6"); // A1 ? ? ? ? 8B 0D ? ? ? ? 6A 00 68 ? ? ? ? C6
 	_(view_matrix, "0F 10 05 ? ? ? ? 8D 85 ? ? ? ? B9"); // 0F 10 05 ? ? ? ? 8D 85 ? ? ? ? B9
 	_(eye_pos, "55 8B EC 83 E4 F8 83 EC 5C 53 8B D9 56 57 83");
-	_(cl_move, "55 8B EC 81 EC 64 01 00 00 53 56 57 8B 3D");
+	_(cl_move, "55 8B EC 81 EC 64 01 00 00 53 56 8A F9");
 	_(smoke_effect, "A3 ? ? ? ? 57 8B CB"); // A3 ? ? ? ? 57 8B CB
 	_(physicssimulate, "56 8B F1 8B 8E ? ? ? ? 83 F9 FF 74 21"); // 56 8B F1 8B 8E ? ? ? ? 83 F9 FF 74 21
 	_(pred_seed, "A3 ? ? ? ? 66 0F 6E 86");
