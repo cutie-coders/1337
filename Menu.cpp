@@ -1722,8 +1722,6 @@ namespace skins_tab {
 			str("Little Kev"),
 			str("Number K"),
 			str("Getaway Sally"),
-			str("Jumpsuit A"),
-			str("Jumpsuit B"),
 			str("Cmdr. Davida 'Goggles' Fernandez | SEAL Frogman"),
 			str("Cmdr. Frank 'Wet Sox' Baroud | SEAL Frogman"),
 			str("Lieutenant Rex Krikey | SEAL Frogman"),
@@ -1752,6 +1750,8 @@ namespace skins_tab {
 			str("Sergeant Bombson | SWAT"),
 			str("Chem-Haz Specialist | SWAT"),
 			str("Lieutenant 'Tree Hugger' Farlow | SWAT"),
+			str("Jumpsuit A"),
+			str("Jumpsuit B"),
 			str("Jumpsuit C")
 
 		};
