@@ -84,12 +84,12 @@ public:
 		getvfunc<void(__thiscall*)(void*)>(interfaces.model_cache, 33)(interfaces.model_cache);
 
 		if (player->isAlive()) {
-			getvfunc< void(__thiscall*)(void*) >(player, 339)(player); //UpdateCollisionBounds
+			getvfunc< void(__thiscall*)(void*) >(player, 339 + 1)(player); //UpdateCollisionBounds
 			if (player->GetFlags() & FL_ONGROUND)
 				player->GetFallVelocity() = 0.f;
 			if (player->GetSequence() == -1)
-				getvfunc< void(__thiscall*)(void*, int) >(player, 218)(player, 0); //SetSequence
-			getvfunc< void(__thiscall*)(void*) >(player, 219)(player); //StudioFrameAdvance 
+				getvfunc< void(__thiscall*)(void*, int) >(player, 218 + 1)(player, 0); //SetSequence
+			getvfunc< void(__thiscall*)(void*) >(player, 219 + 1)(player); //StudioFrameAdvance 
 			PostThinkVPhysics(player);
 		};
 
@@ -151,7 +151,7 @@ public:
 		interfaces.prediction->InPrediction = true;
 
 		if (m_cmd->impulse)
-			*reinterpret_cast<uint32_t*>((uintptr_t)player + 0x31FC) = m_cmd->impulse;
+			*reinterpret_cast<uint32_t*>((uintptr_t)player + 0x320C) = m_cmd->impulse;
 
 		m_cmd->buttons |= *reinterpret_cast<int*>((uintptr_t)player + 0x3334);
 		m_cmd->buttons &= ~(*reinterpret_cast<int*>((uintptr_t)player + 0x3330));
@@ -181,7 +181,7 @@ public:
 		//	CPrediction::RunPreThink
 		if (player->PhysicsRunThink(0))
 		{
-			getvfunc<void(__thiscall*)(void*)>(player, 317)(player);
+			getvfunc<void(__thiscall*)(void*)>(player, 317 + 1)(player);
 		}
 
 		//	CPrediction::RunThink
@@ -195,7 +195,7 @@ public:
 
 				sub_1019B010(player, 0);
 
-				getvfunc<void(__thiscall*)(void*)>(player, 138)(player);
+				getvfunc<void(__thiscall*)(void*)>(player, 138 + 1)(player);
 			}
 		}
 
