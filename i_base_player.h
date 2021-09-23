@@ -256,6 +256,7 @@ public:
 	int			m_iDamage;				// 0x00F0
 	float		m_flArmorRatio;			// 0x00F4
 	int			m_iBullets;				// 0x00F8
+	char manyfix[4];
 	float		m_flPenetration;			// 0x00FC
 	std::byte	m_pad9[0x8];				// 0x0100
 	float		m_flRange;				// 0x0108
@@ -904,10 +905,7 @@ public:
 	int* GetNextThinkTick();
 	int &GetTickBasePtr();
 	float GetLastSeenTime();
-	
-	int& GetTakeDamage() {
-		return *(int*)((DWORD)this + 0x280);
-	}
+
 
 	int GetHitboxSet();
 	std::string GetName();
@@ -928,7 +926,7 @@ public:
 
 	CAnimationLayer *GetAnimOverlays()
 	{
-		return *(CAnimationLayer**)((DWORD)this + 0x2980);
+		return *(CAnimationLayer**)((DWORD)this + 0x2990);
 	}
 
 	CAnimationLayer *GetAnimOverlay(int index)
@@ -961,7 +959,7 @@ public:
 	void UpdateClientSideAnimation()
 	{
 		typedef void(__thiscall *o_updateClientSideAnimation)(void*);
-		getvfunc<o_updateClientSideAnimation>(this, 223)(this);
+		getvfunc<o_updateClientSideAnimation>(this, 223 + 1)(this);
 	}
 
 	IBaseCombatWeapon* GetWeapon();
@@ -1086,7 +1084,7 @@ public:
 
 	int GetShootsFired()
 	{
-		return *reinterpret_cast<int*>((DWORD)this + 0xA390);
+		return *reinterpret_cast<int*>((DWORD)this + 0x103E0);
 	}
 
 	float& GetLBY();
@@ -1113,7 +1111,7 @@ public:
 
 	float& GetSpawnTime()
 	{
-		return *(float*)((DWORD)this + 0xA370);
+		return *(float*)((DWORD)this + 0x103C0);
 	}
 
 	__forceinline Vector GetBonePos(matrix* mat, int i)
@@ -1656,13 +1654,13 @@ public:
 	float GetInaccuracy()
 	{
 		typedef float(__thiscall* OriginalFn)(void*);
-		return getvfunc< OriginalFn >(this, 482)(this);
+		return getvfunc< OriginalFn >(this, 482 + 1)(this);
 	}
 
 	float GetSpread()
 	{
 		typedef float(__thiscall* OriginalFn)(void*);
-		return getvfunc< OriginalFn >(this, 452)(this);
+		return getvfunc< OriginalFn >(this, 452 + 1)(this);
 	}
 
 	int GetMaxTickbaseShift()
@@ -1727,7 +1725,7 @@ public:
 	void UpdateAccuracyPenalty()
 	{
 		typedef void(__thiscall* oUpdateAccuracyPenalty)(PVOID);
-		return getvfunc<oUpdateAccuracyPenalty>(this, 483)(this);
+		return getvfunc<oUpdateAccuracyPenalty>(this, 483 + 1)(this);
 	}
 
 	bool IsZeus()
