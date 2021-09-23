@@ -197,10 +197,10 @@ void UpdateViewmodel(IBasePlayer* player)
 		GetModuleHandleA(g_Modules[fnva1(hs::client_dll.s().c_str())]().c_str()),
 		str("55 8B EC 8B 45 08 53 8B D9 56 8B 84 83 ? ? ? ? 83 F8 FF 74 18 0F")));
 
-	auto v10 = getvfunc<int(__thiscall*)(IBasePlayer*)>(player, 157)(player);
+	auto v10 = getvfunc<int(__thiscall*)(IBasePlayer*)>(player, 157 + 1)(player);
 	if (!v10) return;
 
-	auto v11 = getvfunc<int(__thiscall*)(IBasePlayer*)>(player, 267)(player);
+	auto v11 = getvfunc<int(__thiscall*)(IBasePlayer*)>(player, 267 + 1)(player);
 	if (!v11) return;
 
 	//fixed 

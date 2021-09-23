@@ -524,7 +524,7 @@ __forceinline datamap_t *IBasePlayer::GetPredDescMap()
 bool IBasePlayer::IsWeapon()
 {
 	typedef bool (__thiscall* Fn)(void*);
-	return (getvfunc<Fn>(this, 165))(this);
+	return (getvfunc<Fn>(this, 165 + 1))(this);
 }
 
 std::array<float, 24> &IBasePlayer::m_flPoseParameter()
@@ -619,7 +619,7 @@ int IBasePlayer::GetTeam()
 
 float& IBasePlayer::GetFlashDuration()
 {
-	return *(float*)((DWORD)this + 0xA420);
+	return *(float*)((DWORD)this + 0x10470);
 }
 
 bool IBasePlayer::IsFlashed() {
@@ -803,7 +803,7 @@ bool IBasePlayer::SetupBones(matrix* pBoneToWorldOut, int nMaxBones, int boneMas
 
 std::vector< IBaseCombatWeapon* > IBasePlayer::GetWeapons()
 {
-	int* m_hMyWeapons = reinterpret_cast< int* >((DWORD)this + 0x2DE8);
+	int* m_hMyWeapons = reinterpret_cast<int*>((DWORD)this + 0x2E08);
 	std::vector< IBaseCombatWeapon* > list = {};
 	for (auto i = 0; i < 64; ++i)
 	{
@@ -826,7 +826,7 @@ CCSWeaponInfo* IBaseCombatWeapon::GetCSWpnData()
 {
 	if (!this) return nullptr;
 	typedef CCSWeaponInfo*(__thiscall* OriginalFn)(void*);
-	return getvfunc<OriginalFn>(this, 460)(this);
+	return getvfunc<OriginalFn>(this, 460 + 1)(this);
 }
 
 int IBasePlayer::GetTickBase(void)
@@ -1055,7 +1055,7 @@ CCSGOPlayerAnimState* IBasePlayer::GetPlayerAnimState()
 {
 	if (!this->isAlive())
 		return nullptr;
-	return *reinterpret_cast<CCSGOPlayerAnimState**>(uintptr_t(this) + 0x3914);
+	return *reinterpret_cast<CCSGOPlayerAnimState**>(uintptr_t(this) + 0x9960);
 }
 
 void IBasePlayer::InvalidatePhysicsRecursive(int32_t flags) {
@@ -1065,7 +1065,7 @@ void IBasePlayer::InvalidatePhysicsRecursive(int32_t flags) {
 }
 
 void IBasePlayer::SetAnimState(CCSGOPlayerAnimState* anims) {
-	*reinterpret_cast<CCSGOPlayerAnimState**>(uintptr_t(this) + 0x3914) = anims;
+	*reinterpret_cast<CCSGOPlayerAnimState**>(uintptr_t(this) + 0x9960) = anims;
 }
 
 Vector& IBasePlayer::GetVecForce()
@@ -1106,7 +1106,7 @@ bool IBaseCombatWeapon::IsNade()
 }
 float& IBasePlayer::m_flNextAttack()
 {
-	return *(float*)((uintptr_t)this + 0x2D70);
+	return *(float*)((uintptr_t)this + 0x2D80);
 }
 int IBaseCombatWeapon::Owner() {
 	//  NETVAR(ownerEntity, "CBaseEntity", "m_hOwnerEntity", int)
@@ -1117,7 +1117,7 @@ int IBaseCombatWeapon::Owner() {
 
 bool IBaseCombatWeapon::InReload()
 {
-	return *(bool*)(this + 0x32A5);
+	return *(bool*)(this + 0x32B5);
 }
 
 float& IBaseCombatWeapon::NextSecondaryAttack()
