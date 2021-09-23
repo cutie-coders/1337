@@ -153,7 +153,7 @@ std::string c_config::pop_string()
     size_t str_len = this->pop_size_t();
     this->offset -= str_len;
     if (this->offset < 0)
-        return 0;
+		return "";
     const char* ret = reinterpret_cast<const char*>(&this->raw_stack[this->offset]);
     return { ret, &ret[str_len] };
 }
