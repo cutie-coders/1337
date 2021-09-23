@@ -20,6 +20,7 @@
     <ClInclude Include="Features\Rage\AntiAims.h" />
     <ClInclude Include="Features\Rage\Autopeek.h" />
     <ClInclude Include="Features\Rage\Autowall.h" />
+    <ClInclude Include="Features\Rage\cresolver.h" />
     <ClInclude Include="Features\Rage\RageBackTracking.h" />
     <ClInclude Include="Hooks\BeginFrame.h" />
     <ClInclude Include="bspflags.h" />

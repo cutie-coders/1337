@@ -562,6 +562,8 @@
       <Filter>Cheat\Features\Visual</Filter>
     </ClInclude>
     <ClInclude Include="Features\Rage\RageBackTracking.h" />
+    <ClInclude Include="undefeated.h" />
+    <ClInclude Include="Features\Rage\cresolver.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Menu.cpp">

@@ -52,6 +52,35 @@ std::string GetModel(int team) {
 		str("models/player/custom_player/legacy/tm_professional_varh.mdl"),
 		str("models/player/custom_player/legacy/tm_professional_vari.mdl"),
 		str("models/player/custom_player/legacy/tm_professional_varj.mdl"),
+		str("models/player/custom_player/legacy/ctm_diver_varianta.mdl"), // Cmdr. Davida 'Goggles' Fernandez | SEAL Frogman
+		str("models/player/custom_player/legacy/ctm_diver_variantb.mdl"), // Cmdr. Frank 'Wet Sox' Baroud | SEAL Frogman
+		str("models/player/custom_player/legacy/ctm_diver_variantc.mdl"), // Lieutenant Rex Krikey | SEAL Frogman
+		str("models/player/custom_player/legacy/ctm_fbi_varianth.mdl"), // Michael Syfers | FBI Sniper
+		str("models/player/custom_player/legacy/ctm_fbi_variantf.mdl"), // Operator | FBI SWAT
+		str("models/player/custom_player/legacy/ctm_fbi_variantb.mdl"), // Special Agent Ava | FBI
+		str("models/player/custom_player/legacy/ctm_fbi_variantg.mdl"), // Markus Delrow | FBI HRT
+		str("models/player/custom_player/legacy/ctm_gendarmerie_varianta.mdl"), // Sous-Lieutenant Medic | Gendarmerie Nationale
+		str("models/player/custom_player/legacy/ctm_gendarmerie_variantb.mdl"), // Chem-Haz Capitaine | Gendarmerie Nationale
+		str("models/player/custom_player/legacy/ctm_gendarmerie_variantc.mdl"), // Chef d'Escadron Rouchard | Gendarmerie Nationale
+		str("models/player/custom_player/legacy/ctm_gendarmerie_variantd.mdl"), // Aspirant | Gendarmerie Nationale
+		str("models/player/custom_player/legacy/ctm_gendarmerie_variante.mdl"), // Officer Jacques Beltram | Gendarmerie Nationale
+		str("models/player/custom_player/legacy/ctm_sas_variantg.mdl"), // D Squadron Officer | NZSAS
+		str("models/player/custom_player/legacy/ctm_sas_variantf.mdl"), // B Squadron Officer | SAS
+		str("models/player/custom_player/legacy/ctm_st6_variante.mdl"), // Seal Team 6 Soldier | NSWC SEAL
+		str("models/player/custom_player/legacy/ctm_st6_variantg.mdl"), // Buckshot | NSWC SEAL
+		str("models/player/custom_player/legacy/ctm_st6_varianti.mdl"), // Lt. Commander Ricksaw | NSWC SEAL
+		str("models/player/custom_player/legacy/ctm_st6_variantj.mdl"), // 'Blueberries' Buckshot | NSWC SEAL
+		str("models/player/custom_player/legacy/ctm_st6_variantk.mdl"), // 3rd Commando Company | KSK
+		str("models/player/custom_player/legacy/ctm_st6_variantl.mdl"), // 'Two Times' McCoy | TACP Cavalry
+		str("models/player/custom_player/legacy/ctm_st6_variantm.mdl"), // 'Two Times' McCoy | USAF TACP
+		str("models/player/custom_player/legacy/ctm_st6_variantn.mdl"), // Primeiro Tenente | Brazilian 1st Battalion
+		str("models/player/custom_player/legacy/ctm_swat_variante.mdl"), // Cmdr. Mae 'Dead Cold' Jamison | SWAT
+		str("models/player/custom_player/legacy/ctm_swat_variantf.mdl"), // 1st Lieutenant Farlow | SWAT
+		str("models/player/custom_player/legacy/ctm_swat_variantg.mdl"), // John 'Van Healen' Kask | SWAT 
+		str("models/player/custom_player/legacy/ctm_swat_varianth.mdl"), // Bio-Haz Specialist | SWAT
+		str("models/player/custom_player/legacy/ctm_swat_varianti.mdl"), // Sergeant Bombson | SWAT
+		str("models/player/custom_player/legacy/ctm_swat_variantj.mdl"), // Chem-Haz Specialist | SWAT
+		str("models/player/custom_player/legacy/ctm_swat_variantk.mdl"), // Lieutenant 'Tree Hugger' Farlow | SWAT
 		str("models/player/custom_player/legacy/tm_jumpsuit_varianta.mdl"),
 		str("models/player/custom_player/legacy/tm_jumpsuit_variantb.mdl"),
 		str("models/player/custom_player/legacy/tm_jumpsuit_variantc.mdl")
