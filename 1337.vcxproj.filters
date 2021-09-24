@@ -132,9 +132,6 @@
     <ClInclude Include="Menu.h">
       <Filter>Cheat\Features\Headers</Filter>
     </ClInclude>
-    <ClInclude Include="Features\Rage\Resolver.h">
-      <Filter>Cheat\Features\Headers</Filter>
-    </ClInclude>
     <ClInclude Include="Tracer.h">
       <Filter>Cheat\Features\Headers</Filter>
     </ClInclude>
@@ -617,9 +614,6 @@
     <ClCompile Include="Features\Rage\Ragebot.cpp">
       <Filter>Cheat\Features\Rage</Filter>
     </ClCompile>
-    <ClCompile Include="Features\Rage\Resolver.cpp">
-      <Filter>Cheat\Features\Rage</Filter>
-    </ClCompile>
     <ClCompile Include="Features\Visuals\Dormant.cpp">
       <Filter>Cheat\Features\Visual</Filter>
     </ClCompile>
@@ -796,5 +790,6 @@
     <None Include="duktape\duk_source_meta.json">
       <Filter>javascript\duktape</Filter>
     </None>
+    <None Include="Features\Rage\cresolver.cpp" />
   </ItemGroup>
 </Project>

@@ -1,7 +1,7 @@
 #pragma once
 #include "Hooks.h"
 #include "../Features/Misc/Misc.h"
-#include "../Features/Rage/Resolver.h"
+#include "../Features/Rage/cresolver.h"
 #include "../Features/Animations/AnimationFix.h"
 #include "SetupAnimation.h"
 #include <intrin.h>
@@ -290,7 +290,7 @@ void __stdcall Hooked_FrameStageNotify(ClientFrameStage_t curStage)
 	if (!interfaces.engine->IsConnected() || !interfaces.engine->IsInGame()) {
 		csgo->mapChanged = true;
 		csgo->is_connected = false;
-		g_Resolver->ClearHitInfo();
+		c_Resolver->ClearHitInfo();
 	}
 	else csgo->is_connected = true;
 

@@ -259,11 +259,10 @@ void CAntiAim::Yaw(bool legit_aa)
 					if (!once)
 					{
 						Msg("Breaking lby", color_t(255, 255, 255));
-						once = true;
 					}
 				}
 				else
-					csgo->cmd->viewangles.y += (vars.antiaim.desync_amount / 2) * side;
+					csgo->cmd->viewangles.y -= (vars.antiaim.desync_amount * 2) * side;
 			}
 		}
 		csgo->cmd->viewangles.y -= vars.antiaim.yaw_offset;
@@ -295,9 +294,7 @@ bool CAntiAim::ShouldAA()
 {
 	bool use_aa_on_e = !csgo->local->IsDefusing() && vars.antiaim.aa_on_use && csgo->cmd->buttons & IN_USE;
 
-	if (csgo->game_rules->IsFreezeTime()
-		|| csgo->local->HasGunGameImmunity()
-		|| csgo->local->GetFlags() & FL_FROZEN)
+	if (csgo->local->GetFlags() & FL_FROZEN)
 		return false;
 
 	if (!vars.antiaim.enable)

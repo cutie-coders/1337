@@ -131,7 +131,8 @@ bool __stdcall Hooked_CreateMove(float a, CUserCmd* cmd) {
 
 			g_EnginePrediction->update();
 			g_EnginePrediction->start(csgo->local, cmd);
-			g_Resolver->StoreAntifreestand();
+			// c_Resolver->
+			// g_Resolver->StoreAntifreestand();
 
 			g_AntiAim->Initialize();
 			run_callback("createmove");

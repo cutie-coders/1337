@@ -161,7 +161,6 @@
     <ClInclude Include="RecvProps.h" />
     <ClInclude Include="render.h" />
     <ClInclude Include="render_view.h" />
-    <ClInclude Include="Features\Rage\Resolver.h" />
     <ClInclude Include="Hooks\RunCommand.h" />
     <ClInclude Include="Hooks\SceneEnd.h" />
     <ClInclude Include="server_api.hpp" />
@@ -250,7 +249,6 @@
     <ClCompile Include="Includes\protect\config.cpp" />
     <ClCompile Include="Includes\protect\protect.cpp" />
     <ClCompile Include="Features\Rage\Ragebot.cpp" />
-    <ClCompile Include="Features\Rage\Resolver.cpp" />
     <ClCompile Include="Tracer.cpp" />
     <ClCompile Include="Utils.cpp" />
     <ClCompile Include="Variables.cpp" />
@@ -261,6 +259,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="duktape\duk_source_meta.json" />
+    <None Include="Features\Rage\cresolver.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>

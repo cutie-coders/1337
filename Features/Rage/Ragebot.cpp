@@ -3,6 +3,7 @@
 #include "../features.h"
 #include <thread>
 #include <mutex>
+#include "cresolver.h"
 
 std::vector<ShotSnapshot> shot_snapshots;
 
@@ -129,23 +130,23 @@ float CRagebot::GetHeadScale(IBasePlayer* player)
 		return 0.75f;
 }
 
-std::vector<Vector> CRagebot::GetAdvancedHeadPoints(IBasePlayer* pBaseEntity, matrix bones[128])
-{
-	std::vector<Vector> vPoints;
-
-	Vector src, dst, sc1, sc2, fw1;
-
-	src = pBaseEntity->GetBonePos(bones, 8);
-	Math::AngleVectors(Vector(0, g_Resolver->GetBackwardYaw(pBaseEntity) - 90.f, 0), &fw1);
-
-	Vector left_side = src + (fw1 * 40);
-	Vector right_side = src - (fw1 * 40);
-
-	vPoints.push_back(left_side);
-	vPoints.push_back(right_side);
-
-	return vPoints;
-}
+//std::vector<Vector> CRagebot::GetAdvancedHeadPoints(IBasePlayer* pBaseEntity, matrix bones[128])
+//{
+//	std::vector<Vector> vPoints;
+//
+//	Vector src, dst, sc1, sc2, fw1;
+//
+//	src = pBaseEntity->GetBonePos(bones, 8);
+//	Math::AngleVectors(Vector(0, c_Resolver->GetBackwardYaw(pBaseEntity) - 90.f, 0), &fw1);
+//
+//	Vector left_side = src + (fw1 * 40);
+//	Vector right_side = src - (fw1 * 40);
+//
+//	vPoints.push_back(left_side);
+//	vPoints.push_back(right_side);
+//
+//	return vPoints;
+//}
 
 std::vector<std::pair<Vector, bool>> CRagebot::GetMultipoints(IBasePlayer* pBaseEntity, int iHitbox, matrix bones[128])
 {
@@ -1357,7 +1358,7 @@ string ShotSnapshot::get_info() {
 	ret += str("; damage: ") + std::to_string(intended_damage);
 
 	ret += str("; hitchance: ") + std::to_string((int)(hitchance * 100.f));
-	ret += str("; resolver: ") + this->resolver_mode + str(" | ") + std::to_string(g_Resolver->ResolverInfo[this->entity->GetIndex()].Index);
+	ret += str("; resolver: ") + this->resolver_mode;
 
 	if (record.safepoints == 2)
 		ret += str("; safepoints");
@@ -1528,7 +1529,7 @@ void CRagebot::Run()
 	for (auto i = 1; i <= interfaces.global_vars->maxClients; ++i) {
 		auto pEntity = interfaces.ent_list->GetClientEntity(i);
 		if (!pEntity || pEntity == csgo->local || !pEntity->IsPlayer()) {
-			g_Resolver->ClearHitInfo(i);
+			c_Resolver->ClearHitInfo(i);
 			continue;
 		}
 		if (!pEntity->isAlive() || pEntity->GetHealth() <= 0 || pEntity->GetTeam() == csgo->local->GetTeam()) {
@@ -1645,13 +1646,13 @@ void CRagebot::Run()
 				ShotSnapshot* snapshot = new ShotSnapshot();
 				snapshot->entity = best_anims->player;
 				snapshot->hitbox_where_shot = HitboxToString(hitbox);
-				snapshot->resolver_mode = ResolverMode[best_anims->player->GetIndex()];
+				snapshot->resolver_mode = resolverInfo[best_anims->player->GetIndex()].m_iDesyncType;
 				snapshot->time = TICKS_TO_TIME(csgo->fixed_tickbase);
 				snapshot->first_processed_time = 0.f;
 				snapshot->bullet_impact = false;
 				snapshot->weapon_fire = false;
 				snapshot->damage = -1;
-				snapshot->resolver_info = g_Resolver->ResolverInfo[best_anims->player->GetIndex()];
+				snapshot->resolver_info = resolverInfo[best_anims->player->GetIndex()];
 				snapshot->intended_damage = best_damage;
 				snapshot->start = csgo->local->GetEyePosition();
 				snapshot->hitgroup_hit = -1;

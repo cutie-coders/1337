@@ -1,7 +1,9 @@
 ﻿#include "../../Hooks/hooks.h"
 #include "AnimationFix.h"
-#include "../Rage/Resolver.h"
+#include "../Rage/cresolver.h"
 #include "../Features.h"
+Info resolverInfo[64];
+Info::History resolverRecord[64];
 
 void UpdatePlayer(IBasePlayer* player)
 {
@@ -109,19 +111,23 @@ void animation::build_inversed_bones(IBasePlayer* player) {
 	}
 	g_Animfix->IS_Animstate[idx]->m_duration_in_air = 0.f;
 
-	const float angle = g_Resolver->GetAngle(player);
-	const float delta = player->GetDSYDelta();
-	const float low_delta = delta * 0.5f;
+	// c_Resolver->Run(player);
 
-	float desync_angle = delta;
+	g_Animfix->IS_Animstate[idx]->m_abs_yaw = resolverInfo[idx].m_flLowerBodyYaw;
 
-	bool resolver_disabled = ResolverMode[idx] == str("Disabled") || ResolverMode[idx].find('d') != -1 || g_Resolver->ResolverInfo[idx].Index == 0;
+	//const float angle = g_Resolver->GetAngle(player);
+	//const float delta = player->GetDSYDelta();
+	//const float low_delta = delta * 0.5f;
 
-	if (ResolverMode[idx].find('l') != -1) // low delta
-		desync_angle = low_delta; // half of max desync delta
+	//float desync_angle = delta;
 
-	if (!resolver_disabled)
-		g_Animfix->IS_Animstate[idx]->m_abs_yaw = Math::NormalizeYaw(Math::NormalizeYaw(angle + (desync_angle * -g_Resolver->ResolverInfo[idx].Index)));
+	//bool resolver_disabled = ResolverMode[idx] == str("Disabled") || ResolverMode[idx].find('d') != -1 || g_Resolver->ResolverInfo[idx].Index == 0;
+
+	//if (ResolverMode[idx].find('l') != -1) // low delta
+	//	desync_angle = low_delta; // half of max desync delta
+
+	//if (!resolver_disabled)
+	//	g_Animfix->IS_Animstate[idx]->m_abs_yaw = Math::NormalizeYaw(Math::NormalizeYaw(angle + (desync_angle * -g_Resolver->ResolverInfo[idx].Index)));
 
 	player->UpdateAnimationState(g_Animfix->IS_Animstate[idx], player->GetEyeAngles());
 	BuildBones(player, sim_time, inversed_bones);
@@ -168,19 +174,22 @@ void animation::build_unresolved_bones(IBasePlayer* player)
 
 	const float delta = player->GetDSYDelta();
 
-	const float low_delta = delta * 0.5f;
+	// c_Resolver->Run(player);
+	g_Animfix->US_Animstate[idx]->m_abs_yaw = resolverInfo[idx].m_flLowerBodyYaw;
 
-	float desync_angle = delta;
+	//const float low_delta = delta * 0.5f;
 
-	bool resolver_disabled = ResolverMode[idx] == str("Disabled") || ResolverMode[idx].find('d') != -1 || g_Resolver->ResolverInfo[idx].Index == 0;
+	//float desync_angle = delta;
 
-	if (ResolverMode[idx].find('l') != -1) // low delta
-		desync_angle = low_delta; // half of max desync delta
+	//bool resolver_disabled = ResolverMode[idx] == str("Disabled") || ResolverMode[idx].find('d') != -1 || g_Resolver->ResolverInfo[idx].Index == 0;
 
-	if (resolver_disabled)
-		g_Animfix->US_Animstate[idx]->m_abs_yaw = Math::NormalizeYaw(player->GetEyeAngles().y + desync_angle); // setup inversed side
-	else
-		g_Animfix->US_Animstate[idx]->m_abs_yaw = Math::NormalizeYaw(player->GetEyeAngles().y);
+	//if (ResolverMode[idx].find('l') != -1) // low delta
+	//	desync_angle = low_delta; // half of max desync delta
+
+	//if (resolver_disabled)
+	//	g_Animfix->US_Animstate[idx]->m_abs_yaw = Math::NormalizeYaw(player->GetEyeAngles().y + desync_angle); // setup inversed side
+	//else
+	//	g_Animfix->US_Animstate[idx]->m_abs_yaw = Math::NormalizeYaw(player->GetEyeAngles().y);
 
 	player->UpdateAnimationState(g_Animfix->US_Animstate[idx], player->GetEyeAngles());
 	BuildBones(player, sim_time, unresolved_bones);
@@ -206,7 +215,7 @@ void CAnimationFix::animation_info::UpdateAnims(animation* record, animation* fr
 		record->safepoints = false;
 		record->apply(player);
 
-		animstate->m_abs_yaw = g_Resolver->ResolverInfo[idx].ResolvedAngle;
+		animstate->m_abs_yaw = resolverInfo[idx].m_flLowerBodyYaw;
 
 		return UpdatePlayer(player);
 	}
@@ -224,7 +233,7 @@ void CAnimationFix::animation_info::UpdateAnims(animation* record, animation* fr
 			record->didshot = record->last_shot_time > from->sim_time && record->last_shot_time <= record->sim_time
 			&& record->last_shot_time != came_from_dormant_time && from->last_shot_time != came_from_dormant_time;
 
-		record->resolver_mode = ResolverMode[player->GetIndex()];
+		record->resolver_mode = resolverInfo[player->GetIndex()].m_iDesyncType;
 
 		const auto velocity_per_tick = (record->velocity - from->velocity) / ticks_to_simulate;
 		const auto duck_amount_per_tick = (record->duck - from->duck) / ticks_to_simulate;
@@ -237,7 +246,7 @@ void CAnimationFix::animation_info::UpdateAnims(animation* record, animation* fr
 			// apply record.
 			record->apply(player);
 
-			animstate->m_abs_yaw = g_Resolver->ResolverInfo[idx].ResolvedAngle;
+			animstate->m_abs_yaw = resolverInfo[idx].m_flLowerBodyYaw;
 
 			// run update.
 			return UpdatePlayer(player);
@@ -289,7 +298,7 @@ void CAnimationFix::animation_info::UpdateAnims(animation* record, animation* fr
 				// set new simtime.
 				player->GetSimulationTime() = simulated_time;
 
-				animstate->m_abs_yaw = g_Resolver->ResolverInfo[idx].ResolvedAngle;
+				animstate->m_abs_yaw = resolverInfo[idx].m_flLowerBodyYaw;
 
 				// run update.
 				UpdatePlayer(player);

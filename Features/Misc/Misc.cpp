@@ -663,21 +663,7 @@ void CMisc::ProcessMissedShots()
 				csgo->actual_misses[snapshot.entity->GetIndex()]++;
 
 			if (vars.visuals.eventlog & 4) {
-				if (!spread && !sp_spread) {
-					if (snapshot.record.safepoints && !snapshot.resolver_info.LowDelta)
-						Msg(str("Missed shot due to gay walls."), vars.visuals.eventlog_color);
-					else
-					{
-						g_Resolver->RemoveHitInfo(snapshot.entity);
-						Msg(str("Missed due to spread."), vars.visuals.eventlog_color);
-					}
-				}
-				else {
-					if (snapshot.hitchance == 1.f)
-						Msg(str("Missed shot due to fuck."), vars.visuals.eventlog_color);
-					else
-						Msg(str("Missed shot due to RNG."), vars.visuals.eventlog_color);
-				}
+				// will re-add later. the logs were completely wrong. lmao. (ill just steal legendaware since they work xd)
 			}
 
 			shot_snapshots.erase(shot_snapshots.begin());

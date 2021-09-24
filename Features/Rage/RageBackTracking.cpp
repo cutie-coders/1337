@@ -1,7 +1,7 @@
 #include "../../Hooks/Hooks.h"
 #include "RageBackTracking.h"
 #include "Ragebot.h"
-#include "Resolver.h"
+#include "cresolver.h"
 #include "AntiAims.h"
 
 static std::deque<CIncomingSequence>sequences;

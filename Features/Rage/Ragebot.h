@@ -1,7 +1,8 @@
 #pragma once
 #include "Autowall.h"
 #include "../Animations/AnimationFix.h"
-#include "Resolver.h"
+#include "cresolver.h"
+// #include "Resolver.h"
 
 class ShotSnapshot
 {
@@ -9,7 +10,7 @@ public:
 	IBasePlayer* entity;
 	string hitbox_where_shot;
 	string resolver_mode;
-	ResolverInfo_t resolver_info;
+	Info resolver_info;
 	float time;
 	float first_processed_time;
 	bool weapon_fire, bullet_impact;
@@ -75,7 +76,7 @@ public:
 	std::vector<int> GetHitboxesToScan(IBasePlayer*);
 	float GetBodyScale(IBasePlayer*);
 	float GetHeadScale(IBasePlayer*);
-	std::vector<Vector> GetAdvancedHeadPoints(IBasePlayer* pBaseEntity, matrix bones[128]);
+	// std::vector<Vector> GetAdvancedHeadPoints(IBasePlayer* pBaseEntity, matrix bones[128]);
 	std::vector<std::pair<Vector, bool>> GetMultipoints(IBasePlayer*, int, matrix[128]);
 
 	bool force_accuracy;

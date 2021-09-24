@@ -158,14 +158,17 @@ void CAnimationFix::UpdatePlayers()
 				it = next(it);
 		}
 
-		if (g_Resolver->Do(_animation->player)) {
+		if (auto state = player->GetPlayerAnimState(); state != nullptr)
+			state->m_abs_yaw = resolverInfo[player->EntIndex()].m_flLowerBodyYaw;
+
+		/*if (g_Resolver->Do(_animation->player)) {
 			if (auto state = player->GetPlayerAnimState(); state != nullptr)
 				state->m_abs_yaw = g_Resolver->ResolverInfo[player->EntIndex()].ResolvedAngle;
 		}
 		else {
 			if (auto state = player->GetPlayerAnimState(); state != nullptr)
 				g_Resolver->ResolverInfo[player->EntIndex()].ResolvedAngle = state->m_abs_yaw;
-		}
+		}*/
 
 		// have we already seen this update?
 		if (player->GetSimulationTime() != player->CameFromDormantTime()) {

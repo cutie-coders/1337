@@ -119,7 +119,7 @@ void LogHits(IGameEvent* Event)
 						snapshot.hitbox == 0
 						&& hitgroup == HITGROUP_HEAD
 						&& hittable_in_head) {
-						g_Resolver->AddHitInfo(snapshot.entity, snapshot.resolver_info);
+						c_Resolver->AddHitInfo(snapshot.entity, snapshot.resolver_info);
 					}
 					if (vars.visuals.hitmarker & 2) {
 						g_Hitmarker->Add(snapshot.intended_position, hitgroup == HITGROUP_HEAD, Event->GetString(str("dmg_health")));

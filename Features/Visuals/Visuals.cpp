@@ -681,13 +681,13 @@ void CVisuals::Draw()
 				|| !info.is_valid)
 				continue;
 
-			if (vars.visuals.resolver_flag)
-			{
-				ImGui::PushFont(fonts::esp_info); //info.box.x + info.box.w + 3, (info.box.y - 2) + step
+			//if (vars.visuals.resolver_flag)
+			//{
+			//	ImGui::PushFont(fonts::esp_info); //info.box.x + info.box.w + 3, (info.box.y - 2) + step
 
-				g_Render->DrawString(info.box.x + info.box.w + 3, (info.box.y - 2) + 5, color_t(255, 255, 255),
-					render::outline, fonts::esp_info, ResolverMode[info.player->EntIndex()].c_str());
-			}
+			//	g_Render->DrawString(info.box.x + info.box.w + 3, (info.box.y - 2) + 5, color_t(255, 255, 255),
+			//		render::outline, fonts::esp_info, ResolverMode[info.player->EntIndex()].c_str());
+			//}
 
 			if (vars.visuals.zeus_warning) {
 				if (info.zeuser_stages != none) {
@@ -993,7 +993,7 @@ void CVisuals::Draw()
 				bool fake_ducking = (vars.visuals.flags & 16) && info.fake_duck;
 				bool draw_distance = (vars.visuals.flags & 32) && info.player_distance > 0.f;
 				bool draw_last_place = (vars.visuals.flags & 64);
-				bool draw_resolver = (vars.visuals.flags * 128) && !ResolverMode[info.player->EntIndex()].empty();
+				bool draw_resolver = (vars.visuals.flags * 128) && !resolverInfo[info.player->EntIndex()].m_iDesyncType > -1;
 
 				std::string dist_to_target = std::to_string(info.player_distance) + str("u");
 

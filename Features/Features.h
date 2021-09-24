@@ -4,7 +4,7 @@
 #include "Misc/Bunnyhop.h"
 #include "../Tracer.h"
 #include "Misc/Eventlog.h"
-#include "Rage/Resolver.h"
+// #include "Rage/Resolver.h"
 #include "Misc/Knifebot.h"
 #include "Misc/Misc.h"
 #include "Rage/Autopeek.h"
@@ -23,6 +23,7 @@
 #include "../Utils.h"
 #include "Visuals/Glow.h"
 #include "Rage/RageBackTracking.h"
+#include "Rage/cresolver.h"
 
 extern CCacheSystem*		g_Cache;
 extern CVisuals*			g_Visuals;
@@ -30,7 +31,7 @@ extern CBunnyhop*			g_Bunnyhop;
 extern CBulletTracer*		g_BulletTracer;
 extern CEventlog*			g_Eventlog;
 extern CAnimationFix*		g_Animfix;
-extern CResolver*			g_Resolver;
+// extern CResolver*			g_Resolver;
 extern CAntiAim*			g_AntiAim;
 extern CAutopeek*			g_AutoPeek;
 extern CAutoWall*			g_AutoWall;
@@ -48,3 +49,4 @@ extern CKnifebot*			g_Knifebot;
 extern CLegit*				g_Legit;
 extern CMenu*				g_Menu;
 extern CMisc*				g_Misc;
+extern cResolver*           c_Resolver;
