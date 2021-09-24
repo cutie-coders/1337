@@ -168,7 +168,6 @@
     <ClInclude Include="studio_render.h" />
     <ClInclude Include="surface.h" />
     <ClInclude Include="Tracer.h" />
-    <ClInclude Include="undefeated.h" />
     <ClInclude Include="Utils.h" />
     <ClInclude Include="Variables.h" />
     <ClInclude Include="Vector.h" />

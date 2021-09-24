@@ -78,7 +78,7 @@ void cResolver::Run(IBasePlayer* player)
 
 	if (player->GetVelocity().Length2D() > 0.1f && player->GetVelocity().Length2D() < 75.f)
 	{
-		if (player->GetVelocity().Length2D() >= 30.f)
+		if (player->GetVelocity().Length2D() >= 55.f)
 			lby = (resolverInfo[idx].m_flEyeYaw + 30.f) * side;
 		else
 			lby = (resolverInfo[idx].m_flEyeYaw + 45.f) * side;
@@ -101,7 +101,7 @@ void cResolver::Run(IBasePlayer* player)
 		break;
 	}
 
-	if (player->GetVelocity().Length2D() > 0.1f && resolverRecord[idx].m_flLastLowerBodyYaw != resolverInfo[idx].m_flLowerBodyYaw)
+	if (player->GetVelocity().Length2D() <= 0.1f && resolverRecord[idx].m_flLastLowerBodyYaw != resolverInfo[idx].m_flLowerBodyYaw)
 		resolverInfo[idx].m_iDesyncType = 2;
 	if (side > 0)
 	{
