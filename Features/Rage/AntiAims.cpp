@@ -33,6 +33,7 @@ void CAntiAim::is_lby_update()
 	else
 	{
 		Pre_Breaking = true;
+		Currently_Breaking = false;
 		next_break = cur_time - .22f;
 		csgo->should_sidemove = true;
 		return;
@@ -216,20 +217,12 @@ void CAntiAim::Sidemove() {
 
 void CAntiAim::Yaw(bool legit_aa)
 {
-	bool check = vars.antiaim.ignore_attarget &&
-		(g_Binds[bind_manual_back].active
-			|| g_Binds[bind_manual_right].active
-			|| g_Binds[bind_manual_left].active
-			|| g_Binds[bind_manual_forward].active);
-
-	if (vars.antiaim.attarget && !check && !legit_aa)
+	if (vars.antiaim.attarget && !legit_aa)
 	{
 		auto best_ent = GetNearestTarget(vars.antiaim.attarget_off_when_offsreen);
 		if (best_ent)
 			csgo->cmd->viewangles.y = Math::CalculateAngle(csgo->local->GetOrigin(), best_ent->GetOrigin()).y;
 	}
-
-	is_lby_update();
 
 	static bool sw = false;
 	static bool avoid_overlap_side = false;
@@ -252,37 +245,15 @@ void CAntiAim::Yaw(bool legit_aa)
 
 	if (vars.antiaim.enable) {
 		if (vars.antiaim.desync) {
-			if (!csgo->send_packet)
-			{
-				if (Currently_Breaking) {
-					csgo->cmd->viewangles.y += (vars.antiaim.desync_amount * 2) * side;
-					if (!once)
-					{
-						Msg("Breaking lby", color_t(255, 255, 255));
-					}
-				}
-				else
-					csgo->cmd->viewangles.y -= (vars.antiaim.desync_amount * 2) * side;
+			if (Currently_Breaking) {
+				csgo->send_packet = false;
+				csgo->cmd->viewangles.y -= (vars.antiaim.desync_amount * 2) * -side;
+			}
+			else if (!csgo->send_packet) {
+				csgo->cmd->viewangles.y -= (vars.antiaim.desync_amount * 2) * side;
 			}
 		}
 		csgo->cmd->viewangles.y -= vars.antiaim.yaw_offset;
-	}
-
-	if (!legit_aa) {
-		csgo->cmd->viewangles.y += vars.antiaim.jitter_angle * (sw ? 1 : -1);
-		if (vars.antiaim.manual_antiaim) {
-			if (g_Binds[bind_manual_forward].active)
-				csgo->cmd->viewangles.y -= 180.f;
-			if (g_Binds[bind_manual_left].active)
-				csgo->cmd->viewangles.y -= 90.f;
-			if (g_Binds[bind_manual_right].active)
-				csgo->cmd->viewangles.y += 90.f;
-		}
-	}
-	else
-	{
-		if (vars.antiaim.yaw == 1)
-			csgo->cmd->viewangles.y -= 180.f;
 	}
 
 	if (csgo->send_packet)

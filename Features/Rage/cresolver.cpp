@@ -67,8 +67,9 @@ void cResolver::Run(IBasePlayer* player)
 	int missed = csgo->actual_misses[idx];
 	auto state = player->GetPlayerAnimState();
 	float lby = resolverInfo[idx].m_flLowerBodyYaw;
-	float angle = 0.f;
 	float eye_yaw = player->GetEyeAngles().y;
+	auto inf = resolverInfo[idx];
+	auto rec = resolverRecord[idx];
 #pragma endregion
 
 #pragma region main-code
@@ -78,6 +79,18 @@ void cResolver::Run(IBasePlayer* player)
 		lby = eye_yaw; // just set it to eye yaw since they shot and eye yaw will be last angle :sunglasses:
 		resolverInfo[idx].m_iDesyncType = 10; //onshot   | CHANGE ME AFTER!
 		return;
+	}
+
+	for (int i = 0; i < player->GetNumAnimOverlays(); i++)
+	{
+		if (player->GetSequenceActivity(i) == 979)
+		{
+			resolverInfo[idx].m_iDesyncType = 7; // legit aa / forward / gay shit / ban them for being braindead and gay fuck you whore
+			lby = eye_yaw + 58.f * side;
+			return;
+		}
+		else
+			continue;
 	}
 
 	if (player->GetVelocity().Length2D() <= 0.1f)
@@ -95,19 +108,36 @@ void cResolver::Run(IBasePlayer* player)
 			resolverRecord[idx].m_bIsBreakingLby - false; // set it anyway just incase.
 		}
 	}
-	else if (player->GetVelocity().Length2D() > 10.f /*uhm im not sure, nobody slowwalks under 10 speed right??*/)
+	else if (player->GetVelocity().Length2D() > 10.f) /*uhm im not sure, nobody slowwalks under 10 speed right??*/
 	{
-		if (resolverRecord[idx].m_bIsBreakingLby)
-		{
-			resolverInfo[idx].m_iDesyncType = 3; // slowwalk breaking lby
-			lby = eye_yaw + 38.f * side;
-			resolverRecord[idx].m_bIsBreakingLby = false;
+		if (player->GetVelocity().Length2D() < 40.f) {
+			if (resolverRecord[idx].m_bIsBreakingLby)
+			{
+				resolverInfo[idx].m_iDesyncType = 3; // slowwalk breaking lby
+				lby = eye_yaw + 38.f * side;
+				resolverRecord[idx].m_bIsBreakingLby = false;
+			}
+			else
+			{
+				resolverInfo[idx].m_iDesyncType = 4; // slowwalk non lby
+				lby = eye_yaw + 30.f * side;
+				resolverRecord[idx].m_bIsBreakingLby = false; // again set it to false so the breaker check runs.
+			}
 		}
 		else
 		{
-			resolverInfo[idx].m_iDesyncType = 4; // slowwalk non lby
-			lby = eye_yaw + 30.f * side;
-			resolverRecord[idx].m_bIsBreakingLby = false; // again set it to false so the breaker check runs.
+			if (resolverRecord[idx].m_bIsBreakingLby)
+			{
+				resolverInfo[idx].m_iDesyncType = 5; // fastwalk breaking lby
+				lby = eye_yaw + 30.f * side;
+				resolverRecord[idx].m_bIsBreakingLby = false;
+			}
+			else
+			{
+				resolverInfo[idx].m_iDesyncType = 6; // fastwalk non lby
+				lby = eye_yaw + 25.f * side;
+				resolverRecord[idx].m_bIsBreakingLby = false; // again set it to false so the breaker check runs.
+			}
 		}
 	}
 

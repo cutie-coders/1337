@@ -131,6 +131,7 @@ bool __stdcall Hooked_CreateMove(float a, CUserCmd* cmd) {
 
 			g_EnginePrediction->update();
 			g_EnginePrediction->start(csgo->local, cmd);
+			// g_AntiAim->is_lby_update();
 			// c_Resolver->
 			// g_Resolver->StoreAntifreestand();
 
@@ -166,6 +167,7 @@ bool __stdcall Hooked_CreateMove(float a, CUserCmd* cmd) {
 			if (vars.antiaim.enable)
 			{
 				g_AntiAim->Run();
+				g_AntiAim->is_lby_update();
 				if (!g_AutoPeek->has_shot)
 					g_AntiAim->Sidemove();
 			}

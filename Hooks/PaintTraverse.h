@@ -26,9 +26,6 @@ void __stdcall Hooked_PaintTraverse(unsigned int vguiPanel, bool forceRepaint, b
 		for (int j = 0; j < 4; j++)
 			csgo->viewMatrix[i][j] = interfaces.engine->WorldToScreenMatrix()[i][j];
 
-	if (panel_name == HudZoom && vars.visuals.remove & 8)
-		return;
-
 	int width, height;
 	interfaces.engine->GetScreenSize(width, height);
 	if (width != previousWidth || height != previousHeight)
@@ -38,6 +35,9 @@ void __stdcall Hooked_PaintTraverse(unsigned int vguiPanel, bool forceRepaint, b
 		csgo->w = width;
 		csgo->h = height;
 	}
+
+	if (panel_name == HudZoom && vars.visuals.remove & 8)
+		return;
 
 	PaintTraverse(interfaces.v_panel, vguiPanel, forceRepaint, allowForce);
 

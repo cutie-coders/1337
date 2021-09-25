@@ -233,7 +233,7 @@ void CAnimationFix::animation_info::UpdateAnims(animation* record, animation* fr
 			record->didshot = record->last_shot_time > from->sim_time && record->last_shot_time <= record->sim_time
 			&& record->last_shot_time != came_from_dormant_time && from->last_shot_time != came_from_dormant_time;
 
-		record->resolver_mode = resolverInfo[player->GetIndex()].m_iDesyncType;
+		record->resolver_mode = std::to_string(resolverInfo[player->GetIndex()].m_iDesyncType);
 
 		const auto velocity_per_tick = (record->velocity - from->velocity) / ticks_to_simulate;
 		const auto duck_amount_per_tick = (record->duck - from->duck) / ticks_to_simulate;

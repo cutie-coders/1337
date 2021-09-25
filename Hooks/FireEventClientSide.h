@@ -145,7 +145,7 @@ void LogHits(IGameEvent* Event)
 				Message += HitgroupToName(hitgroup);
 			}
 
-			Message += health > 0 ? str(" for ") : str(" with damage at ");
+			Message += health > 0 ? str(" for ") : str(" and did ");
 			Message += Event->GetString(str("dmg_health"));
 			Message += str(" hp ");
 			if (health > 0) {

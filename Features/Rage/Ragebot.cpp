@@ -1646,7 +1646,7 @@ void CRagebot::Run()
 				ShotSnapshot* snapshot = new ShotSnapshot();
 				snapshot->entity = best_anims->player;
 				snapshot->hitbox_where_shot = HitboxToString(hitbox);
-				snapshot->resolver_mode = resolverInfo[best_anims->player->GetIndex()].m_iDesyncType;
+				snapshot->resolver_mode = std::to_string(resolverInfo[best_anims->player->GetIndex()].m_iDesyncType);
 				snapshot->time = TICKS_TO_TIME(csgo->fixed_tickbase);
 				snapshot->first_processed_time = 0.f;
 				snapshot->bullet_impact = false;
