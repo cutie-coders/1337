@@ -14,10 +14,21 @@ bool cResolver::IsBreakingLby(IBasePlayer* player)
 	if (!player)
 		return false;
 	CCSGOPlayerAnimState* state = player->GetPlayerAnimState();
+	float m_flNextBreakTime;
 	
 	//   No animstate      no previous simulationtime                      moving too fast to break lby :thinking:     // in air bruh.
-	if (!state || !player->GetOldSimulationTime() || player->GetVelocity().Length2D() > 0.1f || !(player->GetFlags() & FL_ONGROUND))
+	if (!state || !player->GetOldSimulationTime() || !(player->GetFlags() & FL_ONGROUND))
 		return false;
+
+	if (player->GetVelocity().Length2D() > 0.1f)
+		m_flNextBreakTime = csgo->curtime + .22f;
+
+	if (m_flNextBreakTime == csgo->curtime) {
+		resolverRecord[player->EntIndex()].m_flTimeSinceLastMove += 0.1f;
+		float to_ticks = TIME_TO_TICKS(resolverRecord[player->EntIndex()].m_flTimeSinceLastMove);
+		resolverRecord[player->EntIndex()].m_iTicksSinceLastMove = to_ticks;
+		resolverRecord[player->EntIndex()].m_bIsBreakingLby = true; return true;
+	}
 
 	resolverRecord[player->EntIndex()].m_flLastLowerBodyYaw = state->m_abs_yaw; // lmfao
 	resolverInfo[player->EntIndex()].m_flEyeYaw = state->m_eye_yaw;
@@ -38,7 +49,7 @@ bool cResolver::IsBreakingLby(IBasePlayer* player)
 	else
 	{
 		resolverInfo[player->EntIndex()].m_iDesyncType = 1; // non extended.
-		resolverInfo[player->EntIndex()].m_iSide = 0; // right side
+		resolverInfo[player->EntIndex()].m_iSide = 0; // middle side
 		resolverRecord[player->EntIndex()].m_bIsBreakingLby = false;
 	}
 	return false; // all checks failed.
@@ -57,74 +68,48 @@ void cResolver::Run(IBasePlayer* player)
 	auto state = player->GetPlayerAnimState();
 	float lby = resolverInfo[idx].m_flLowerBodyYaw;
 	float angle = 0.f;
+	float eye_yaw = player->GetEyeAngles().y;
 #pragma endregion
 
 #pragma region main-code
 
-	if (player->GetPlayerInfo().fakeplayer)
-		return; // dont resolve bots for fuck sake
-
-	if (player->GetEyeAngles().y == 0)
-		return;
-
-	if (!(player->GetFlags() & FL_ONGROUND))
+	if (player->GetWeapon()->GetLastShotTime() == player->GetSimulationTime() || player->GetWeapon()->LastShotTime() == player->GetSimulationTime())
 	{
-		if (player->GetVelocity().Length2D() > 0.1f && player->GetVelocity().Length2D() < 70.f) // scuffed but should work?
-			lby = state->m_eye_yaw * side; // if they're in air they probably dont have a lot of desync so no point trying to resolve them ykyk
-		else
-			lby = resolverInfo[idx].m_flEyeYaw + 13.f * side;
-		return; // lolw
-	}
-
-	if (player->GetVelocity().Length2D() > 0.1f && player->GetVelocity().Length2D() < 75.f)
-	{
-		if (player->GetVelocity().Length2D() >= 55.f)
-			lby = (resolverInfo[idx].m_flEyeYaw + 30.f) * side;
-		else
-			lby = (resolverInfo[idx].m_flEyeYaw + 45.f) * side;
+		lby = eye_yaw; // just set it to eye yaw since they shot and eye yaw will be last angle :sunglasses:
+		resolverInfo[idx].m_iDesyncType = 10; //onshot   | CHANGE ME AFTER!
 		return;
 	}
 
-	switch (resolverInfo[idx].m_iDesyncType)
+	if (player->GetVelocity().Length2D() <= 0.1f)
 	{
-	case 0: // extended
-		angle = 58.f;
-		break;
-	case 1: // non extended	
-		angle = 30.f; // idfk
-		break;
-	case 2: // sway
-		if (resolverRecord[idx].m_flLastLowerBodyYaw != resolverInfo[idx].m_flLowerBodyYaw)
-			angle = (resolverInfo[idx].m_flLowerBodyYaw + state->m_eye_yaw) - (resolverRecord[idx].m_flLastLowerBodyYaw + state->m_eye_yaw);
-		else
-			angle = resolverRecord[idx].m_flLastLowerBodyYaw;
-		break;
-	}
-
-	if (player->GetVelocity().Length2D() <= 0.1f && resolverRecord[idx].m_flLastLowerBodyYaw != resolverInfo[idx].m_flLowerBodyYaw)
-		resolverInfo[idx].m_iDesyncType = 2;
-	if (side > 0)
-	{
-		switch (missed % 5) // before you talk shit, no its not a fucking bruteforce resolver, ist just easier to keep track of players we're resolving by keeping it inside the switch case.
+		if (resolverRecord[idx].m_bIsBreakingLby)
 		{
-		case 0:
-		case 1:
-			lby = state->m_eye_yaw + angle * side;
-			break;
-		case 2: // after 2 misses we will just bruteforce them.
-			lby = state->m_eye_yaw + 35.f * side;
-			break;
-		case 3:
-			side = !side;
-			lby = state->m_eye_yaw + 25.f * side;
-			break;
-		case 4:
-			lby = state->m_eye_yaw + 45.f * side;
-			break;
+			resolverInfo[idx].m_iDesyncType = 1; // breaking lby
+			lby = eye_yaw + 58.f * side; // will be max * -1 / 1 so it will be left / right
+			resolverRecord[idx].m_bIsBreakingLby = false; // set it to false so the breaker code can run again and make sure that they are 100% breaking
+		}
+		else
+		{
+			resolverInfo[idx].m_iDesyncType = 2; // not breaking but not moving
+			lby = eye_yaw + 40.f * side;
+			resolverRecord[idx].m_bIsBreakingLby - false; // set it anyway just incase.
 		}
 	}
-	else
-		lby = state->m_eye_yaw; // center apparently :shrug:
+	else if (player->GetVelocity().Length2D() > 10.f /*uhm im not sure, nobody slowwalks under 10 speed right??*/)
+	{
+		if (resolverRecord[idx].m_bIsBreakingLby)
+		{
+			resolverInfo[idx].m_iDesyncType = 3; // slowwalk breaking lby
+			lby = eye_yaw + 38.f * side;
+			resolverRecord[idx].m_bIsBreakingLby = false;
+		}
+		else
+		{
+			resolverInfo[idx].m_iDesyncType = 4; // slowwalk non lby
+			lby = eye_yaw + 30.f * side;
+			resolverRecord[idx].m_bIsBreakingLby = false; // again set it to false so the breaker check runs.
+		}
+	}
 
 #pragma endregion
 }
