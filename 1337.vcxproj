@@ -22,6 +22,7 @@
     <ClInclude Include="Features\Rage\Autowall.h" />
     <ClInclude Include="Features\Rage\cresolver.h" />
     <ClInclude Include="Features\Rage\RageBackTracking.h" />
+    <ClInclude Include="IGrenadeWarning.h" />
     <ClInclude Include="Hooks\BeginFrame.h" />
     <ClInclude Include="bspflags.h" />
     <ClInclude Include="Features\Misc\Bunnyhop.h" />
@@ -195,6 +196,7 @@
     <ClCompile Include="duktape\duktape.c" />
     <ClCompile Include="Features\Misc\EnginePrediction.cpp" />
     <ClCompile Include="Features\Features.cpp" />
+    <ClCompile Include="IGrenadeWarning.cpp" />
     <ClCompile Include="Includes\fonts\SMALLEST_PIXEL-7.c" />
     <ClCompile Include="Features\Visuals\Glow.cpp" />
     <ClCompile Include="Features\Visuals\GrenadePrediction.cpp" />

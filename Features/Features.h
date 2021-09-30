@@ -24,7 +24,8 @@
 #include "Visuals/Glow.h"
 #include "Rage/RageBackTracking.h"
 #include "Rage/cresolver.h"
-
+#include "../IGrenadeWarning.h"
+extern IGrenadeWarning* GrenadePrediction;
 extern CCacheSystem*		g_Cache;
 extern CVisuals*			g_Visuals;
 extern CBunnyhop*			g_Bunnyhop;
@@ -49,4 +50,3 @@ extern CKnifebot*			g_Knifebot;
 extern CLegit*				g_Legit;
 extern CMenu*				g_Menu;
 extern CMisc*				g_Misc;
-extern cResolver*           c_Resolver;

@@ -1,30 +1,21 @@
 #include "../Features.h"
 
-void CAutopeek::GotoStart(CUserCmd* cur_cmd)
+void CAutopeek::GotoStart(CUserCmd* cmd)
 {
-    if (!cur_cmd) {
-        cur_cmd = csgo->cmd;
-    }
-
-    float wish_yaw = csgo->original.y;
+    static auto cl_forwardspeed = interfaces.cvars->FindVar("cl_forwardspeed");
+    auto wish_yaw = csgo->original.y;
     auto difference = csgo->local->GetRenderOrigin() - quickpeekstartpos;
-
-    const auto chocked_ticks = (cur_cmd->command_number % 2) != 1 
-        ? (14 - csgo->client_state->iChokedCommands) : csgo->client_state->iChokedCommands;
-
-    static auto cl_forwardspeed = interfaces.cvars->FindVar(str("cl_forwardspeed"));
-
     if (difference.Length2D() > 5.0f)
     {
-        auto angle = Math::CalculateAngle(csgo->local->GetRenderOrigin(), quickpeekstartpos);
-        csgo->original.y = angle.y;
+        auto velocity = Vector(difference.x * cos(wish_yaw / 180.0f * PI) + difference.y * sin(wish_yaw / 180.0f * PI), difference.y * cos(wish_yaw / 180.0f * PI) - difference.x * sin(wish_yaw / 180.0f * PI), difference.z);
+        cmd->forwardmove = clamp(-velocity.x * 1000.0f, -cl_forwardspeed->GetFloat(), cl_forwardspeed->GetFloat());
+        cmd->sidemove = clamp(velocity.y * 1000.0f, -cl_forwardspeed->GetFloat(), cl_forwardspeed->GetFloat());
 
-        cur_cmd->forwardmove = cl_forwardspeed->GetFloat() - (1.2f * chocked_ticks);
-        cur_cmd->sidemove = 0.0f;
     }
     else {
         Reset();
     }
+    
 }
 
 void CAutopeek::Draw()
@@ -43,20 +34,22 @@ void CAutopeek::Draw()
 
     if (quickpeekstartpos != Vector{ 0, 0, 0 })
     {
-        static constexpr float Step = PI * 2.0f / 60;
-        std::vector<ImVec2> points;
-        for (float lat = 0.f; lat <= PI * 2.0f; lat += Step)
-        {
-            const auto& point3d = Vector(sin(lat), cos(lat), 0.f) * 25.f;
-            Vector point2d;
-            if (Math::WorldToScreen(quickpeekstartpos + point3d, point2d))
-                points.push_back(ImVec2(point2d.x, point2d.y));
-        }
-        auto flags_backup = g_Render->_drawList->Flags;
-        g_Render->_drawList->Flags |= ImDrawListFlags_AntiAliasedFill;
-        g_Render->_drawList->AddConvexPolyFilled(points.data(), points.size(), color_t(20, 20, 20, 127).u32());
-        g_Render->_drawList->AddPolyline(points.data(), points.size(), color_t(255, 255, 255, 127).u32(), true, 2.f);
-        g_Render->_drawList->Flags = flags_backup;
+        static auto FilledCircle = [](Vector location, float radius, color_t Col, float pAlpha) {
+            static constexpr float Step = PI * 2.0f / 60;
+            std::vector<ImVec2> points;
+            for (float lat = 0.f; lat <= PI * 2.0f; lat += Step)
+            {
+                const auto& point3d = Vector(sin(lat), cos(lat), 0.f) * radius;
+                Vector point2d;
+                if (Math::WorldToScreen(location + point3d, point2d))
+                    points.push_back(ImVec2(point2d.x, point2d.y));
+            }
+            g_Render->_drawList->AddConvexPolyFilled(points.data(), points.size(), color_t(Col[0],
+                Col[1], Col[2], (pAlpha / 255) * 80).u32());
+            g_Render->_drawList->AddPolyline(points.data(), points.size(), color_t(Col[0],
+                Col[1], Col[2], (pAlpha / 255) * 120).u32(), true, 3.5f);
+        };
+        FilledCircle(quickpeekstartpos, 20.f, color_t(170, 170, 255, 255), 255);
     }
     csgo->mtx.unlock();
 }
@@ -76,7 +69,7 @@ void CAutopeek::Run()
             has_shot = true;
 
         if (has_shot)
-            GotoStart();
+            GotoStart(csgo->cmd);
     }
     else {
         Reset();

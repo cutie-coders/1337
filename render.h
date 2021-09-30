@@ -29,6 +29,7 @@ struct vertex
 
 namespace fonts
 {
+	extern ImFont* keybindsBig;
 	extern ImFont* esp_name;
 	extern ImFont* esp_info;
 	extern ImFont* esp_logs;
@@ -37,6 +38,7 @@ namespace fonts
 	extern ImFont* menu_desc;
 	extern ImFont* very_small;
 	extern ImFont* esp_icons;
+	extern ImFont* Thingg;
 	extern ImFont* esp_icons_big;
 	extern std::map<uint32_t, ImFont*> js_fonts;
 }
@@ -49,7 +51,7 @@ namespace render {
 		centered_y = 1 << 2,
 		dropshadow = 1 << 3,
 	};
-	void Render3DCircle(IDirect3DDevice9* dev, Vector center, float radius, color_t outer, color_t inner);
+	
 }
 
 class ImGuiRendering {
@@ -59,7 +61,7 @@ public:
 	void __stdcall PreRender(IDirect3DDevice9* device);
 	void __stdcall EndPresent(IDirect3DDevice9* device);
 	void __stdcall SetupPresent(IDirect3DDevice9* device);
-
+	void PolyGradient(std::vector<Vector2D> Points, Vector2D Center, color_t outer, color_t inner);
 	void DrawEspBox(Vector leftUpCorn, Vector rightDownCorn, color_t clr, float width);
 	void DrawLine(float x1, float y1, float x2, float y2, color_t clr, float thickness = 1.f);
 	void DrawLineGradient(float x1, float y1, float x2, float y2, color_t clr1, color_t cl2, float thickness = 1.f);
@@ -72,6 +74,10 @@ public:
 	void CircleFilled(float x1, float y1, float radius, color_t col, int segments);
 	void DrawString(float x, float y, color_t color, int flags, ImFont* font, const char* message, ...);
 	void Arc(float x, float y, float radius, float min_angle, float max_angle, color_t col, float thickness = 1.f);
+	void PArc(float X, float Y, float radius, float Angle1, float Angle2, float Thickness, color_t color);
+	void GradientCircle(Vector2D center, float radius, color_t color1, color_t color2);
+	void Render3DCircle(Vector center, float radius, color_t outer, color_t inner);
+	void Render3DPolyObject(Vector center, std::vector<Vector> in, color_t outer, color_t inner);
 	IDirect3DDevice9* GetDevice() {
 		return m_pDevice;
 	}

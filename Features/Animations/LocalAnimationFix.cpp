@@ -35,15 +35,15 @@ void CAnimationFix::UpdateFakeState()
 
 	if (FakeAnimstate->m_last_update_frame == interfaces.global_vars->framecount)
 		FakeAnimstate->m_last_update_frame -= 1;
-
-	CAnimationLayer layers[13] = {};
-	std::array<float, 24> poses = {};
-
-	csgo->local->ParseAnimOverlays(layers);
-	csgo->local->ParsePoseParameter(poses);
-
 	if (csgo->send_packet)
 	{
+		CAnimationLayer layers[13] = {};
+		std::array<float, 24> poses = {};
+
+		csgo->local->ParseAnimOverlays(layers);
+		csgo->local->ParsePoseParameter(poses);
+
+
 		csgo->local->UpdateAnimationState(FakeAnimstate, csgo->FakeAngle); // update animstate
 
 		csgo->local->InvalidateBoneCache();
@@ -57,11 +57,14 @@ void CAnimationFix::UpdateFakeState()
 			i[1][3] -= csgo->local->GetRenderOrigin().y;
 			i[2][3] -= csgo->local->GetRenderOrigin().z;
 		}
+		if (vars.misc.slidewalk == 2) {
+			poses[PLAYER_POSE_PARAM_LEAN_YAW] = 0.f;
+			//poses[PLAYER_POSE_PARAM_STRAFE_DIR] = 0.f;
+		}
+
+		csgo->local->SetAnimOverlays(layers);
+		csgo->local->SetPoseParameter(poses);
 	}
-
-	csgo->local->SetAnimOverlays(layers);
-	csgo->local->SetPoseParameter(poses);
-
 	csgo->animstate = FakeAnimstate;
 }
 
@@ -117,6 +120,15 @@ void CAnimationFix::UpdateRealState() {
 
 		if (FakeAnimstate && RealAnimstate)
 			csgo->desync_angle = clamp(Math::NormalizeYaw(Math::AngleDiff(FakeAnimstate->m_abs_yaw, RealAnimstate->m_abs_yaw)), -58.f, 58.f);
+
+		if (vars.misc.slidewalk == 2) {
+			csgo->poses[PLAYER_POSE_PARAM_LEAN_YAW] = 0.f;
+		}
+		else if (vars.misc.slidewalk == 3) {
+			if (csgo->LegSwitch) {
+				csgo->poses[PLAYER_POSE_PARAM_LEAN_YAW] = 0.f;
+			}
+		}
 	}
 
 	csgo->layers[12].m_flWeight = FLT_EPSILON;

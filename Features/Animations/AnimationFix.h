@@ -7,6 +7,41 @@
 #define LEFT_SIDE 0
 #define RIGHT_SIDE 1
 
+enum DesyncType {
+	NONE = 0,
+	MOVING,
+	LBYREVERSE,
+	LBY,
+	LOWDELTABRUTEFORCE,
+	INAIR,
+	SLOWWALK
+};
+struct History
+{
+	bool Sway;
+	bool BreakLBY;
+};
+struct Info
+{
+
+	float ResolvedLowerBodyAngle;
+	float FixedLowerBodyYaw;
+	DesyncType DesyncType;
+	int ChokedTicks;
+	float LowerBodyYaw;
+	float EyeYaw;
+	int Side;
+	int LastMissed;
+	int CurrentMiss;
+	bool Resolved;
+	float Relative;
+	float DesyncDelta;
+};
+
+
+extern Info resolverInfo[64];
+extern History resolverRecord[64];
+
 struct animation
 {
 	animation() = default;
@@ -70,6 +105,14 @@ struct animation
 class CAnimationFix
 {
 public:
+
+
+
+	void Resolve(IBasePlayer* player);
+
+	float GetBackwardYaw(IBasePlayer*);
+
+
 	struct animation_info {
 		animation_info(IBasePlayer* player, std::deque<animation> animations)
 			: player(player), frames(std::move(animations)), last_spawn_time(0) { }

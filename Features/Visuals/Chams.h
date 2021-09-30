@@ -23,10 +23,11 @@ private:
         DrawModelState_t state;
         matrix pBoneToWorld[128] = {};
         float time;
+        float alpha;
         matrix model_to_world;
     };
     std::deque<CHitMatrixEntry> m_Hitmatrix;
-
+    std::deque<CHitMatrixEntry> m_DeathMatrix;
     IMaterial* GetMaterial(int index);
 
     bool DrawChams(const chams_t& chams_data, matrix* mat, bool ignore_z,
@@ -38,6 +39,7 @@ private:
     );
 
 public:
+    void AddDeathmatrix(animation* record);
     void AddHitmatrix(animation* record);
     void OnPostScreenEffects();
     bool ShouldDraw(DrawModelExecuteFn original,

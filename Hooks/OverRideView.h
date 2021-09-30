@@ -99,8 +99,40 @@ void __stdcall Hooked_OverrideView(void* pSetup)
 			if (vars.visuals.remove & 1)
 				Setup->angles -= csgo->local->GetPunchAngle() * 0.9f + csgo->local->GetViewPunchAngle();
 
-			g_GrenadePrediction->View(Setup);
+			//g_GrenadePrediction->View();
+			if (vars.visuals.nadepred) {
+				
+				if (csgo->local && csgo->local->isAlive())
+				{
+					IBaseCombatWeapon* weapon = csgo->local->GetWeapon();
 
+					if (weapon && weapon->IsNade())
+					{
+						if (csgo->cmd->buttons & IN_ATTACK) {
+							csgo->LocalGrenadePrediction.ThrowTime = interfaces.global_vars->realtime;
+						}
+						if (interfaces.global_vars->realtime < csgo->LocalGrenadePrediction.ThrowTime + 0.15f) {
+							csgo->LocalGrenadePrediction.Finished = false;
+							csgo->LocalGrenadePrediction.Valid = true;
+							Vector VA;
+							interfaces.engine->GetViewAngles(VA);
+							csgo->LocalGrenadePrediction.Type = csgo->local->GetWeapon()->GetItemDefinitionIndex();
+							GrenadePrediction->View(csgo->unpred_eyepos, csgo->local->GetVelocity(), VA, csgo->local->GetWeapon()->GetItemDefinitionIndex());
+							csgo->LocalGrenadePrediction.EndPos = GrenadePrediction->EndPos;
+							csgo->LocalGrenadePrediction.Path = GrenadePrediction->path;
+							csgo->LocalGrenadePrediction.Bounce = GrenadePrediction->bounces;
+						}
+						else
+							csgo->LocalGrenadePrediction.Valid = false;
+					}
+					else
+						csgo->LocalGrenadePrediction.Valid = false;
+				}
+				else
+					csgo->LocalGrenadePrediction.Valid = false;
+			}
+			else
+				csgo->LocalGrenadePrediction.Valid = false;
 			if (csgo->zoom_level > 0)
 				Setup->fov = (90.f + fov_addition - (50.f * (vars.misc.zoomfov / 100.f))) / csgo->zoom_level;
 			else

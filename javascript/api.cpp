@@ -128,22 +128,13 @@ namespace js_variables {
 
 		// anti-aims
 		bools[str("antiaim.enable")] = &vars.antiaim.enable;
-		bools[str("antiaim.attarget")] = &vars.antiaim.attarget;
-		bools[str("antiaim.attarget_off_when_offsreen")] = &vars.antiaim.attarget_off_when_offsreen;
-		bools[str("antiaim.aa_on_use")] = &vars.antiaim.aa_on_use;
-		bools[str("antiaim.fakelag_when_standing")] = &vars.antiaim.fakelag_when_standing;
-		bools[str("antiaim.fakelag_when_exploits")] = &vars.antiaim.fakelag_when_exploits;
-		bools[str("antiaim.fakelag_on_peek")] = &vars.antiaim.fakelag_on_peek;
-		bools[str("antiaim.manual_antiaim")] = &vars.antiaim.manual_antiaim;
-		bools[str("antiaim.ignore_attarget")] = &vars.antiaim.ignore_attarget;
+	
 
 		ints[str("antiaim.pitch")] = &vars.antiaim.pitch;
 		ints[str("antiaim.yaw")] = &vars.antiaim.yaw;
-		ints[str("antiaim.desync_direction")] = &vars.antiaim.desync_direction;
-		ints[str("antiaim.desync_amount")] = &vars.antiaim.desync_amount;
-		ints[str("antiaim.fakelag")] = &vars.antiaim.fakelag;
-		ints[str("antiaim.fakelagfactor")] = &vars.antiaim.fakelagfactor;
-		ints[str("antiaim.jitter_angle")] = &vars.antiaim.jitter_angle;
+
+
+
 
 		bools[str("misc.bunnyhop")] = &vars.misc.bunnyhop;
 		bools[str("misc.autostrafe")] = &vars.misc.autostrafe;

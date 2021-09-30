@@ -60,15 +60,24 @@ void __vectorcall Hooked_CLMove(float flAccumulatedExtraSamples, bool bFinalTick
 {
 	static auto original = hooker::h.original(&Hooked_CLMove);
 
-	if (!csgo->local->isAlive())
+	if (!csgo->local->isAlive()) {
 		return original(flAccumulatedExtraSamples, bFinalTick);
-	while (csgo->cl_move_shift > 0)
-	{
-		original(flAccumulatedExtraSamples, bFinalTick);
-		csgo->cl_move_shift--;
 	}
 
-	original(flAccumulatedExtraSamples, bFinalTick);
+	if (csgo->clskip > 0) {
+		csgo->clskip--;
+		return;
+	}
+
+	while (csgo->cl_move_shift > 0)
+	{
+		csgo->cl_move_shift--;
+		original(flAccumulatedExtraSamples, csgo->cl_move_shift == 0);
+		if (csgo->cl_move_shift <= 0)
+			return;
+	}
+
+	return original(flAccumulatedExtraSamples, bFinalTick);
 }
 
 //void __vectorcall Hooked_CLMove(float flAccumulatedExtraSamples, bool bFinalTick)

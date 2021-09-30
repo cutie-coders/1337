@@ -5,11 +5,11 @@
 #define PI			3.14159265358979323846
 #define DEG2RAD(x) ((float)(x) * (float)((float)(PI) / 180.0f))
 #define RAD2DEG(x) ((float)(x) * (float)(180.0f / (float)(PI)))
-
+typedef std::vector<Vector> Matrix;
 namespace Math
 {
-
-
+	bool WorldToScreen3(Vector& in, Vector& out);
+	Matrix WrapPoints(Matrix& points);
 	RECT GetViewport();
 	__forceinline void AngleMatrix(const Vector &angles, matrix& matrix);
 	void ConcatTransforms(const matrix& in1, const matrix& in2, matrix& out);

@@ -133,7 +133,7 @@ bool __fastcall Hooked_WriteUsercmdDeltaToBuffer(void* ecx, void*, int slot, bf_
 		|| csgo->local->GetFlags() & FL_FROZEN)
 		return original_fn(ecx, slot, buf, from, to, isnewcommand);
 
-	if (!csgo->shift_amount)
+	if (!csgo->PPShift)
 		return original_fn(ecx, slot, buf, from, to, isnewcommand);
 
 	if (from != -1)
@@ -145,8 +145,8 @@ bool __fastcall Hooked_WriteUsercmdDeltaToBuffer(void* ecx, void*, int slot, bf_
 
 	auto next_cmd_nr = csgo->client_state->nLastOutgoingCommand + csgo->client_state->iChokedCommands + 1;
 
-	auto total_new_commands = std::clamp(csgo->shift_amount, 0, 16);
-	csgo->shift_amount -= total_new_commands;
+	auto total_new_commands = std::clamp(csgo->PPShift, 0, 16);
+	csgo->PPShift -= total_new_commands;
 
 	from = -1;
 

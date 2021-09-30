@@ -24,7 +24,7 @@ void CGlow::Draw()
 					vars.visuals.local_glow_clr[2] / 255.f
 				);
 				if (vars.visuals.glowtype == 1)
-					glow_object->m_bPulsatingChams = true;
+					glow_object->m_nRenderStyle = 1;
 				glow_object->m_flGlowAlpha = vars.visuals.local_glow_clr[3] / 255.f;
 				glow_object->m_bRenderWhenOccluded = true;
 				glow_object->m_bRenderWhenUnoccluded = false;
@@ -44,7 +44,7 @@ void CGlow::Draw()
 				vars.visuals.glow_color[2] / 255.f
 			);
 			if (vars.visuals.glowtype == 1)
-				glow_object->m_bPulsatingChams = true;
+				glow_object->m_nRenderStyle = 1;
 			glow_object->m_flGlowAlpha = vars.visuals.glow_color[3] / 255.f;
 			glow_object->m_bRenderWhenOccluded = true;
 			glow_object->m_bRenderWhenUnoccluded = false;

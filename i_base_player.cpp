@@ -539,6 +539,16 @@ Vector& IBasePlayer::GetVecViewOffset()
 	return *(Vector*)((DWORD)this + iOffset);
 }
 
+void IBasePlayer::SetFloat(float R, const char* A, const char* B) {
+	static int iOffset = netvars.GetOffset(A, B);
+	*(float*)((DWORD)this + iOffset) = R;
+}
+
+int IBasePlayer::GetInt(const char* A, const char* B) {
+	static int iOffset = netvars.GetOffset(A, B);
+	return *(int*)((DWORD)this + iOffset);
+}
+
 float& IBasePlayer::GetDuckSpeed()
 {
 	static auto m_flDuckSpeed = netvars.GetOffset(hs::DT_CSPlayer.s().c_str(), hs::m_flDuckSpeed.s().c_str());

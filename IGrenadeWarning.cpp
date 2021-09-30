@@ -1,113 +1,30 @@
-#include "GrenadePrediction.h"
+#include "IGrenadeWarning.h"
 
-void CGrenadePrediction::Tick(int buttons)
+
+
+void IGrenadeWarning::View(Vector& source, Vector& Vec, Vector& EyeAng,int Type)
 {
-	if (!vars.visuals.nadepred)
-		return;
-	bool in_attack = buttons & IN_ATTACK;
-	bool in_attack2 = buttons & IN_ATTACK2;
-
-	act = (in_attack && in_attack2) ? ACT_LOB :
-		(in_attack2) ? ACT_DROP :
-		(in_attack) ? ACT_THROW :
-		ACT_NONE;
-}
-
-void CGrenadePrediction::View()
-{
-	if (!vars.visuals.nadepred)
-		return;
-
 	if (csgo->local && csgo->local->isAlive())
 	{
-		IBaseCombatWeapon* weapon = csgo->local->GetWeapon();
+		Source = source;
+		Velocity = Vec;
+		Direction = EyeAng;
 
-		if (weapon && weapon->IsNade() && act != ACT_NONE)
-		{
-			type = weapon->GetItemDefinitionIndex();
-			Simulate();
-		}
-		else
-		{
-			type = 0;
-		}
+
+		
+		type = Type;
+		Simulate();
+	
 	}
 }
 
-void CGrenadePrediction::ParseInfo() {
-	if (!csgo->is_local_alive)
-		return;
 
-	if (!vars.visuals.nadepred)
-		return;
 
-	csgo->mtx.lock();
 
-	render_info.path.clear();
 
-	if ((type) && !(path.empty())) {
-		Vector prev = path[0];
-
-		render_info.type = type;
-		render_info.path.push_back(prev);
-
-		for (auto it = path.begin(), end = path.end(); it != end; ++it)
-		{
-			render_info.path.push_back(*it);
-			prev = *it;
-		}
-	}
-	csgo->mtx.unlock();
-}
-
-void CGrenadePrediction::Paint()
+void IGrenadeWarning::Setup(Vector& vecSrc, Vector& vecThrow, Vector viewangles)
 {
-	if (!vars.visuals.nadepred) {
-		return;
-	}
-	csgo->mtx.lock();
-	auto flags_backup = g_Render->_drawList->Flags;
-	g_Render->_drawList->Flags |= ImDrawListFlags_AntiAliasedFill | ImDrawListFlags_AntiAliasedLines;
 
-	std::vector<ImVec2> pts = {};
-	std::vector<ImVec2> shadow_pts = {};
-
-	pts.clear();
-	shadow_pts.clear();
-
-	if ((render_info.type) && !(render_info.path.empty()))
-	{
-		Vector nadeStart, nadeEnd;
-
-		Vector prev = render_info.path[0];
-
-		for (const auto &it : render_info.path)
-		{
-			if (Math::WorldToScreen(prev, nadeStart) && Math::WorldToScreen(it, nadeEnd))
-			{
-				pts.push_back(ImVec2(nadeEnd.x, nadeEnd.y));
-				shadow_pts.push_back(ImVec2(nadeEnd.x + 1, nadeEnd.y + 1));
-			}
-			prev = it;
-		}
-
-		if (!shadow_pts.empty())
-			g_Render->_drawList->AddPolyline(shadow_pts.data(), shadow_pts.size(), vars.visuals.nadepred_color.u32() & IM_COL32_A_MASK, false, 1.5f);
-
-		if (!pts.empty())
-			g_Render->_drawList->AddPolyline(pts.data(), pts.size(), vars.visuals.nadepred_color.u32(), false, 1.5f);
-
-		g_Render->CircleFilled(nadeEnd.x, nadeEnd.y, 5, color_t(0, 0, 0, vars.visuals.nadepred_color.get_alpha()), 20);
-		g_Render->CircleFilled(nadeEnd.x, nadeEnd.y, 4, vars.visuals.nadepred_color, 20);
-	}
-	g_Render->_drawList->Flags = flags_backup;
-	csgo->mtx.unlock();
-}
-
-void CGrenadePrediction::Setup(Vector& vecSrc, Vector& vecThrow, Vector viewangles)
-{
-	if (!vars.visuals.nadepred)
-		return;
 
 	Vector angThrow = viewangles;
 	float pitch = angThrow.x;
@@ -132,8 +49,8 @@ void CGrenadePrediction::Setup(Vector& vecSrc, Vector& vecThrow, Vector viewangl
 
 	// Do magic on member of grenade object [esi+9E4h]
 	// m1=1  m1+m2=0.5  m2=0
-	static const float power[] = { 1.0f, 1.0f, 0.5f, 0.0f };
-	float b = power[act];
+
+	float b = 1.0f;
 	// Clamped to [0,1]
 	b = b * 0.7f;
 	b = b + 0.3f;
@@ -142,8 +59,8 @@ void CGrenadePrediction::Setup(Vector& vecSrc, Vector& vecThrow, Vector viewangl
 	Vector vForward, vRight, vUp;
 	Math::AngleVector4(angThrow, vForward, vRight, vUp); //angThrow.ToVector(vForward, vRight, vUp);
 
-	vecSrc = csgo->unpred_eyepos;
-	float off = (power[act] * 12.0f) - 12.0f;
+	vecSrc = Source;
+	float off = (12.0f) - 12.0f;
 	vecSrc.z += off;
 
 	// Game calls UTIL_TraceHull here with hull and assigns vecSrc tr.endpos
@@ -160,16 +77,15 @@ void CGrenadePrediction::Setup(Vector& vecSrc, Vector& vecThrow, Vector viewangl
 	vecSrc -= vecBack;
 
 	// Finally calculate velocity
-	vecThrow = csgo->local->GetVelocity(); vecThrow *= 1.25f;
+	vecThrow = Velocity; vecThrow *= 1.25f;
 	vecThrow += vForward * flVel; //	vecThrow.MultAdd(vForward, flVel);
 }
 
-void CGrenadePrediction::Simulate()
+void IGrenadeWarning::Simulate()
 {
-	if (!vars.visuals.nadepred)
-		return;
+
 	Vector vecSrc, vecThrow;
-	Vector angles; interfaces.engine->GetViewAngles(angles);
+	Vector angles = Direction;
 	Setup(vecSrc, vecThrow, angles);
 
 	float interval = interfaces.global_vars->interval_per_tick;
@@ -178,7 +94,7 @@ void CGrenadePrediction::Simulate()
 	int logstep = static_cast<int>(0.05f / interval);
 	int logtimer = 0;
 
-
+	bounces.clear();
 	path.clear();
 	for (unsigned int i = 0; i < path.max_size() - 1; ++i)
 	{
@@ -193,9 +109,10 @@ void CGrenadePrediction::Simulate()
 		else ++logtimer;
 	}
 	path.push_back(vecSrc);
+	EndPos = vecSrc;
 }
 
-int CGrenadePrediction::Step(Vector& vecSrc, Vector& vecThrow, int tick, float interval)
+int IGrenadeWarning::Step(Vector& vecSrc, Vector& vecThrow, int tick, float interval)
 {
 
 	// Apply gravity
@@ -218,6 +135,7 @@ int CGrenadePrediction::Step(Vector& vecSrc, Vector& vecThrow, int tick, float i
 	{
 		result |= 2; // Collision!
 		ResolveFlyCollisionCustom(tr, vecThrow, interval);
+		bounces.push_back(tr.endpos);
 	}
 
 	// Set new position
@@ -226,7 +144,7 @@ int CGrenadePrediction::Step(Vector& vecSrc, Vector& vecThrow, int tick, float i
 	return result;
 }
 
-bool CGrenadePrediction::CheckDetonate(const Vector& vecThrow, const trace_t& tr, int tick, float interval)
+bool IGrenadeWarning::CheckDetonate(const Vector& vecThrow, const trace_t& tr, int tick, float interval)
 {
 	switch (type)
 	{
@@ -257,10 +175,9 @@ bool CGrenadePrediction::CheckDetonate(const Vector& vecThrow, const trace_t& tr
 	}
 }
 
-void CGrenadePrediction::TraceHull(Vector& src, Vector& end, trace_t& tr)
+void IGrenadeWarning::TraceHull(Vector& src, Vector& end, trace_t& tr)
 {
-	if (!vars.visuals.nadepred)
-		return;
+
 	Ray_t ray;
 	ray.Init(src, end, Vector(-2.0f, -2.0f, -2.0f), Vector(2.0f, 2.0f, 2.0f));
 
@@ -271,35 +188,33 @@ void CGrenadePrediction::TraceHull(Vector& src, Vector& end, trace_t& tr)
 	interfaces.trace->TraceRay(ray, 0x200400B, &filter, &tr);
 }
 
-void CGrenadePrediction::AddGravityMove(Vector& move, Vector& vel, float frametime, bool onground)
+void IGrenadeWarning::AddGravityMove(Vector& move, Vector& Velocity, float frametime, bool onground)
 {
-	if (!vars.visuals.nadepred)
-		return;
+
 	Vector basevel(0.0f, 0.0f, 0.0f);
 
-	move.x = (vel.x + basevel.x) * frametime;
-	move.y = (vel.y + basevel.y) * frametime;
+	move.x = (Velocity.x + basevel.x) * frametime;
+	move.y = (Velocity.y + basevel.y) * frametime;
 
 	if (onground)
 	{
-		move.z = (vel.z + basevel.z) * frametime;
+		move.z = (Velocity.z + basevel.z) * frametime;
 	}
 	else
 	{
 		// Game calls GetActualGravity( this );
 		float gravity = 800.0f * 0.4f;
 
-		float newZ = vel.z - (gravity * frametime);
-		move.z = ((vel.z + newZ) / 2.0f + basevel.z) * frametime;
+		float newZ = Velocity.z - (gravity * frametime);
+		move.z = ((Velocity.z + newZ) / 2.0f + basevel.z) * frametime;
 
-		vel.z = newZ;
+		Velocity.z = newZ;
 	}
 }
 
-void CGrenadePrediction::PushEntity(Vector& src, const Vector& move, trace_t& tr)
+void IGrenadeWarning::PushEntity(Vector& src, const Vector& move, trace_t& tr)
 {
-	if (!vars.visuals.nadepred)
-		return;
+
 	Vector vecAbsEnd = src;
 	vecAbsEnd += move;
 
@@ -307,10 +222,9 @@ void CGrenadePrediction::PushEntity(Vector& src, const Vector& move, trace_t& tr
 	TraceHull(src, vecAbsEnd, tr);
 }
 
-void CGrenadePrediction::ResolveFlyCollisionCustom(trace_t& tr, Vector& vecVelocity, float interval)
+void IGrenadeWarning::ResolveFlyCollisionCustom(trace_t& tr, Vector& vecVelocity, float interval)
 {
-	if (!vars.visuals.nadepred)
-		return;
+
 	// Calculate elasticity
 	float flSurfaceElasticity = 1.0;  // Assume all surfaces have the same elasticity
 	float flGrenadeElasticity = 0.45f; // GetGrenadeElasticity()
@@ -347,7 +261,7 @@ void CGrenadePrediction::ResolveFlyCollisionCustom(trace_t& tr, Vector& vecVeloc
 	}
 }
 
-int CGrenadePrediction::PhysicsClipVelocity(const Vector& in, const Vector& normal, Vector& out, float overbounce)
+int IGrenadeWarning::PhysicsClipVelocity(const Vector& in, const Vector& normal, Vector& out, float overbounce)
 {
 	static const float STOP_EPSILON = 0.1f;
 

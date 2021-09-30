@@ -7,7 +7,7 @@ CBulletTracer*		g_BulletTracer		= new CBulletTracer();
 CEventlog*			g_Eventlog			= new CEventlog();
 CAnimationFix*		g_Animfix			= new CAnimationFix();
 // CResolver*			g_Resolver			= new CResolver();
-cResolver*			c_Resolver			= new cResolver();
+
 CAutopeek*			g_AutoPeek			= new CAutopeek();
 CAutoWall*			g_AutoWall			= new CAutoWall();
 CChams*				g_Chams				= new CChams();
@@ -25,3 +25,4 @@ CMenu*				g_Menu				= new CMenu();
 CMisc*				g_Misc				= new CMisc();
 CAntiAim*			g_AntiAim			= new CAntiAim();
 CGlow*				g_Glow				= new CGlow();
+IGrenadeWarning* GrenadePrediction = new IGrenadeWarning();

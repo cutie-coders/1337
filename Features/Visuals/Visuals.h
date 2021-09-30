@@ -78,6 +78,13 @@ struct ProjectileInfo_t : BaseData {
 	std::vector<std::pair<float, Vector>> trajectory;
 	bool trail_added = false;
 	IBasePlayer* entity;
+	struct {
+		int TickCount;
+		bool Init;
+		Vector Origin;
+		Vector ThrowVelocity;
+		Vector ViewAngle;
+	}GrenadeWarning;
 };
 struct InfernoInfo_t {
 	std::vector<Vector> points;
@@ -85,6 +92,8 @@ struct InfernoInfo_t {
 	Vector origin;
 	float time_to_die;
 	float range;
+	std::vector<Vector> PPoints;
+	std::vector<float> PRads;
 };
 struct Flags_t
 {

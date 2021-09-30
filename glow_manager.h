@@ -31,7 +31,7 @@ public:
 		bool m_bRenderWhenUnoccluded;
 		bool m_bFullBloomRender;
 		uint8_t pad_0027[5];
-		int32_t m_bPulsatingChams;
+		int m_nRenderStyle;
 		int32_t m_nSplitScreenSlot;
 		
 

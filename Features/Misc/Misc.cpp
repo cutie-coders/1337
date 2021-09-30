@@ -42,65 +42,160 @@ void CMisc::PreverseKillFeed(bool roundStart)
 	}
 }
 
-void CMisc::FixMovement(CUserCmd* cmd, Vector& ang)
-{
-	if (!csgo->local)
+void CMisc::FixMovement(CUserCmd* cmd, Vector& ang) {
+
+	static auto ResetKeys = []() -> void {
+		csgo->cmd->buttons &= ~IN_RIGHT;
+		csgo->cmd->buttons &= ~IN_MOVERIGHT;
+		csgo->cmd->buttons &= ~IN_LEFT;
+		csgo->cmd->buttons &= ~IN_MOVELEFT;
+		csgo->cmd->buttons &= ~IN_FORWARD;
+		csgo->cmd->buttons &= ~IN_BACK;
+	};
+
+	static auto QuickStop = [](CUserCmd* cmd) -> void {
+		auto wpn_info = csgo->weapon->GetCSWpnData();
+		bool pressed_move_key = cmd->buttons & IN_FORWARD || cmd->buttons & IN_MOVELEFT || cmd->buttons & IN_BACK || cmd->buttons & IN_MOVERIGHT || cmd->buttons & IN_JUMP;
+		if (!wpn_info)
+			return;
+		if (pressed_move_key)
+			return;
+		auto velocity = csgo->local->GetVelocity();
+		float speed = velocity.Length2D();
+
+		if (speed > 15.f) {
+			Vector direction;
+			Math::VectorAngles(velocity, direction);
+			direction.y = csgo->original.y - direction.y;
+			Vector forward;
+			Math::AngleVectors(direction, forward);
+			static const auto cl_sidespeed = interfaces.cvars->FindVar("cl_forwardspeed");
+			Vector negated_direction = forward * -(cl_sidespeed->GetFloat());
+
+			csgo->cmd->forwardmove = negated_direction.x;
+
+
+			csgo->cmd->sidemove = negated_direction.y;
+
+		}
+	};
+
+	QuickStop(csgo->cmd);
+	g_AutoPeek->Run();
+	Vector real_viewangles;
+	interfaces.engine->GetViewAngles(real_viewangles);
+
+	Vector vecMove(csgo->cmd->forwardmove, csgo->cmd->sidemove, csgo->cmd->upmove);
+	float speed = sqrt(vecMove.x * vecMove.x + vecMove.y * vecMove.y);
+
+	Vector angMove;
+	Math::VectorAngles(vecMove, angMove);
+
+	float yaw = DEG2RAD(csgo->cmd->viewangles.y - ang.y + angMove.y);
+
+	csgo->cmd->forwardmove = cos(yaw) * speed;
+	csgo->cmd->sidemove = sin(yaw) * speed;
+
+
+
+	ResetKeys();
+
+
+
+	if (csgo->cmd->forwardmove > 0.f)
+		csgo->cmd->buttons |= IN_FORWARD;
+	else if (csgo->cmd->forwardmove < 0.f)
+		csgo->cmd->buttons |= IN_BACK;
+
+	if (csgo->cmd->sidemove > 0.f)
+	{
+		csgo->cmd->buttons |= IN_RIGHT;
+		csgo->cmd->buttons |= IN_MOVERIGHT;
+	}
+	else if (csgo->cmd->sidemove < 0.f)
+	{
+		csgo->cmd->buttons |= IN_LEFT;
+		csgo->cmd->buttons |= IN_MOVELEFT;
+	}
+
+
+
+	if (!(csgo->local->GetFlags() & FL_ONGROUND) || vars.misc.slidewalk == 0)
 		return;
 
-	Vector  move, dir;
-	float   delta, len;
-	Vector   move_angle;
+	static bool PSwitch;
+	if (csgo->send_packet)
+		PSwitch = !PSwitch;
 
-	if (!(csgo->local->GetFlags() & FL_ONGROUND) && cmd->viewangles.z != 0 && cmd->buttons & IN_ATTACK)
-		cmd->sidemove = 0;
+	bool SL = vars.misc.slidewalk == 1 ? true : vars.misc.slidewalk == 2 ? csgo->LegSwitch : vars.misc.slidewalk == 3 ? csgo->LegSwitch : false;
 
-	move = { cmd->forwardmove, cmd->sidemove, 0 };
 
-	len = move.NormalizeMovement();
-
-	if (!len)
-		return;
-
-	Math::VectorAngles(move, move_angle);
-
-	delta = (cmd->viewangles.y - ang.y);
-
-	move_angle.y += delta;
-
-	Math::AngleVectors(move_angle, &dir);
-
-	dir *= len;
-
-	if (csgo->local->GetMoveType() == MOVETYPE_LADDER) {
-		if (cmd->viewangles.x >= 45 && ang.x < 45 && std::abs(delta) <= 65)
-			dir.x = -dir.x;
-
-		cmd->forwardmove = dir.x;
-		cmd->sidemove = dir.y;
-
-		if (cmd->forwardmove > 200)
-			cmd->buttons |= IN_FORWARD;
-
-		else if (cmd->forwardmove < -200)
+	if (g_AntiAim->ShouldAA() && SL)
+	{
+		if (cmd->forwardmove > 0.0f)
+		{
 			cmd->buttons |= IN_BACK;
+			cmd->buttons &= ~IN_FORWARD;
+		}
+		else if (cmd->forwardmove < 0.0f)
+		{
+			cmd->buttons |= IN_FORWARD;
+			cmd->buttons &= ~IN_BACK;
+		}
 
-		if (cmd->sidemove > 200)
-			cmd->buttons |= IN_MOVERIGHT;
-
-		else if (cmd->sidemove < -200)
+		if (cmd->sidemove > 0.0f)
+		{
 			cmd->buttons |= IN_MOVELEFT;
+			cmd->buttons &= ~IN_MOVERIGHT;
+		}
+		else if (cmd->sidemove < 0.0f)
+		{
+			cmd->buttons |= IN_MOVERIGHT;
+			cmd->buttons &= ~IN_MOVELEFT;
+		}
 	}
-	else {
-		if (cmd->viewangles.x < -90 || cmd->viewangles.x > 90)
-			dir.x = -dir.x;
+	else
+	{
+		auto buttons = cmd->buttons & ~(IN_MOVERIGHT | IN_MOVELEFT | IN_BACK | IN_FORWARD);
 
-		cmd->forwardmove = dir.x;
-		cmd->sidemove = dir.y;
+		if (SL)
+		{
+			if (cmd->forwardmove <= 0.0f)
+				buttons |= IN_BACK;
+			else
+				buttons |= IN_FORWARD;
+
+			if (cmd->sidemove > 0.0f)
+				goto LABEL_15;
+			else if (cmd->sidemove >= 0.0f)
+				goto LABEL_18;
+
+			goto LABEL_17;
+		}
+		else
+			goto LABEL_18;
+
+		if (cmd->forwardmove <= 0.0f) //-V779
+			buttons |= IN_FORWARD;
+		else
+			buttons |= IN_BACK;
+
+		if (cmd->sidemove > 0.0f)
+		{
+		LABEL_17:
+			buttons |= IN_MOVELEFT;
+			goto LABEL_18;
+		}
+
+		if (cmd->sidemove < 0.0f)
+			LABEL_15:
+
+		buttons |= IN_MOVERIGHT;
+
+	LABEL_18:
+		cmd->buttons = buttons;
 	}
-
-	cmd->forwardmove = clamp(cmd->forwardmove, -450.f, 450.f);
-	cmd->sidemove = clamp(cmd->sidemove, -450.f, 450.f);
-	cmd->upmove = clamp(cmd->upmove, -320.f, 320.f);
+	
 }
 
 void CMisc::FixMouseInput() 
@@ -179,17 +274,6 @@ void CMisc::FixMouseInput()
 
 void CMisc::SlideWalk()
 {
-	if (!csgo->local->isAlive())
-		return;
-
-	if (csgo->local->GetMoveType() == MOVETYPE_LADDER)
-		return;
-
-	if (!(csgo->local->GetFlags() & FL_ONGROUND))
-		return;
-
-	if (g_AntiAim->ShouldAA() && (vars.misc.slidewalk == 2 && rand() % 3 != 0 || vars.misc.slidewalk == 0))
-		csgo->cmd->buttons &= ~(IN_FORWARD | IN_BACK | IN_MOVERIGHT | IN_MOVELEFT);
 }
 
 bool CMisc::IsChatOpened() {
@@ -218,32 +302,69 @@ bool CMisc::IsChatOpened() {
 	return false;
 }
 
+void CopyCommand2(CUserCmd* cmd, int tickbase_shift)
+{
+
+
+
+
+
+
+
+	auto commands_to_add = 0;
+
+	do
+	{
+		auto sequence_number = commands_to_add + cmd->command_number;
+
+		auto command = interfaces.input->GetUserCmd(sequence_number);
+		auto verified_command = interfaces.input->GetVerifiedUserCmd(sequence_number);
+
+		memcpy(command, cmd, sizeof(CUserCmd));
+
+		if (command->tick_count != INT_MAX && csgo->client_state->iDeltaTick > 0)
+			interfaces.prediction->Update(
+				csgo->client_state->iDeltaTick, true,
+				csgo->client_state->nLastCommandAck,
+				csgo->client_state->nLastOutgoingCommand + csgo->client_state->iChokedCommands
+			);
+
+		command->command_number = sequence_number;
+		command->hasbeenpredicted = command->tick_count != INT_MAX;
+
+		++csgo->client_state->iChokedCommands;
+
+		if (csgo->client_state->pNetChannel)
+		{
+			++csgo->client_state->pNetChannel->iChokedPackets;
+			++csgo->client_state->pNetChannel->iOutSequenceNr;
+		}
+
+		command->viewangles = Math::normalize(command->viewangles);
+
+		memcpy(&verified_command->m_cmd, command, sizeof(CUserCmd));
+		verified_command->m_crc = command->GetChecksum();
+
+		++commands_to_add;
+	} while (commands_to_add != tickbase_shift);
+
+	interfaces.prediction->PreviousAckHadErrors = true;
+	interfaces.prediction->CommandsPredicted = 0;
+
+}
+
 void CMisc::CopyCommand(CUserCmd* cmd, int tickbase_shift)
 {
-	static auto cl_forwardspeed = interfaces.cvars->FindVar(str("cl_forwardspeed"));
 	static auto cl_sidespeed = interfaces.cvars->FindVar(str("cl_sidespeed"));
 
-	//if (vars.ragebot.dt_teleport)
-	//{
-	//	Vector vMove(cmd->forwardmove, cmd->sidemove, cmd->upmove);
-	//	float flSpeed = sqrt(vMove.x * vMove.x + vMove.y * vMove.y), flYaw;
-	//	Vector vMove2;
-	//	Math::VectorAngles(vMove, vMove2);
-	//	vMove2.Normalize();
-	//	flYaw = DEG2RAD(cmd->viewangles.y - csgo->original.y + vMove2.y);
-	//	if (vars.ragebot.dt_backwards_teleport) { // ghetto scout dt autopeek fix, idk what math to use to teleport to autopeek spot
-	//		flSpeed = -flSpeed * 10;
-	//	}
-	//	cmd->forwardmove = cos(flYaw) * flSpeed;
-	//	cmd->sidemove = sin(flYaw) * flSpeed;
-	//}
-	//else {
-	//	cmd->forwardmove = 0.0f;
-	//	cmd->sidemove = 0.0f;
-	//}
-
-	if (g_Binds[bind_peek_assist].active)
-		g_Ragebot->FastStop();
+	if (g_Binds[bind_peek_assist].active) {
+		g_AutoPeek->has_shot = true;
+		g_AutoPeek->GotoStart(csgo->cmd);
+	}
+	else if (!vars.ragebot.dt_teleport) {
+		cmd->forwardmove = 0.0f;
+		cmd->sidemove = 0.0f;
+	}
 
 	auto commands_to_add = 0;
 
@@ -297,127 +418,92 @@ __forceinline void ResetValue()
 
 bool CMisc::Doubletap()
 {
-	static int last_doubletap = 0;
-	double_tap_enabled = true;
-	static auto recharge_double_tap = false;
+	
 
-	if (recharge_double_tap)
-	{
-		recharge_double_tap = false;
-		recharging_double_tap = true;
-		ResetValue();
-		return false;
-	}
-
-	if (recharging_double_tap)
-	{
-		if ((g_Ragebot->IsAbleToShoot(vars.ragebot.recharge_time) || fabs(csgo->fixed_tickbase - last_doubletap) > TIME_TO_TICKS(0.5f)) && !g_Ragebot->ShouldWork)
-		{
-			last_doubletap = 0;
-
-			recharging_double_tap = false;
-			double_tap_key = true;
-			dt_bullets = 0;
+	static int LastShot = 0;
+	static bool Recharged = false;
+	auto max_tickbase_shift = (vars.ragebot.more_ticks && csgo->weapon->isSniper()) ? vars.ragebot.dt_tickammount : csgo->weapon->GetMaxTickbaseShift();
+	if (!vars.ragebot.enable || !g_Binds[bind_double_tap].active || (csgo->game_rules->IsFreezeTime() || csgo->local->HasGunGameImmunity() || csgo->local->GetFlags() & FL_FROZEN)) {
+		if (Recharged) {
+			csgo->cl_move_shift = 14;
+			Recharged = false;
 		}
-		else if (csgo->cmd->buttons & IN_ATTACK) {
-			last_doubletap = csgo->fixed_tickbase;
-			dt_bullets++;
-		}
-	}
-
-	if (!vars.ragebot.enable)
-	{
-		double_tap_enabled = false;
-		double_tap_key = false;
-		ResetValue();
 		return false;
 	}
-
-	if (!g_Binds[bind_double_tap].active)
-	{
-		double_tap_enabled = false;
-		double_tap_key = false;
-		//if (!g_Binds[bind_hide_shots].active)
-		//	ResetValue();
-		return false;
-	}
-
-	//if (double_tap_key && g_Binds[bind_double_tap].key != g_Binds[bind_hide_shots].key)
-	//	hide_shots_key = false;
-
-	if (!double_tap_key)
-	{
-		double_tap_enabled = false;
-		ResetValue();
-		return false;
-	}
-
-	if (csgo->game_rules->IsFreezeTime() || csgo->local->HasGunGameImmunity() || csgo->local->GetFlags() & FL_FROZEN)
-	{
-		double_tap_enabled = false;
-		ResetValue();
-		return false;
-	}
-
-	if (csgo->game_rules->IsValveDS())
-	{
-		double_tap_enabled = false;
-		ResetValue();
-		return false;
-	}
+	
 
 	if (csgo->fake_duck)
-	{
-		double_tap_enabled = false;
-		ResetValue();
 		return false;
+
+	
+	if (g_Binds[bind_peek_assist].active && !Recharged && g_AutoPeek->has_shot) {
+		LastShot = csgo->fixed_tickbase;
 	}
 
-	if (vars.ragebot.dt_defensive) // we sould add a peek check but it already works fine
-	{
-		csgo->shift_amount = csgo->tickcount % 16 > 0 ? 16 : 0;
-	} else if (csgo->skip_ticks <= 8) {
-		ResetValue();
-		csgo->need_to_recharge = true;
-		return false;
+	if (!Recharged) {
+		if (csgo->fixed_tickbase > LastShot + (vars.ragebot.clmove ? 42 : 33)) {
+			csgo->need_to_recharge = true;
+			Recharged = true;
+		}
 	}
 
 
-	auto max_tickbase_shift = csgo->weapon->GetMaxTickbaseShift();
+
 	bool can_dt =
 		!csgo->weapon->IsMiscWeapon()
 		&& csgo->weapon->IsGun()
 		&& csgo->weapon->GetItemDefinitionIndex() != WEAPON_ZEUSX27
-		&& csgo->weapon->GetItemDefinitionIndex() != WEAPON_REVOLVER;
+		&& csgo->weapon->GetItemDefinitionIndex() != WEAPON_REVOLVER && (!(csgo->weapon->IsNade()));
 
 	bool is_firing = csgo->cmd->buttons & IN_ATTACK;
 
-	if (can_dt && is_firing || ((csgo->cmd->buttons & IN_ATTACK || csgo->cmd->buttons & IN_ATTACK2) && csgo->weapon->IsKnife()))
+	if (is_firing && !Recharged) {
+		LastShot = csgo->fixed_tickbase;
+	}
+
+
+	if ((can_dt && is_firing || ((csgo->cmd->buttons & IN_ATTACK || csgo->cmd->buttons & IN_ATTACK2) && csgo->weapon->IsKnife())) && Recharged)
 	{
 
-		auto next_command_number = csgo->cmd->command_number + 1;
-		auto user_cmd = interfaces.input->GetUserCmd(next_command_number);
+		
+		if (g_Binds[bind_peek_assist].active) {
+			if (vars.ragebot.teleport) {
 
-		memcpy(user_cmd, csgo->cmd, sizeof(CUserCmd));
-		user_cmd->command_number = next_command_number;
-
-		if (vars.ragebot.more_ticks && csgo->weapon->isSniper()) {
-			//csgo->cl_move_shift = vars.ragebot.dt_tickammount;
-			CopyCommand(user_cmd, vars.ragebot.dt_tickammount);
+				g_AutoPeek->has_shot = true;
+				g_AutoPeek->GotoStart(csgo->cmd);
+				csgo->cl_move_shift = 14;
+			
+			}
+			else {
+				auto next_command_number = csgo->cmd->command_number + 1;
+				auto user_cmd = interfaces.input->GetUserCmd(next_command_number);
+				memcpy(user_cmd, csgo->cmd, sizeof(CUserCmd));
+				user_cmd->command_number = next_command_number;
+				CopyCommand(user_cmd, max_tickbase_shift);
+			}
 		}
-		else
-		{
-			CopyCommand(user_cmd, max_tickbase_shift);
-			//csgo->cl_move_shift = max_tickbase_shift;
+		else {
+			if (vars.ragebot.clmove) {
+				csgo->cl_move_shift = max_tickbase_shift;
+			}
+			else {
+				auto next_command_number = csgo->cmd->command_number + 1;
+				auto user_cmd = interfaces.input->GetUserCmd(next_command_number);
+				memcpy(user_cmd, csgo->cmd, sizeof(CUserCmd));
+				user_cmd->command_number = next_command_number;
+				CopyCommand(user_cmd, max_tickbase_shift);
+			}
 		}
 
-		recharge_double_tap = true;
-		double_tap_enabled = false;
-		double_tap_key = false;
-		csgo->send_packet = true;
-		last_doubletap = csgo->fixed_tickbase;
-		dt_bullets++;
+
+		LastShot = csgo->fixed_tickbase;
+		Recharged = false;
 	}
+	else if(vars.ragebot.defensivedt)
+		csgo->PPShift = (vars.ragebot.defensivething & 4) ? 16 : 14;
+
+	if(vars.ragebot.defensivedt && ((vars.ragebot.defensivething & 1 && g_Binds[bind_peek_assist].active) || vars.ragebot.defensivething & 2))
+		csgo->PPShift = (vars.ragebot.defensivething & 4) ? 16 : 14;
 
 	return true;
 }
@@ -515,7 +601,7 @@ void CMisc::UpdateDormantTime() {
 			csgo->dormant_time[ent->GetIndex()] = ent->GetSimulationTime();
 	}
 }
-
+#define ct(a, x) case a: SetClanTag(x, "gamesense"); break;
 void CMisc::Clantag()
 {
 	auto SetClanTag = [](const char* tag, const char* name)
@@ -526,89 +612,55 @@ void CMisc::Clantag()
 		pSetClanTag(tag, name);
 	};
 
-	auto Marquee = [](std::string& clantag)
-	{
-		std::string temp = clantag;
-		clantag.erase(0, 1);
-		clantag += temp[0];
-	};
 
-	static bool Reset = true;
+
+	static bool Reset = false;
 
 	if (vars.visuals.clantagspammer)
 	{
-		Reset = false;
-		static float oldTime;
-		float flCurTime = TICKS_TO_TIME(csgo->fixed_tickbase);
-		static float flNextTimeUpdate = 0;
-		static int iLastTime;
-
-		float latency = interfaces.engine->GetNetChannelInfo()->GetLatency(FLOW_INCOMING) + interfaces.engine->GetNetChannelInfo()->GetLatency(FLOW_OUTGOING);
-		if (int(interfaces.global_vars->curtime * vars.misc.clantag_speed + latency) != iLastTime)
-		{
-			if (flNextTimeUpdate <= flCurTime || flNextTimeUpdate - flCurTime > 1.f)
+		Reset = true;
+		static int oldcurtime = 0;
+		
+		if (oldcurtime != (int)(interfaces.global_vars->curtime * 3.3f) % 28) {
+			switch ((int)(interfaces.global_vars->curtime * 3.3f) % 28)
 			{
-				switch (int(interfaces.global_vars->curtime * vars.misc.clantag_speed) % 41) {
-				case 0: SetClanTag(hs::clantag1.s().c_str(), hs::weave_su.s().c_str()); break;
-				case 1: SetClanTag(hs::clantag2.s().c_str(), hs::weave_su.s().c_str()); break;
-				case 2: SetClanTag(hs::clantag3.s().c_str(), hs::weave_su.s().c_str()); break;
-				case 3: SetClanTag(hs::clantag4.s().c_str(), hs::weave_su.s().c_str()); break;
-				case 4: SetClanTag(hs::clantag5.s().c_str(), hs::weave_su.s().c_str()); break;
-				case 5: SetClanTag(hs::clantag6.s().c_str(), hs::weave_su.s().c_str()); break;
-				case 6: SetClanTag(hs::clantag7.s().c_str(), hs::weave_su.s().c_str()); break;
-				case 7: SetClanTag(hs::clantag8.s().c_str(), hs::weave_su.s().c_str()); break;
-				case 8: SetClanTag(hs::clantag9.s().c_str(), hs::weave_su.s().c_str()); break;
-				case 9: SetClanTag(hs::clantag10.s().c_str(), hs::weave_su.s().c_str()); break;
-				case 10: SetClanTag(hs::clantag11.s().c_str(), hs::weave_su.s().c_str()); break;
-				case 11: SetClanTag(hs::clantag12.s().c_str(), hs::weave_su.s().c_str()); break;
-				case 12: SetClanTag(hs::clantag13.s().c_str(), hs::weave_su.s().c_str()); break;
-				case 13: SetClanTag(hs::clantag14.s().c_str(), hs::weave_su.s().c_str()); break;
-				case 14: SetClanTag(hs::clantag15.s().c_str(), hs::weave_su.s().c_str()); break;
-				case 15: SetClanTag(hs::clantag16.s().c_str(), hs::weave_su.s().c_str()); break;
-				case 16: SetClanTag(hs::clantag17.s().c_str(), hs::weave_su.s().c_str()); break;
-				case 17: SetClanTag(hs::clantag18.s().c_str(), hs::weave_su.s().c_str()); break;
-				case 18: SetClanTag(hs::clantag19.s().c_str(), hs::weave_su.s().c_str()); break;
-				case 19: SetClanTag(hs::clantag20.s().c_str(), hs::weave_su.s().c_str()); break;
-				case 20: SetClanTag(hs::clantag21.s().c_str(), hs::weave_su.s().c_str()); break;
-				case 21: SetClanTag(hs::clantag22.s().c_str(), hs::weave_su.s().c_str()); break;
-				case 22: SetClanTag(hs::clantag23.s().c_str(), hs::weave_su.s().c_str()); break;
-				case 23: SetClanTag(hs::clantag24.s().c_str(), hs::weave_su.s().c_str()); break;
-				case 24: SetClanTag(hs::clantag25.s().c_str(), hs::weave_su.s().c_str()); break;
-				case 25: SetClanTag(hs::clantag26.s().c_str(), hs::weave_su.s().c_str()); break;
-				case 26: SetClanTag(hs::clantag27.s().c_str(), hs::weave_su.s().c_str()); break;
-				case 27: SetClanTag(hs::clantag28.s().c_str(), hs::weave_su.s().c_str()); break;
-				case 28: SetClanTag(hs::clantag29.s().c_str(), hs::weave_su.s().c_str()); break;
-				case 29: SetClanTag(hs::clantag30.s().c_str(), hs::weave_su.s().c_str()); break;
-				case 30: SetClanTag(hs::clantag31.s().c_str(), hs::weave_su.s().c_str()); break;
-				case 31: SetClanTag(hs::clantag32.s().c_str(), hs::weave_su.s().c_str()); break;
-				case 32: SetClanTag(hs::clantag33.s().c_str(), hs::weave_su.s().c_str()); break;
-				case 33: SetClanTag(hs::clantag34.s().c_str(), hs::weave_su.s().c_str()); break;
-				case 34: SetClanTag(hs::clantag35.s().c_str(), hs::weave_su.s().c_str()); break;
-				case 35: SetClanTag(hs::clantag36.s().c_str(), hs::weave_su.s().c_str()); break;
-				case 36: SetClanTag(hs::clantag37.s().c_str(), hs::weave_su.s().c_str()); break;
-				case 37: SetClanTag(hs::clantag38.s().c_str(), hs::weave_su.s().c_str()); break;
-				case 38: SetClanTag(hs::clantag39.s().c_str(), hs::weave_su.s().c_str()); break;
-				case 39: SetClanTag(hs::clantag40.s().c_str(), hs::weave_su.s().c_str()); break;
-				case 40: SetClanTag(hs::clantag41.s().c_str(), hs::weave_su.s().c_str()); break;
-				}
+				ct(0, " ");
+				ct(1, "ga");
+				ct(2, "gam");
+				ct(3, "game");
+				ct(4, "games");
+				ct(5, "gamese");
+				ct(6, "gamesen");
+				ct(7, "gamesens");
+				ct(8, "gamesense");
+				ct(9, " gamesense ");
+				ct(10, "  gamesense  ");
+				ct(11, "   gamesense   ");
+				ct(12, "    gamesense    ");
+				ct(13, "     gamesense     ");
+				ct(14, "     gamesense      ");
+				ct(15, "    gamesense       ");
+				ct(16, "   gamesense        ");
+				ct(17, "  gamesense         ");
+				ct(18, " gamesense          ");
+				ct(19, "gamesense           ");
+				ct(20, "amesense            ");
+				ct(21, "mesense             ");
+				ct(22, "esense              ");
+				ct(23, "sense               ");
+				ct(24, "ense                ");
+				ct(25, "nse                 ");
+				ct(26, "se                  ");
+				ct(27, "e                   ");
 			}
-			iLastTime = int(interfaces.global_vars->curtime * vars.misc.clantag_speed + latency);
+
+			oldcurtime = (int)(interfaces.global_vars->curtime * 3.3f) % 28;
 		}
+		
 	}
-	else
-	{
-		if (!Reset)
-		{
-			static int iLastTime;
-
-			float latency = interfaces.engine->GetNetChannelInfo()->GetLatency(FLOW_INCOMING) + interfaces.engine->GetNetChannelInfo()->GetLatency(FLOW_OUTGOING);
-			if (int(interfaces.global_vars->curtime * vars.misc.clantag_speed + latency) != iLastTime)
-			{
-				SetClanTag(str(""), str(""));
-				iLastTime = int(interfaces.global_vars->curtime * vars.misc.clantag_speed + latency);
-			}
-			Reset = true;
-		}
+	else if (Reset) {
+		Reset = false;
+		SetClanTag("", "");
 	}
 }
 
@@ -659,8 +711,10 @@ void CMisc::ProcessMissedShots()
 			new_hitlog.resolver = snapshot.resolver_mode;
 			new_hitlog.spread = spread || sp_spread;
 
-			if (!spread && !sp_spread)
+			if (!spread && !sp_spread) {
 				csgo->actual_misses[snapshot.entity->GetIndex()]++;
+				csgo->maxmisses[snapshot.entity->GetIndex()]++;
+			}
 
 			if (vars.visuals.eventlog & 4) {
 				// will re-add later. the logs were completely wrong. lmao. (ill just steal legendaware since they work xd)

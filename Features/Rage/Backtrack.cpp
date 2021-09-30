@@ -150,7 +150,7 @@ void CAnimationFix::UpdatePlayers()
 		const auto player = _animation->player;
 
 		for (auto it = _animation->frames.rbegin(); it != _animation->frames.rend();) {
-			if (!it->is_valid(0.2f + TICKS_TO_TIME(17)))
+			if (!it->is_valid(0.2f + TIME_TO_TICKS(16)))
 				it = decltype(it) {
 				info.second->frames.erase(next(it).base())
 			};
@@ -159,7 +159,7 @@ void CAnimationFix::UpdatePlayers()
 		}
 
 		if (auto state = player->GetPlayerAnimState(); state != nullptr)
-			state->m_abs_yaw = resolverInfo[player->EntIndex()].m_flLowerBodyYaw;
+			state->m_abs_yaw = resolverInfo[player->EntIndex()].ResolvedLowerBodyAngle;
 
 		/*if (g_Resolver->Do(_animation->player)) {
 			if (auto state = player->GetPlayerAnimState(); state != nullptr)

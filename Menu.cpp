@@ -242,6 +242,9 @@ namespace ragebot_tab
 				settings->add_element(new c_slider(str("FOV"), &vars.ragebot.fov,
 					0.f, 180.f, enable_rage));
 
+				settings->add_element(new c_checkbox(str("Avoid Unresovled Hitboxes"), &vars.ragebot.avoidunsafehitboxes,
+					enable_rage));
+
 				settings->add_element(new c_checkbox(str("Zeus bot"), &vars.ragebot.zeusbot,
 					enable_rage));
 
@@ -266,13 +269,37 @@ namespace ragebot_tab
 					return vars.ragebot.enable && vars.misc.restrict_type == 1;
 					}));
 
-				settings->add_element(new c_checkbox(str("Teleport boost"), &vars.ragebot.dt_teleport, []() {
+				settings->add_element(new c_checkbox(str("Teleport"), &vars.ragebot.clmove, []() {
+					return enable_rage() && (g_Binds[bind_double_tap].key > 0 || g_Binds[bind_double_tap].active);
+					}));	
+
+				settings->add_element(new c_checkbox(str("Ideal Tick"), &vars.ragebot.teleport, []() {
+				return enable_rage() && (g_Binds[bind_double_tap].key > 0 || g_Binds[bind_double_tap].active);
+					}));
+
+				settings->add_element(new c_checkbox(str("Teleport Boost"), &vars.ragebot.dt_teleport, []() {
 					return enable_rage() && (g_Binds[bind_double_tap].key > 0 || g_Binds[bind_double_tap].active);
 					}));
 
-				settings->add_element(new c_checkbox(str("Teleport backwards"), &vars.ragebot.dt_backwards_teleport, []() {
+				settings->add_element(new c_checkbox(str("Defensive"), &vars.ragebot.defensivedt, []() { //eh 
 					return enable_rage() && (g_Binds[bind_double_tap].key > 0 || g_Binds[bind_double_tap].active);
 					})); //Ghetto fix for scout autopeek
+
+				settings->add_element(new c_multicombo(str("Defensive Flags"), &vars.ragebot.defensivething, {
+					str("On Shot [ Ideal Tick ]"),
+					str("On Shot [ Normal ]"),
+					str("Max Defensive")
+					}, []() { //eh 
+					return enable_rage() && (g_Binds[bind_double_tap].key > 0 || g_Binds[bind_double_tap].active) && vars.ragebot.defensivedt;
+					}));
+
+		
+
+				settings->add_element(new c_checkbox(str("Anti-Defensive"), &vars.ragebot.AntiDefensive, []() { //eh 
+					return enable_rage() && (g_Binds[bind_double_tap].key > 0 || g_Binds[bind_double_tap].active);
+					})); //Ghetto fix for scout autopeek
+
+		
 
 				/*settings->add_element(new c_checkbox(str("Defensive DT"), &vars.ragebot.dt_defensive, []() {
 					return enable_rage() && (g_Binds[bind_double_tap].key > 0 || g_Binds[bind_double_tap].active);
@@ -282,15 +309,12 @@ namespace ragebot_tab
 					return vars.ragebot.enable && vars.misc.restrict_type == 1;
 					}));
 
-				settings->add_element(new c_slider(str("Charge delay"), &vars.ragebot.recharge_time,
-					0, 14));
-
-				settings->add_element(new c_checkbox(str("Custom Tickbase"), &vars.ragebot.more_ticks, []() {
+				settings->add_element(new c_checkbox(str("Custom Speed"), &vars.ragebot.more_ticks, []() {
 					return enable_rage() && (g_Binds[bind_double_tap].key > 0 || g_Binds[bind_double_tap].active);
 					}));
 
-				settings->add_element(new c_slider(str("DT Tickbase"), &vars.ragebot.dt_tickammount,
-					13, 30, []() {
+				settings->add_element(new c_slider(str("Speed"), &vars.ragebot.dt_tickammount,
+					2, 15, []() {
 						return enable_rage() && vars.ragebot.more_ticks;
 					}));
 
@@ -307,40 +331,64 @@ namespace ragebot_tab
 				settings->add_element(new c_combo(str("Pitch"), &vars.antiaim.pitch, {
 					str("Disabled"),
 					str("Down"),
-					str("Ideal down"),
+					str("Up"),
 				}, []() { return enable_antiaim(); }));
-				settings->add_element(new c_slider(str("Yaw Offset"),
-					&vars.antiaim.yaw_offset,
-					-180, 180, []() { return vars.antiaim.enable; }));
 
-				settings->add_element(new c_separator([]() { return enable_antiaim(); }));
-				settings->add_element(new c_text(str("DESYNC"), 25, []() { return enable_antiaim(); }, color_t(127, 127, 127)));
+				settings->add_element(new c_combo(str("Yaw Base"), &vars.antiaim.yaw, {
+					str("View Angles"),
+					str("At Target")
+					}, []() { return enable_antiaim(); }));
 
-				settings->add_element(new c_checkbox(str("Enable"), &vars.antiaim.desync,
-					[]() { return enable_antiaim(); }));
+				settings->add_element(new c_slider(str("Yaw Offset"), &vars.antiaim.yawoffset,
+					-180, 180, []() {
+						return enable_antiaim();
+					}));
+
+				settings->add_element(new c_combo(str("Yaw Modifier"), &vars.antiaim.modifier, {
+		str("Disabled"),
+		str("Offset"),
+		str("Jitter"),
+		str("Spin"),
+		str("Random")
+					}, []() { return enable_antiaim(); }));
+
+
+				settings->add_element(new c_slider(str("Modifier"), &vars.antiaim.modifieroffset,
+					-180, 180, []() {
+						return enable_antiaim() && vars.antiaim.modifier > 0;
+					}));
+
+				settings->add_element(new c_combo(str("Desync"), &vars.antiaim.desync, {
+			str("Disabled"),
+			str("Static"),
+			str("Jitter"),
+			str("Dynamic"),
+			str("Random")
+					}, []() { return enable_antiaim(); }));
+
+				settings->add_element(new c_combo(str("Lower Body Yaw Target"), &vars.antiaim.lbytarget, {
+		str("Offset"),
+		str("Extend"),
+		str("Random")
+					}, []() { return enable_antiaim() && vars.antiaim.desync > 0; }));
+				
+
+	
+
+
+				settings->add_element(new c_slider(str("Desync Delta"), &vars.antiaim.delta,
+					0, 60, []() {
+						return enable_antiaim() && vars.antiaim.desync > 0;
+					}));
 
 				settings->add_element(new c_keybind(str("Inverter"), &g_Binds[bind_aa_inverter],
-					[]() { return enable_antiaim() && vars.antiaim.desync_direction == 0 && vars.antiaim.desync; }));
-
-				settings->add_element(new c_slider(str("Amount"), &vars.antiaim.desync_amount, -60, 60,
 					[]() { return enable_antiaim() && vars.antiaim.desync; }));
 
-				settings->add_element(new c_separator([]() { return enable_antiaim(); }));
-				settings->add_element(new c_text(str("YAW SETTINGS"), 25, []() { return enable_antiaim(); }, color_t(127, 127, 127)));
-				settings->add_element(new c_slider(str("Jitter angle"), &vars.antiaim.jitter_angle, 0.f, 45.f,
-					[]() { return enable_antiaim(); }));
-
-				settings->add_element(new c_checkbox(str("At target"),
-					&vars.antiaim.attarget, []() { return enable_antiaim(); }));
-
-				settings->add_element(new c_checkbox(str("Off when offscreen"),
-					&vars.antiaim.attarget_off_when_offsreen, []() { return enable_antiaim() && vars.antiaim.attarget; }));
 
 				settings->add_element(new c_checkbox(str("Manual yaw direction"),
 					&vars.antiaim.manual_antiaim, enable_antiaim));
 
-				settings->add_element(new c_checkbox(str("Ignore at target"),
-					&vars.antiaim.ignore_attarget, []() { return enable_antiaim() && vars.antiaim.manual_antiaim; }));
+
 
 				settings->add_element(new c_keybind(str("Left"), &g_Binds[bind_manual_left], []() {
 					return enable_antiaim() && vars.antiaim.manual_antiaim;
@@ -363,30 +411,23 @@ namespace ragebot_tab
 			{
 				settings->add_element(new c_text(str("FAKE-LAG SETTINGS"), 25, nullptr, color_t(127, 127, 127)));
 
-				settings->add_element(new c_combo(str("Lag mode"), &vars.antiaim.fakelag,
+				settings->add_element(new c_combo(str("Fake Lag Mode"), &vars.antiaim.fakelag.mode,
 					{
 						str("Disabled"),
 						str("Static"),
-						str("Fluctuate"),
-						str("Adaptive"),
+						str("Defensive")
+						//str("Break Lag Compensation")
 					},
 					enable_antiaim));
 
-				settings->add_element(new c_separator([]() { return vars.antiaim.enable && vars.antiaim.fakelag > 0; }));
+				settings->add_element(new c_separator([]() { return vars.antiaim.enable && vars.antiaim.fakelag.mode > 0; }));
 
-				settings->add_element(new c_slider(str("Limit"), &vars.antiaim.fakelagfactor, 1, 14,
-					[]() { return enable_antiaim() && vars.antiaim.fakelag > 0; }));
+				settings->add_element(new c_slider(str("Limit"), &vars.antiaim.fakelag.min, 1, 14,
+					[]() { return enable_antiaim() && vars.antiaim.fakelag.mode > 0; }));
 
-				settings->add_element(new c_separator([]() { return vars.antiaim.enable && vars.antiaim.fakelag > 0; }));
+				settings->add_element(new c_slider(str("Randomization"), &vars.antiaim.fakelag.randomization, 0, 14,
+					[]() { return enable_antiaim() && vars.antiaim.fakelag.mode > 0; }));
 
-				settings->add_element(new c_checkbox(str("When standing"), &vars.antiaim.fakelag_when_standing,
-					[]() { return enable_antiaim() && vars.antiaim.fakelag > 0; }));
-
-				settings->add_element(new c_checkbox(str("When using exploits"), &vars.antiaim.fakelag_when_exploits,
-					[]() { return enable_antiaim() && vars.antiaim.fakelag > 0; }));
-
-				settings->add_element(new c_checkbox(str("Only on peek"), &vars.antiaim.fakelag_on_peek,
-					[]() { return enable_antiaim() && vars.antiaim.fakelag > 0; }));
 
 				settings->add_element(new c_text(str("Please toggle anti-aims before setup!"), 0, []() { return !vars.antiaim.enable; }));
 			}
@@ -894,7 +935,7 @@ namespace visuals_tab
 
 			settings->add_element(new c_combo(str("Glow style"), &vars.visuals.glowtype, {
 				str("Normal"),
-				str("Pulsating"),
+				str("Inner")
 				}));
 		}
 		break;
@@ -1494,10 +1535,12 @@ namespace misc_tab {
 			settings->add_element(new c_checkbox(str("Auto strafe"),
 				&vars.misc.autostrafe));
 
-			settings->add_element(new c_combo(str("Slidewalk Mode"), &vars.misc.slidewalk, {
+			settings->add_element(new c_combo(str("Leg Movement"), &vars.misc.slidewalk, {
 			str("Off"),
-			str("On"),
+			str("Slide"),
+			str("Static"),
 			str("Jitter"),
+			str("Walking")
 				}, nullptr));
 
 			settings->add_element(new c_keybind(str("Peek assistance"), &g_Binds[bind_peek_assist]));
@@ -1622,6 +1665,8 @@ namespace misc_tab {
 
 			settings->add_element(new c_button(str("Unload"), Vector2D(320, 32), []() { csgo->DoUnload = true; }));
 			settings->add_element(new c_button(str("Full update"), Vector2D(320, 32), []() { csgo->client_state->ForceFullUpdate(); }));
+
+
 
 			settings->add_element(new c_button(str("Spoof sv_cheats"), Vector2D(320, 32), []() {
 				ConVar* sv_cheats = interfaces.cvars->FindVar(hs::sv_cheats.s().c_str());
@@ -2252,10 +2297,10 @@ void CMenu::update_binds()
 				}
 			}
 			else if (binder->type == 1 && binder->key > 0) {
-				binder->active = csgo->key_pressed[binder->key];
+				binder->active = GetAsyncKeyState(binder->key) & (1 << 16);
 			}
 			else if (binder->type == 3 && binder->key > 0) {
-				binder->active = !csgo->key_pressed[binder->key];
+				binder->active = !(GetAsyncKeyState(binder->key) & (1 << 16));
 			}
 			else if (binder->type == 0)
 				binder->active = false;

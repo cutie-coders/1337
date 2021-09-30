@@ -65,22 +65,22 @@ void CHitMarker::Paint()
 				case 0:
 					g_Render->DrawString(pos2D.x - 50 * modifier, pos2D.y - 25.f - 50 * modifier,
 						hitmarker.hs ? color_t(255, 35, 35, (1.f - modifier) * 255) : color_t(255, 255, 255, (1.f - modifier) * 255),
-						render::dropshadow | render::centered_x | render::centered_y, fonts::lby_indicator, hitmarker.hp.c_str());
+						 render::centered_x | render::centered_y, fonts::keybindsBig, hitmarker.hp.c_str());
 					break;
 				case 1:
 					g_Render->DrawString(pos2D.x - 50 * modifier, pos2D.y - 25.f + 50 * modifier,
 						hitmarker.hs ? color_t(255, 35, 35, (1.f - modifier) * 255) : color_t(255, 255, 255, (1.f - modifier) * 255),
-						render::dropshadow | render::centered_x | render::centered_y, fonts::lby_indicator, hitmarker.hp.c_str());
+						 render::centered_x | render::centered_y, fonts::keybindsBig, hitmarker.hp.c_str());
 					break;
 				case 2:
 					g_Render->DrawString(pos2D.x + 50 * modifier, pos2D.y - 25.f - 50 * modifier,
 						hitmarker.hs ? color_t(255, 35, 35, (1.f - modifier) * 255) : color_t(255, 255, 255, (1.f - modifier) * 255),
-						render::dropshadow | render::centered_x | render::centered_y, fonts::lby_indicator, hitmarker.hp.c_str());
+						 render::centered_x | render::centered_y, fonts::keybindsBig, hitmarker.hp.c_str());
 					break;
 				case 3:
 					g_Render->DrawString(pos2D.x + 50 * modifier, pos2D.y - 25.f + 50 * modifier,
 						hitmarker.hs ? color_t(255, 35, 35, (1.f - modifier) * 255) : color_t(255, 255, 255, (1.f - modifier) * 255),
-						render::dropshadow | render::centered_x | render::centered_y, fonts::lby_indicator, hitmarker.hp.c_str());
+						 render::centered_x | render::centered_y, fonts::keybindsBig, hitmarker.hp.c_str());
 					break;
 				}
 			}

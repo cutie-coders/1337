@@ -17,10 +17,7 @@ bool __stdcall Hooked_CreateMove(float a, CUserCmd* cmd) {
 	uintptr_t* pebp;
 	__asm mov pebp, ebp;
 
-	if (csgo->cl_move_shift > 0) {
-		*(bool*)(*pebp - 0x1C) = false;
-		return false;
-	}
+
 
 	csgo->in_cm = true;
 	csgo->cmd = cmd;
@@ -44,9 +41,9 @@ bool __stdcall Hooked_CreateMove(float a, CUserCmd* cmd) {
 
 		if (csgo->need_to_recharge) {
 			cmd->tick_count = INT_MAX;
-			const int ticks = /*g_Binds[bind_hide_shots].active ? shift_ticks / 2 :*/ shift_ticks;
-			if (++csgo->skip_ticks >= ticks)
+			if (++csgo->skip_ticks >= 16)
 			{
+				csgo->skip_ticks = 0;
 				csgo->need_to_recharge = false;
 				*(bool*)(*pebp - 0x1C) = true;
 			}
@@ -83,12 +80,6 @@ bool __stdcall Hooked_CreateMove(float a, CUserCmd* cmd) {
 			g_Misc->double_tap_key = false;
 
 
-		bool shit = g_Misc->double_tap_enabled && g_Misc->double_tap_key || g_Misc->hide_shots_enabled && g_Misc->hide_shots_key;
-
-		if (csgo->skip_ticks < shift_ticks &&
-			shit) {
-			csgo->need_to_recharge = true;
-		}
 
 		if (g_Misc->hs_works)
 			csgo->fixed_tickbase = csgo->local->GetTickBase() - 6;
@@ -131,8 +122,7 @@ bool __stdcall Hooked_CreateMove(float a, CUserCmd* cmd) {
 
 			g_EnginePrediction->update();
 			g_EnginePrediction->start(csgo->local, cmd);
-			// g_AntiAim->is_lby_update();
-			// c_Resolver->
+			// g_Animfix->
 			// g_Resolver->StoreAntifreestand();
 
 			g_AntiAim->Initialize();
@@ -167,7 +157,6 @@ bool __stdcall Hooked_CreateMove(float a, CUserCmd* cmd) {
 			if (vars.antiaim.enable)
 			{
 				g_AntiAim->Run();
-				g_AntiAim->is_lby_update();
 				if (!g_AutoPeek->has_shot)
 					g_AntiAim->Sidemove();
 			}
@@ -175,7 +164,7 @@ bool __stdcall Hooked_CreateMove(float a, CUserCmd* cmd) {
 			g_Misc->Doubletap();
 			g_Misc->Hideshots();
 
-			g_AutoPeek->Run();
+			
 
 			if (F::Shooting()) {
 				csgo->m_shot_command_number = cmd->command_number;
@@ -271,9 +260,15 @@ bool __stdcall Hooked_CreateMove(float a, CUserCmd* cmd) {
 		csgo->ForceOffAA = false;
 		csgo->should_draw_taser_range = false;
 	}
-
-	csgo->last_sendpacket = csgo->send_packet;
+	if (csgo->cl_move_shift > 0) {
+		csgo->last_sendpacket = false;
+		*(bool*)(*pebp - 0x1C) = false;
+	}
+	else {
+		csgo->last_sendpacket = csgo->send_packet;
+		
+		*(bool*)(*pebp - 0x1C) = csgo->send_packet;
+	}
 	csgo->in_cm = false;
-	*(bool*)(*pebp - 0x1C) = csgo->send_packet;
 	return false;
 }

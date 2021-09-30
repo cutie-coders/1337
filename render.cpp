@@ -5,6 +5,7 @@ namespace fonts
 {
 	ImFont* esp_name = nullptr;
 	ImFont* esp_info = nullptr;
+	ImFont* keybindsBig = nullptr;
 	ImFont* esp_logs = nullptr;
 	ImFont* lby_indicator = nullptr;
 	ImFont* menu_main = nullptr;
@@ -12,6 +13,7 @@ namespace fonts
 	ImFont* very_small = nullptr;
 	ImFont* esp_icons = nullptr;
 	ImFont* esp_icons_big = nullptr;
+	ImFont* Thingg;
 	std::map<uint32_t, ImFont*> js_fonts;
 }
 
@@ -136,6 +138,42 @@ void ImGuiRendering::Arc(float x, float y, float radius, float min_angle, float 
 	_drawList->PathStroke(col.u32(), true, thickness);
 }
 
+
+	void ImGuiRendering::GradientCircle(Vector2D center, float radius, color_t color1, color_t color2)
+	{
+		const auto col1 = color1.u32();
+		const auto col2 = color2.u32();
+		
+
+		vertex vert[64 + 2] = {};
+
+		for (auto i = 1; i <= 64; i++) {
+			Vector Point = Vector(std::sin(2.f * D3DX_PI * (i / static_cast<float>(64))), std::cos(2.f * D3DX_PI * (i / static_cast<float>(64))), 0.f) * radius;
+			vert[i] =
+			{
+				center.x + Point.x,
+				center.y - Point.y,
+				0.0f,
+				1.0f,
+				col1
+			};
+		}
+
+		vert[0] = { center.x, center.y, 0.0f, 1.0f, col2 };
+		vert[64 + 1] = vert[1];
+
+		m_pDevice->SetRenderState(D3DRS_ANTIALIASEDLINEENABLE, true);
+		m_pDevice->SetTexture(0, nullptr);
+		m_pDevice->DrawPrimitiveUP(D3DPT_TRIANGLEFAN, 64, &vert, sizeof vertex);
+		m_pDevice->SetRenderState(D3DRS_ANTIALIASEDLINEENABLE, false);
+	}
+
+void ImGuiRendering::PArc(float X, float Y, float radius, float Angle1, float Angle2, float Thickness, color_t color)
+{
+	_drawList->PathArcTo(ImVec2(X, Y), radius, Angle1, Angle2, 130);
+	_drawList->PathStroke(color.u32(), false, Thickness);
+}
+
 void ImGuiRendering::Triangle(float x1, float y1, float x2, float y2, float x3, float y3, color_t clr, float thickness)
 {
 	_drawList->AddTriangle(ImVec2(x1, y1), ImVec2(x2, y2), ImVec2(x3, y3), clr.u32(), thickness);
@@ -156,7 +194,33 @@ void ImGuiRendering::CircleFilled(float x1, float y1, float radius, color_t col,
 	_drawList->AddCircleFilled(ImVec2(x1, y1), radius, col.u32(), segments);
 }
 
-void render::Render3DCircle(IDirect3DDevice9* dev, Vector center, float radius, color_t outer, color_t inner) {
+void ImGuiRendering::Render3DPolyObject(Vector center, std::vector<Vector> in, color_t outer, color_t inner) {
+
+
+	
+
+}
+
+void ImGuiRendering::PolyGradient(std::vector<Vector2D> Points, Vector2D Center, color_t outer, color_t inner) {
+	if (Points.size() < 3)
+		return;
+	std::vector<vertex> vert;
+	vert.push_back({
+		Center.x, Center.y, 0.0f, 1.0f, inner.u32()
+		});
+	for (auto& Point : Points) {
+		vert.push_back({
+		Point.x, Point.y, 0.0f, 1.0f, outer.u32()
+			});
+	}
+	vert.push_back(vert[1]);
+	m_pDevice->SetRenderState(D3DRS_ANTIALIASEDLINEENABLE, true);
+	m_pDevice->SetTexture(0, nullptr);
+	m_pDevice->DrawPrimitiveUP(D3DPT_TRIANGLEFAN, vert.size(), vert.data(), sizeof vertex);
+	m_pDevice->SetRenderState(D3DRS_ANTIALIASEDLINEENABLE, false);
+}
+
+void ImGuiRendering::Render3DCircle(Vector center, float radius, color_t outer, color_t inner) {
 
 
 
@@ -187,9 +251,9 @@ void render::Render3DCircle(IDirect3DDevice9* dev, Vector center, float radius, 
 	vert[0] = { Point2D.x, Point2D.y, 0.0f, 1.0f, inner.u32() };
 	vert[65] = vert[1];
 
-	dev->SetRenderState(D3DRS_ANTIALIASEDLINEENABLE, true);
-	dev->SetTexture(0, nullptr);
-	dev->DrawPrimitiveUP(D3DPT_TRIANGLEFAN, 64, &vert, sizeof vertex);
-	dev->SetRenderState(D3DRS_ANTIALIASEDLINEENABLE, false);
+	m_pDevice->SetRenderState(D3DRS_ANTIALIASEDLINEENABLE, true);
+	m_pDevice->SetTexture(0, nullptr);
+	m_pDevice->DrawPrimitiveUP(D3DPT_TRIANGLEFAN, 64, &vert, sizeof vertex);
+	m_pDevice->SetRenderState(D3DRS_ANTIALIASEDLINEENABLE, false);
 
 }

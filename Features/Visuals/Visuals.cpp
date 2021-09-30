@@ -68,29 +68,7 @@ void CVisuals::DrawAngleLine(Vector origin, float angle, color_t color)
 
 static void drawProjectileTrajectory(const Trail& config, const std::vector<std::pair<float, Vector>>& trajectory) noexcept
 {
-	std::vector<ImVec2> points, shadowPoints;
-
-	auto color = config.color;
-
-	for (const auto& [time, point] : trajectory) {
-		if (Vector pos; time + config.time >= csgo->get_absolute_time() && Math::WorldToScreen(point, pos)) {
-			if (config.type == Trail::Line) {
-				points.push_back(ImVec2(pos.x, pos.y));
-				shadowPoints.push_back(ImVec2(pos.x + 1, pos.y + 1));
-			}
-			else if (config.type == Trail::Circles) {
-				g_Render->_drawList->AddCircle(ImVec2(pos.x, pos.y), 3.5f - point.DistTo(csgo->origin) / 700.0f, color.u32(), 12, config.thickness);
-			}
-			else if (config.type == Trail::FilledCircles) {
-				g_Render->_drawList->AddCircleFilled(ImVec2(pos.x, pos.y), 3.5f - point.DistTo(csgo->origin) / 700.0f, color.u32());
-			}
-		}
-	}
-
-	if (config.type == Trail::Line) {
-		g_Render->_drawList->AddPolyline(shadowPoints.data(), shadowPoints.size(), color.u32() & IM_COL32_A_MASK, false, config.thickness);
-		g_Render->_drawList->AddPolyline(points.data(), points.size(), color.u32(), false, config.thickness);
-	}
+	
 }
 
 void RenderEntityBox(const ProjectileInfo_t& projectileData, const char* name) {
@@ -99,79 +77,35 @@ void RenderEntityBox(const ProjectileInfo_t& projectileData, const char* name) {
 		if (!strcmp(name, str("Smoke"))) {
 			if (projectileData.time_to_die + 0.5f <= 0.f) {
 				g_Render->DrawString(origin2d.x, origin2d.y, color_t(255, 255, 255, 255),
-					render::dropshadow | render::centered_x | render::centered_y, fonts::esp_icons_big, str("k"));
+				 render::centered_x | render::centered_y, fonts::esp_icons_big, str("k"));
 			}
 			else {
 
-				static constexpr float Step = PI * 2.0f / 60;
-				std::vector<ImVec2> points;
-				for (float lat = 0.f; lat <= PI * 2.0f; lat += Step)
-				{
-					float sin1 = sin(lat);
-					float cos1 = cos(lat);
-					float sin3 = sin(0.0f);
-					float cos3 = cos(0.0f);
-
-					Vector point1;
-					point1 = Vector(sin1 * cos3, cos1, sin1 * sin3) * 120.f;
-					Vector point3 = Vector(projectileData.origin);
-					Vector Out;
-					point3 += point1;
-
-					if (Math::WorldToScreen(point3, Out))
-						points.push_back(ImVec2(Out.x, Out.y));
-				}
-
-				g_Render->_drawList->AddConvexPolyFilled(points.data(), points.size(), color_t(150, 150, 150, 80).u32());
-				g_Render->_drawList->AddPolyline(points.data(), points.size(), color_t(93, 186, 240, 50).u32(), true, 2.f);
-
-				constexpr int radius = 26;
-				g_Render->CircleFilled(origin2d.x, origin2d.y, radius, color_t(40, 40, 40, 255), 50);
-				g_Render->CircleFilled(origin2d.x, origin2d.y, radius - 6, color_t(25, 25, 25, 255), 50);
-
-				g_Render->_drawList->PathArcTo(ImVec2(origin2d.x, origin2d.y), radius - 3, 0.f, 2 * PI * (projectileData.time_to_die / 18.f), 32);
-				g_Render->_drawList->PathStroke(color_t(93, 186, 240, 255).u32(), false, 4.f);
-
-				float time = projectileData.time_to_die + 0.5f;
+			
 
 				g_Render->DrawString(origin2d.x, origin2d.y, color_t(255, 255, 255, 255),
 					render::centered_x | render::centered_y, fonts::esp_icons_big, str("k"), time);
 			}
 		}
 		else if (!strcmp(name, str("Molotov"))) {
-			constexpr int radius = 26;
-			g_Render->CircleFilled(origin2d.x, origin2d.y, radius, color_t(40, 40, 40, 255), 50);
-			g_Render->CircleFilled(origin2d.x, origin2d.y, radius - 6, color_t(25, 25, 25, 255), 50);
-			g_Render->_drawList->PathArcTo(ImVec2(origin2d.x, origin2d.y), radius - 3, 0.f, 2 * PI, 32);
-			g_Render->_drawList->PathStroke(color_t(255, 150, 0, 255).u32(), false, 4.f);
+			
 
-			g_Render->DrawString(origin2d.x, origin2d.y, color_t(255, 150, 0, 255),
+			g_Render->DrawString(origin2d.x, origin2d.y, color_t(255, 255, 255, 255),
 				render::centered_x | render::centered_y, fonts::esp_icons_big, str("l"));
 		}
 		else if (!strcmp(name, str("HE Grenade"))) {
-			constexpr int radius = 26;
-			g_Render->CircleFilled(origin2d.x, origin2d.y, radius, color_t(40, 40, 40, 255), 50);
-			g_Render->CircleFilled(origin2d.x, origin2d.y, radius - 6, color_t(25, 25, 25, 255), 50);
-			g_Render->_drawList->PathArcTo(ImVec2(origin2d.x, origin2d.y), radius - 3, 0.f, 2 * PI, 32);
-			g_Render->_drawList->PathStroke(color_t(255, 35, 35, 255).u32(), false, 4.f);
+			
 
-			g_Render->DrawString(origin2d.x, origin2d.y, color_t(255, 35, 35, 255),
+			g_Render->DrawString(origin2d.x, origin2d.y, color_t(255, 255,255, 255),
 				render::centered_x | render::centered_y, fonts::esp_icons_big, str("j"));
 		}
 		else if (!strcmp(name, str("Flashbang"))) {
-			constexpr int radius = 26;
-			g_Render->CircleFilled(origin2d.x, origin2d.y, radius, color_t(40, 40, 40, 255), 50);
-			g_Render->CircleFilled(origin2d.x, origin2d.y, radius - 6, color_t(25, 25, 25, 255), 50);
-			g_Render->_drawList->PathArcTo(ImVec2(origin2d.x, origin2d.y), radius - 3, 0.f, 2 * PI, 32);
-			g_Render->_drawList->PathStroke(color_t(255, 208, 55, 255).u32(), false, 4.f);
+	
 
-			g_Render->DrawString(origin2d.x, origin2d.y, color_t(255, 208, 55, 255),
+			g_Render->DrawString(origin2d.x, origin2d.y, color_t(255, 255, 255, 255),
 				render::centered_x | render::centered_y, fonts::esp_icons_big, str("i"));
 		}
-		else {
-			g_Render->DrawString(origin2d.x, origin2d.y, color_t(255, 255, 255, 255),
-				render::dropshadow | render::centered_x | render::centered_y, fonts::esp_logs, name);
-		}
+
 	}
 }
 
@@ -213,29 +147,7 @@ void renderProjectileEsp(const ProjectileInfo_t& projectileData, const char* nam
 }
 
 void CVisuals::DrawWatermark() {
-	std::string output = str("1337 version 2 | ") + csgo->username;
-	output += str(" | beta");
 
-
-	std::transform(output.begin(), output.end(), output.begin(), ::toupper);
-
-	ImGui::PushFont(fonts::very_small);
-	const auto& text_size = ImGui::CalcTextSize(output.c_str());
-	ImGui::PopFont();
-
-	g_Render->FilledRect(
-		((csgo->w - text_size.x) / 2) - 2,
-		(csgo->h - text_size.y) - 3,
-		text_size.x + 3,
-		text_size.y - 1,
-		color_t(10, 10, 10, 150));
-
-	g_Render->DrawString((csgo->w / 2),
-		(csgo->h - text_size.y) - 4,
-		color_t(255, 255, 255, 255),
-		render::outline | render::centered_x,
-		fonts::very_small,
-		output.c_str());
 }
 
 class c_dynamic_list {
@@ -272,21 +184,23 @@ public:
 			if (current_animation <= 0.f)
 				continue;
 
-			ImGui::PushFont(fonts::menu_desc);
-			auto text_size = ImGui::CalcTextSize(el.second.type.c_str());
-			ImGui::PopFont();
+			std::string t;
 
-			g_Render->DrawString(pos.x + 10.f, pos.y + 35.f + cursor,
-				style.get_color(c_style::accented_color).manage_alpha(255.f * easeOutQuad(current_animation)),
-				render::centered_y | render::dropshadow, fonts::menu_desc,
-				str("%s"), el.second.type.c_str());
+	
 
-			g_Render->DrawString(pos.x + 14.f + text_size.y, pos.y + 35.f + cursor,
+
+			g_Render->DrawString(pos.x + 3.f, pos.y + 38.f + cursor,
 				style.get_color(c_style::text_color).manage_alpha(255.f * easeOutQuad(current_animation)),
-				render::centered_y | render::dropshadow, fonts::menu_desc,
-				str("%s"), el.second.name.c_str());
+				render::centered_y, fonts::esp_logs,
+				str("%s"), (el.second.name).c_str());
 
-			cursor += 20 * easeOutQuad(current_animation);
+
+			g_Render->DrawString(pos.x + 9.f + 109.5f, pos.y + 38.f + cursor,
+				style.get_color(c_style::text_color).manage_alpha(255.f * easeOutQuad(current_animation)),
+				render::centered_y, fonts::esp_logs,
+				str("%s"), (el.second.type).c_str());
+
+			cursor += 16 * easeOutQuad(current_animation);
 		}
 		last_size = cursor;
 	}
@@ -297,11 +211,11 @@ c_dynamic_list bind_list;
 std::string GetTypeofBind(int type) {
 	switch (type)
 	{
-	case 0: return str("[E]");
-	case 1: return str("[H]");
-	case 2: return str("[T]");
-	case 3: return str("[R]");
-	default: return str("?");
+	case 0: return str("[ off ]");
+	case 1: return str("[ hold ]");
+	case 2: return str("[ toggle ]");
+	case 3: return str("[ release ]");
+	default: return str("[ on ]");
 	}
 }
 
@@ -330,7 +244,7 @@ void DrawIndicators() {
 		return;
 
 	Vector2D size = Vector2D(200.f, 25.f);
-	static Vector2D position = Vector2D(10.f, (csgo->h / 2.f));
+	static Vector2D position = Vector2D(240.f, 300.f);
 
 	static std::vector<c_bind> old_binds;
 	if (old_binds.empty()) {
@@ -355,13 +269,9 @@ void DrawIndicators() {
 			bind_list.add(std::string(GetBindName(i)), GetTypeofBind(g_Binds[i].type), i);
 	}
 	if (bind_list.last_size > 0) {
-		g_Render->FilledRectGradient(position.x, position.y, size.x, size.y,
-			style.get_color(c_style::window_background).manage_alpha(255.f * 0.7f), color_t(0, 0, 0, 0),
-			color_t(0, 0, 0, 0), style.get_color(c_style::window_background).manage_alpha(255.f * 0.7f));
+		g_Render->FilledRect(position.x, position.y, + size.x - 30.f, size.y, color_t(7, 2, 31, 255));
 
-		g_Render->FilledRect(position.x, position.y, 4.f, size.y, style.get_color(c_style::accented_color));
-
-		g_Render->DrawString(position.x + 17, position.y + (size.y / 2.f), style.get_color(c_style::text_color), render::centered_y, fonts::menu_desc, str("Keybinds"));
+		g_Render->DrawString(position.x + 14, position.y + (size.y / 2.f), style.get_color(c_style::text_color), render::centered_y, fonts::keybindsBig, str("KEYBINDS"));
 	}
 	bind_list.render(position);
 
@@ -370,15 +280,142 @@ void DrawIndicators() {
 
 void CVisuals::DrawLocalVisuals()
 {
+	static auto CLLagComp = interfaces.cvars->FindVar("cl_lagcompensation");
+
+	static bool LastConnected = false;
+
+	if (LastConnected != (interfaces.engine->IsConnected() && interfaces.engine->IsInGame())) {
+		LastConnected = (interfaces.engine->IsConnected() && interfaces.engine->IsInGame());
+		memset(csgo->maxmisses, 0, sizeof(csgo->maxmisses));
+	}
+	
 	if (vars.visuals.watermark)
 		DrawWatermark();
 
 	if (!csgo->is_connected)
 		return;
 
-	DrawIndicators();
-	g_GrenadePrediction->Paint();
 
+	if (!vars.ragebot.AntiDefensive) {
+		CLLagComp->SetValue(1);
+		csgo->DisableLagComp = false;
+	}
+	else {
+		CLLagComp->SetValue(0);
+		csgo->DisableLagComp = false;
+	}
+
+	DrawIndicators();
+	//g_GrenadePrediction->Paint();
+	if (csgo->local->isAlive() && csgo->local) {
+		if (csgo->send_packet)
+			csgo->LegSwitch = !csgo->LegSwitch;
+		
+		if (!csgo->LocalGrenadePrediction.Valid) {
+			
+	
+			auto flags_backup = g_Render->_drawList->Flags;
+			g_Render->_drawList->Flags |= ImDrawListFlags_AntiAliasedFill | ImDrawListFlags_AntiAliasedLines;
+			Vector Screen;
+			Vector Last;
+			//std::vector<ImVec2> pts;
+			if (!csgo->LocalGrenadePrediction.Finished) {
+				csgo->LocalGrenadePrediction.Finished = true;
+				trace_t tr;
+				Ray_t ray;
+				ray.Init(csgo->LocalGrenadePrediction.EndPos + Vector(0, 0, 50), csgo->LocalGrenadePrediction.EndPos - Vector(0, 0, 1000));
+				static CTraceFilterWorldAndPropsOnly t;
+				interfaces.trace->TraceRay(ray, MASK_SOLID, &t, &tr);
+				csgo->LocalGrenadePrediction.EndPos = tr.endpos;
+				for (auto& Cur : csgo->LocalGrenadePrediction.Path) {
+
+					if (!Last.IsZero()) {
+
+						static std::string model_name = str("sprites/purplelaser1.vmt");
+
+
+						BeamInfo_t beamInfo;
+						beamInfo.m_nType = TE_BEAMPOINTS;
+						beamInfo.m_pszModelName = model_name.c_str();
+						beamInfo.m_nModelIndex = -1;
+						beamInfo.m_flHaloScale = 0.0f;
+						beamInfo.m_flLife = 3.f; //duration of tracers
+						beamInfo.m_flWidth = 14; //start width
+						beamInfo.m_flEndWidth = 14; //end width
+						beamInfo.m_flFadeLength = 0.0f;
+						beamInfo.m_flAmplitude = 2.0f;
+						beamInfo.m_flBrightness =255.f;
+						beamInfo.m_flSpeed = 0.0000000007f;
+						beamInfo.m_nStartFrame = 0;
+						beamInfo.m_flFrameRate = 0.f;
+						beamInfo.m_flRed = vars.visuals.nadepred_color.get_red();
+						beamInfo.m_flGreen = vars.visuals.nadepred_color.get_green();
+						beamInfo.m_flBlue = vars.visuals.nadepred_color.get_blue();
+						beamInfo.m_nSegments = 2;
+						beamInfo.m_bRenderable = true;
+						beamInfo.m_nFlags = FBEAM_ONLYNOISEONCE | FBEAM_NOTILE | FBEAM_HALOBEAM;
+						beamInfo.m_vecStart = Last;
+						beamInfo.m_vecEnd = Cur;
+
+						Beam_t* beam = interfaces.beams->CreateBeamPoints(beamInfo);
+						if (beam)
+							interfaces.beams->DrawBeam(beam);
+
+
+					}
+					Last = Cur;
+
+				}
+			}
+			Vector origin2d;
+			if (interfaces.global_vars->realtime < csgo->LocalGrenadePrediction.ThrowTime + 3.0f) {
+				for (auto& bounce : csgo->LocalGrenadePrediction.Bounce) {
+					if (Math::WorldToScreen(bounce, origin2d)) {
+						g_Render->GradientCircle(origin2d, 10.f, color_t(vars.visuals.nadepred_color[2], vars.visuals.nadepred_color[1],
+							vars.visuals.nadepred_color[0], 0), color_t(vars.visuals.nadepred_color[2], vars.visuals.nadepred_color[1],
+								vars.visuals.nadepred_color[0], vars.visuals.nadepred_color[3]));
+					}
+				}
+
+				if (Math::WorldToScreen(csgo->LocalGrenadePrediction.EndPos, origin2d)) {
+					g_Render->GradientCircle(origin2d, 17.f, color_t(vars.visuals.nadepred_color[2], vars.visuals.nadepred_color[1],
+						vars.visuals.nadepred_color[0], 0), color_t(vars.visuals.nadepred_color[2], vars.visuals.nadepred_color[1],
+							vars.visuals.nadepred_color[0], vars.visuals.nadepred_color[3]));
+					//g_Render->CircleFilled(Screen.x, Screen.y, 40, color_t(255, 255, 255, 255), 40);
+				}
+			}
+		
+			g_Render->_drawList->Flags = flags_backup;
+		}
+			if (csgo->LocalGrenadePrediction.Valid) {
+				auto flags_backup = g_Render->_drawList->Flags;
+				g_Render->_drawList->Flags |= ImDrawListFlags_AntiAliasedFill | ImDrawListFlags_AntiAliasedLines;
+				Vector Screen;
+				std::vector<ImVec2> pts;
+				for (auto& Cur : csgo->LocalGrenadePrediction.Path) {
+					if (Math::WorldToScreen(Cur, Screen)) {
+						pts.push_back(ImVec2(Screen.x, Screen.y));
+					}
+				}
+				if (!pts.empty())
+					g_Render->_drawList->AddPolyline(pts.data(), pts.size(), vars.visuals.nadepred_color.u32(), false, 3.f);
+
+				for (auto& bounce : csgo->LocalGrenadePrediction.Bounce) {
+					if (Math::WorldToScreen(bounce, Screen)) {
+						g_Render->GradientCircle(Screen, 7.f, color_t(170,170,255, 0), color_t(170,170,255, 255));
+					}
+				}
+
+				if (Math::WorldToScreen(csgo->LocalGrenadePrediction.EndPos, Screen)) {
+					g_Render->GradientCircle(Screen, 15.f, color_t(vars.visuals.nadepred_color[2], vars.visuals.nadepred_color[1],
+						vars.visuals.nadepred_color[0], 0), color_t(vars.visuals.nadepred_color[2], vars.visuals.nadepred_color[1],
+							vars.visuals.nadepred_color[0], vars.visuals.nadepred_color[3]));
+					//g_Render->CircleFilled(Screen.x, Screen.y, 40, color_t(255, 255, 255, 255), 40);
+				}
+				g_Render->_drawList->Flags = flags_backup;
+			}
+		
+	}
 	if ((vars.visuals.remove & 8) && csgo->is_local_alive && csgo->scoped) {
 		g_Render->DrawLine(csgo->w / 2, 0, csgo->w / 2, csgo->h, color_t(0, 0, 0, 255));
 		g_Render->DrawLine(0, csgo->h / 2, csgo->w, csgo->h / 2, color_t(0, 0, 0, 255));
@@ -430,12 +467,12 @@ void renderWeaponBox(const WeaponData_t& weaponData) noexcept
 		return;
 
 	g_Render->DrawString(screen.x, screen.y, vars.visuals.world.weapons.color,
-		render::outline | render::centered_x | render::centered_y, fonts::menu_desc, weaponData.name.c_str());
+	 render::centered_x | render::centered_y, fonts::esp_info, weaponData.name.c_str());
 }
 
 void renderInferno(const InfernoInfo_t& info) {
 	Vector origin2d;
-	if (!Math::WorldToScreen(info.entity_origin, origin2d))
+	if (!Math::WorldToScreen(info.entity_origin + Vector(0,0,70.f), origin2d))
 		return;
 
 	static auto world_circle = [](Vector location, float radius) {
@@ -448,51 +485,60 @@ void renderInferno(const InfernoInfo_t& info) {
 			if (Math::WorldToScreen(location + point3d, point2d))
 				points.push_back(ImVec2(point2d.x, point2d.y));
 		}
-		g_Render->_drawList->AddConvexPolyFilled(points.data(), points.size(), color_t(255, 98, 0, 80).u32());
-		g_Render->_drawList->AddPolyline(points.data(), points.size(), color_t(255, 93, 0, 50).u32(), true, 2.f);
+		g_Render->_drawList->AddPolyline(points.data(), points.size(), color_t(170, 170, 255, 180).u32(), true, 1.f);
+	};
+
+	static auto polyobject = [](vector<Vector> Points,int Count,float Rad, Vector cen) {
+		Vector Temp;
+		Vector w2s;
+		std::vector<ImVec2> points;
+
+
+		float Step = PI * 2.0f / Count;
+		float temp;
+		for (float lat = 0.f; lat <= PI * 2.0f; lat += Step)
+		{
+			temp = INT_MAX;
+			const auto& TB = Vector(sin(lat), cos(lat), 0.f) * Rad;
+			for (auto& Point : Points) {
+				auto l = (Point - (cen + TB)).LengthSqr();
+				if (l < temp) {
+					temp = l;
+					Temp = Point;
+				}
+			}
+			if (Math::WorldToScreen(Temp, w2s))
+				points.push_back(ImVec2(w2s.x, w2s.y));
+
+		}
+		int Auto = 1;
+		for (auto& point : points) {
+			g_Render->DrawLine(point.x,point.y,points[(Auto % Count)].x, points[(Auto % Count)].y, color_t(170, 170, 255, 120),2.f);
+			Auto++;
+		}
+		g_Render->_drawList->AddConvexPolyFilled(points.data(), points.size(), color_t(170, 170, 255, 40).u32());
+		g_Render->_drawList->AddPolyline(points.data(), points.size(), color_t(170, 170, 255, 150).u32(), true, 2.f);
 	};
 
 
-	world_circle(info.origin, info.range);
+	auto PPoint = info.PPoints;
+	//g_Render->Render3DCircle(info.origin, info.range, color_t(255, 170, 170, 0), color_t(255, 170, 170, 169));
+	polyobject(PPoint, info.PPoints.size(), info.range, info.origin);
 
-	//std::vector<ImVec2> points;
-	//for (const auto& p : info.points)
-	//{
-	//	Vector point2d;
-	//	if (Math::WorldToScreen(p, point2d)) {
-	//		points.push_back(ImVec2(point2d.x, point2d.y));
-	//	}
-	//}
-	//
-	//auto flags_backup = g_Render->_drawList->Flags;
-	//g_Render->_drawList->Flags |= ImDrawListFlags_AntiAliasedFill | ImDrawListFlags_AntiAliasedLines;
-	//g_Render->_drawList->AddConvexPolyFilled(points.data(), points.size(), color_t(255, 35, 35, 140).u32());
-	//g_Render->_drawList->AddPolyline(points.data(), points.size(), color_t(0, 0, 255, 255).u32(), true, 3.f);
-	//g_Render->_drawList->Flags = flags_backup;
-	//
-	//if (info.points.size() > 2) {
+	//g_Render->Render3DCircle(info.origin, info.range, color_t(255, 170, 170, 0), color_t(255, 170, 170, 99));
+	/*
+	int ct = 0;
+	for (auto& PT : info.PPoints) {
+		world_circle(PT,info.PRads[ct]);
+		ct++;
+	}*/
 
-	//	int i = 0;
-	//	for (const auto& p : info.points)
-	//	{
-	//		Vector point2d;
-	//		if (Math::WorldToScreen(p, point2d)) {
-	//			g_Render->DrawLine(point2d.x, point2d.y, origin2d.x, origin2d.y, color_t(255, 100, 0, 255).u32(), 3.f);
-	//			//g_Render->DrawString(point2d.x, point2d.y, color_t(255, 255, 255, 255).u32(), render::dropshadow, fonts::menu_desc, "%i", ++i);
-	//			//points.push_back(ImVec2(point2d.x, point2d.y));
-	//		}
-	//	}
-	//}
+	
 
-	constexpr int radius = 26;
-	g_Render->CircleFilled(origin2d.x, origin2d.y, radius, color_t(40, 40, 40, 255), 50);
-	g_Render->CircleFilled(origin2d.x, origin2d.y, radius - 6, color_t(25, 25, 25, 255), 50);
-
-	g_Render->_drawList->PathArcTo(ImVec2(origin2d.x, origin2d.y), radius - 3, 0.f, 2.f * PI * (info.time_to_die / 7.03125f), 32);
-	g_Render->_drawList->PathStroke(color_t(255, 98, 0, 255).u32(), false, 4.f);
-
-	g_Render->DrawString(origin2d.x, origin2d.y, color_t(255, 255, 255, 255),
-		render::dropshadow | render::centered_x | render::centered_y, fonts::esp_icons_big, str("l"));
+	g_Render->GradientCircle(Vector2D(origin2d.x, origin2d.y), 39, color_t(255,170,170, 0), color_t(255,170,170, 255));
+	g_Render->CircleFilled(origin2d.x, origin2d.y, 26 - 7, color_t(13, 13, 13, 255), 35);
+	g_Render->PArc(origin2d.x, origin2d.y, 26 - 5, 1.5f * PI, ((1.5f * PI) - ((1.5f * PI + 1.57) * (info.time_to_die / 7.03125f))), 4.f, color_t(170,170,255, 255));
+	g_Render->DrawString(origin2d.x + 1, origin2d.y, color_t(170,170,255,255), render::centered_x | render::centered_y, fonts::esp_icons_big, str("l"));
 }
 
 void renderBomb(const BombInfo_t& info) {
@@ -522,43 +568,7 @@ void renderBomb(const BombInfo_t& info) {
 	}
 	pulse = clamp(pulse, 0.f, 1.f);
 
-	if (info.bomb_defused) {
-		g_Render->CircleFilled(csgo->w / 2, csgo->h - offset, radius, color_t(40, 40, 40, 255), 50);
-		g_Render->CircleFilled(csgo->w / 2, csgo->h - offset, radius - 6, color_t(25, 25, 25, 255), 50);
-
-		g_Render->_drawList->PathArcTo(ImVec2(csgo->w / 2, csgo->h - offset), radius - 3, DEG2RAD(0.f), DEG2RAD(360.f), 32);
-		g_Render->_drawList->PathStroke(color_t(0, 255, 0, 255).u32(), false, 4.f);
-
-		g_Render->DrawString(csgo->w / 2, csgo->h - offset, color_t(255, 255, 255, 255),
-			render::dropshadow | render::centered_x | render::centered_y, fonts::esp_name, str("defused"));
-	}
-	else {
-		if (info.is_defusing) {
-			g_Render->CircleFilled(csgo->w / 2, csgo->h - offset, radius, color_t(40, 40, 40, 255), 50);
-			g_Render->CircleFilled(csgo->w / 2, csgo->h - offset, radius - 6, color_t(25, 25, 25, 255), 50);
-
-			g_Render->_drawList->PathArcTo(ImVec2(csgo->w / 2, csgo->h - offset), radius - 3, DEG2RAD(0.f), DEG2RAD(360.f), 32);
-			g_Render->_drawList->PathStroke(color_t(84, 227, 255, 155 + (100 * pulse)).u32(), false, 4.f);
-
-			g_Render->DrawString(csgo->w / 2, csgo->h - offset, color_t(255, 255, 255, 255),
-				render::dropshadow | render::centered_x | render::centered_y, fonts::esp_icons_big, str("r"));
-		}
-		else {
-			if (info.bomb_ticking && info.blow_time > 0.f) {
-				g_Render->CircleFilled(csgo->w / 2, csgo->h - offset, radius, color_t(40, 40, 40, 255), 50);
-				g_Render->CircleFilled(csgo->w / 2, csgo->h - offset, radius - 6, color_t(25, 25, 25, 255), 50);
-
-				g_Render->_drawList->PathArcTo(ImVec2(csgo->w / 2, csgo->h - offset), radius - 3, 0.f, 2.f * PI * (info.blow_time / info.time), 32);
-				g_Render->_drawList->PathStroke(color_t(255, 0, 0, 255).u32(), false, 4.f);
-
-				g_Render->DrawString(csgo->w / 2, csgo->h - offset - 10, color_t(255, 255, 255, 255),
-					render::dropshadow | render::centered_x | render::centered_y, fonts::esp_icons_big, str("o"));
-
-				g_Render->DrawString(csgo->w / 2, csgo->h - offset + 10, color_t(255, 255, 255, 255),
-					render::dropshadow | render::centered_x | render::centered_y, fonts::lby_indicator, str("%.0f"), info.blow_time);
-			}
-		}
-	}
+	
 
 	Vector origin;
 	if (!Math::WorldToScreen(info.origin, origin))
@@ -583,7 +593,7 @@ void renderBomb(const BombInfo_t& info) {
 	};
 
 	g_Render->DrawString(origin.x, origin.y, bomb_clr(),
-		render::dropshadow | render::centered_x | render::centered_y, fonts::esp_logs,
+	render::centered_x | render::centered_y, fonts::esp_logs,
 		bomb_str().c_str());
 }
 
@@ -681,13 +691,6 @@ void CVisuals::Draw()
 				|| !info.is_valid)
 				continue;
 
-			//if (vars.visuals.resolver_flag)
-			//{
-			//	ImGui::PushFont(fonts::esp_info); //info.box.x + info.box.w + 3, (info.box.y - 2) + step
-
-			//	g_Render->DrawString(info.box.x + info.box.w + 3, (info.box.y - 2) + 5, color_t(255, 255, 255),
-			//		render::outline, fonts::esp_info, ResolverMode[info.player->EntIndex()].c_str());
-			//}
 
 			if (vars.visuals.zeus_warning) {
 				if (info.zeuser_stages != none) {
@@ -802,7 +805,7 @@ void CVisuals::Draw()
 				auto clr = info.dormant ? color_t(255, 255, 255, alpha) : color_t(r, g, b, a * easeOutQuad(info.esp_offsets[4]));
 
 				g_Render->DrawString(info.box.x + info.box.w / 2 - text_size.x / 2, info.box.y - 15, clr,
-					render::outline, fonts::esp_name, info.name.c_str());
+					render::none, fonts::esp_name, info.name.c_str());
 				ImGui::PopFont();
 			}
 
@@ -817,13 +820,13 @@ void CVisuals::Draw()
 
 					//if (info.AnimInfo.points.size() > 0) {
 					//	Vector p1 = info.AnimInfo.points[0];
-					//	Vector p2 = info.AnimInfo.points[1];
+					//	Vector origin2d = info.AnimInfo.points[1];
 
 					//	int add = 5;
 
 					//	Vector w1, w2;
 					//	if (Math::WorldToScreen(p1, w1)
-					//		&& Math::WorldToScreen(p2, w2)) {
+					//		&& Math::WorldToScreen(origin2d, w2)) {
 					//		g_Render->FilledRect(w1.x - 4 + add, w1.y - 4 + add, 6 + add, 6 + add, color_t(0, 0, 0, 255));
 					//		g_Render->FilledRect(w1.x - 3 + add, w1.y - 3 + add, 4 + add, 4 + add, color_t(255, 0, 0, 255));
 
@@ -903,7 +906,7 @@ void CVisuals::Draw()
 						ImGui::PopFont();
 
 						g_Render->DrawString(info.box.x - health_width.x + 1, info.box.y + health_height - 2,
-							color_t(255, 255, 255, alpha * easeOutQuad(info.esp_offsets[2])), render::outline | render::centered_y, fonts::esp_info,
+							color_t(255, 255, 255, alpha * easeOutQuad(info.esp_offsets[2])), render::centered_y, fonts::esp_info,
 							health_str.c_str());
 					}
 				}
@@ -947,7 +950,7 @@ void CVisuals::Draw()
 
 						if (ammo < max_ammo)
 							g_Render->DrawString((info.box.x + width - text_size.x) + 1, info.box.y + info.box.h + 3,
-								color_t(255, 255, 255, alpha * animated_mod), render::outline | render::centered_y, fonts::esp_info,
+								color_t(255, 255, 255, alpha * animated_mod),  render::centered_y, fonts::esp_info,
 								ammostr);
 
 						ImGui::PopFont();
@@ -967,10 +970,10 @@ void CVisuals::Draw()
 
 					if (info.esp_offsets[1] > 0.f) {
 						ImGui::PushFont(fonts::esp_info);
-
+						std::string t = info.weapon_name;
 						g_Render->DrawString(info.box.x + info.box.w / 2, info.box.y + 1 + info.box.h + (6.f * animated_mod),
 							vars.visuals.weapon_color.manage_alpha(vars.visuals.weapon_color.get_alpha() * easeOutQuad(info.esp_offsets[1])),
-							render::outline | render::centered_x, fonts::esp_info, info.weapon_name.c_str());
+							render::centered_x, fonts::esp_name, t.c_str());
 
 						ImGui::PopFont();
 					}
@@ -993,17 +996,17 @@ void CVisuals::Draw()
 				bool fake_ducking = (vars.visuals.flags & 16) && info.fake_duck;
 				bool draw_distance = (vars.visuals.flags & 32) && info.player_distance > 0.f;
 				bool draw_last_place = (vars.visuals.flags & 64);
-				bool draw_resolver = (vars.visuals.flags * 128) && !resolverInfo[info.player->EntIndex()].m_iDesyncType > -1;
+				bool draw_resolver = (vars.visuals.flags * 128) && resolverInfo[info.player->EntIndex()].DesyncType != NONE;
 
 				std::string dist_to_target = std::to_string(info.player_distance) + str("u");
 
-				flags_info.emplace_back(Flags_t(info.have_helmet ? str("q") : str("p"),
+				flags_info.emplace_back(Flags_t(info.have_helmet ? str("HK") : str("K"),
 					have_armor, clr, true));
 
-				flags_info.emplace_back(Flags_t(str("r"),
+				flags_info.emplace_back(Flags_t(str("Kit"),
 					have_kit, clr, true));
 
-				flags_info.emplace_back(Flags_t(str("i"),
+				flags_info.emplace_back(Flags_t(str("Flashed"),
 					is_flashed, clr, true));
 
 				flags_info.emplace_back(Flags_t(str("Scoped"),
@@ -1041,8 +1044,8 @@ void CVisuals::Draw()
 
 					if (cur_alpha > 0.f) {
 						g_Render->DrawString(info.box.x + info.box.w + 3,
-							(info.box.y - 2) + step, current_flags.clr.manage_alpha(cur_alpha), render::outline, 
-							current_flags.icon ? fonts::esp_icons : fonts::esp_info, current_flags.name.c_str());
+							(info.box.y - 2) + step, current_flags.clr.manage_alpha(cur_alpha), render::none, 
+							fonts::esp_info, current_flags.name.c_str());
 
 						step += cur_step;
 					}
@@ -1112,14 +1115,15 @@ void CVisuals::StoreOtherInfo()
 						int* m_fireZDelta = entity->m_fireZDelta(); //0xD04
 						int m_fireCount = entity->m_fireCount();  //0x13A8
 						inferno.entity_origin = inferno_origin;
+						inferno.PPoints.push_back(inferno_origin);
+						inferno.PRads.push_back(35.f);
 						inferno.range = 0.f;
 						Vector average_vector = Vector(0, 0, 0);
 						//	std::vector<Vector> points;
 						for (int i = 0; i <= m_fireCount; i++) {
-							if (!m_bFireIsBurning[i])
-								continue;
-
+	
 							Vector fire_origin = Vector(m_fireXDelta[i], m_fireYDelta[i], m_fireZDelta[i]);
+					
 							float delta = fire_origin.Length2D() + 14.4f;
 							if (delta > inferno.range)
 								inferno.range = delta;
@@ -1127,6 +1131,15 @@ void CVisuals::StoreOtherInfo()
 							average_vector += fire_origin;
 							if (fire_origin == Vector(0, 0, 0))
 								continue;
+
+							Vector fire_origin2 = Vector(m_fireXDelta[i], m_fireYDelta[i], 0);
+							Ray_t pray;
+							pray.Init((inferno_origin + fire_origin2) + Vector(0, 0, 40), (inferno_origin + fire_origin2) - Vector(0, 0, 1000));
+							static CTraceFilterWorldAndPropsOnly tracefilter;
+							CGameTrace tr;
+							interfaces.trace->TraceRay(pray, MASK_SOLID, &tracefilter, &tr);
+							inferno.PPoints.push_back(tr.endpos);
+							inferno.PRads.push_back((fire_origin2 * 0.22f).Length2D() + 15.f);
 							inferno.points.push_back(fire_origin + inferno_origin);
 						}
 

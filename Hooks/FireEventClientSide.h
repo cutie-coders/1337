@@ -119,7 +119,7 @@ void LogHits(IGameEvent* Event)
 						snapshot.hitbox == 0
 						&& hitgroup == HITGROUP_HEAD
 						&& hittable_in_head) {
-						c_Resolver->AddHitInfo(snapshot.entity, snapshot.resolver_info);
+			
 					}
 					if (vars.visuals.hitmarker & 2) {
 						g_Hitmarker->Add(snapshot.intended_position, hitgroup == HITGROUP_HEAD, Event->GetString(str("dmg_health")));
@@ -145,7 +145,7 @@ void LogHits(IGameEvent* Event)
 				Message += HitgroupToName(hitgroup);
 			}
 
-			Message += health > 0 ? str(" for ") : str(" and did ");
+			Message += health > 0 ? str(" for ") : str(" with damage at ");
 			Message += Event->GetString(str("dmg_health"));
 			Message += str(" hp ");
 			if (health > 0) {
@@ -167,8 +167,7 @@ IBasePlayer* GetPlayer(int ID)
 
 void ClearMissedShots(IGameEvent* game_event)
 {
-	memset(csgo->actual_misses, 0, sizeof(csgo->actual_misses));
-	memset(csgo->imaginary_misses, 0, sizeof(csgo->actual_misses));
+	memset(csgo->maxmisses, 0, sizeof(csgo->maxmisses));
 }
 
 void player_hurt(IGameEvent* game_event) {

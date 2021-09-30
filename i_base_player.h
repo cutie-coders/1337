@@ -1069,6 +1069,10 @@ public:
 		return *(bool*)((DWORD)this + 0x29E8);
 	}
 
+	void SetFloat(float R, const char* A, const char* B);
+
+	int GetInt(const char* A, const char* B);
+
 	Vector& GetVecViewOffset();
 
 	float& GetDuckSpeed();
@@ -1666,7 +1670,7 @@ public:
 	int GetMaxTickbaseShift()
 	{
 		if (!DTable())
-			return 14;
+			return 13;
 
 		auto idx = GetItemDefinitionIndex();
 		auto max_tickbase_shift = 0;
@@ -1708,11 +1712,11 @@ public:
 			max_tickbase_shift = 9;
 			break;
 		case WEAPON_DEAGLE:
-			max_tickbase_shift = 13;
+			max_tickbase_shift = 12;
 			break;
 		case WEAPON_G3SG1:
 		case WEAPON_SCAR20:
-			max_tickbase_shift = 14;
+			max_tickbase_shift = 13;
 			break;
 		}
 

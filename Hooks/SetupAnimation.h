@@ -84,12 +84,9 @@ void __fastcall Hooked_UpdateClientSideAnimation(IBasePlayer* player, uint32_t e
 		if (csgo->ShouldUpdate)
 			original(player, edx);
 		else {
-			std::array<float, 24> poses = {};
-			CAnimationLayer layers[13] = {};
 
-			// backup old data
-			player->ParseAnimOverlays(layers);
-			player->ParsePoseParameter(poses);
+
+
 
 			// set last recieved data on bones
 			player->SetAnimOverlays(csgo->layers);
@@ -100,9 +97,7 @@ void __fastcall Hooked_UpdateClientSideAnimation(IBasePlayer* player, uint32_t e
 			player->SetAbsAngles(Vector(0, player->GetPlayerAnimState()->m_abs_yaw, 0));
 			player->SetupBones(nullptr, -1, 0x7FF00, interfaces.global_vars->curtime);
 
-			// restore old data so it won't fuck up
-			player->SetAnimOverlays(layers);
-			player->SetPoseParameter(poses);
+
 		}
 	}
 	else {

@@ -21,6 +21,7 @@ public:
 	Vector intended_position;
 	int hitbox;
 	animation record;
+	animation* anims;
 	Vector eyeangles, impact, start;
 	int backtrack;
 	matrix default_matrix[128];

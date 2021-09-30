@@ -1,27 +1,14 @@
 #pragma once
 #include "../../Hooks/hooks.h"
 
-enum ACT
-{
-	ACT_NONE,
-	ACT_THROW,
-	ACT_LOB,
-	ACT_DROP,
-};
 
-class CGrenadePrediction
+class IGrenadeWarning
 {
 private:
-	struct render_info_t
-	{
-		std::vector<Vector> path;
-		int type;
-	}render_info;
 
-	std::vector<Vector> path;
-
+	Vector Source, Velocity, Direction;
+	IBasePlayer* Entity;
 	int type = 0;
-	int act = 0;
 
 	void Setup(Vector& vecSrc, Vector& vecThrow, Vector viewangles);
 	void Simulate();
@@ -35,8 +22,8 @@ private:
 	void ResolveFlyCollisionCustom(trace_t& tr, Vector& vecVelocity, float interval);
 	int PhysicsClipVelocity(const Vector& in, const Vector& normal, Vector& out, float overbounce);
 public:
-	void Tick(int buttons);
-	void View();
-	void Paint();
-	void ParseInfo();
+	void View(Vector& source, Vector& Vec, Vector& EyeAng, int Type);
+	Vector EndPos;
+	std::vector<Vector> path;
+	std::vector<Vector> bounces;
 };

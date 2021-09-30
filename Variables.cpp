@@ -76,16 +76,13 @@ void CConfig::ResetToDefault()
 	vars.ragebot.active_index = 0;
 
 	vars.antiaim.enable = false;
-	vars.antiaim.aa_on_use = false;
+
 	vars.antiaim.desync = false;
 	vars.antiaim.pitch = 0;
 	vars.antiaim.yaw = 0;
 	
-	vars.antiaim.fakelag = 0;
-	vars.antiaim.fakelag_when_exploits = true;
-	vars.antiaim.fakelag_when_standing = false;
-	vars.antiaim.fakelag_on_peek = false;
-	vars.antiaim.fakelagfactor = 1;
+
+	
 
 	g_Binds[bind_fake_duck].active = false;
 	g_Binds[bind_fake_duck].key = 0;
@@ -332,7 +329,7 @@ void CConfig::Save(string cfg_name, bool create)
 		ragebot[str("custom_ticks")] = vars.ragebot.more_ticks;
 		ragebot[str("ticks")] = vars.ragebot.dt_tickammount;
 		ragebot[str("dt_defensive")] = vars.ragebot.dt_defensive;
-		ragebot[str("dt_teleport")] = vars.ragebot.dt_backwards_teleport;
+		ragebot[str("dt_teleport")] = vars.ragebot.defensivedt;
 
 
 		SaveBind(&g_Binds[bind_override_dmg], str("override_dmg"), &ragebot);
@@ -365,36 +362,34 @@ void CConfig::Save(string cfg_name, bool create)
 
 	auto& antiaim = json[str("antiaim")]; {
 		antiaim[str("enable")] = vars.antiaim.enable;
-		antiaim[str("aa_on_use")] = vars.antiaim.aa_on_use;
 		antiaim[str("pitch")] = vars.antiaim.pitch;
 		antiaim[str("yaw")] = vars.antiaim.yaw;
-		antiaim[str("desync")] = vars.antiaim.desync;
-		antiaim[str("desync_amount")] = vars.antiaim.desync_amount;
-		antiaim[str("yaw_offset")] = vars.antiaim.yaw_offset;
-		antiaim[str("jitter_angle")] = vars.antiaim.jitter_angle;
-		antiaim[str("at_target")] = vars.antiaim.attarget;
-		antiaim[str("attarget_off_when_offsreen")] = vars.antiaim.attarget_off_when_offsreen;
+
+		antiaim[str("yawoffset")] = vars.antiaim.yawoffset;
+
+		
 
 		SaveBind(&g_Binds[bind_fake_duck], str("fakeduck"), &antiaim);
 		SaveBind(&g_Binds[bind_slow_walk], str("slowwalk"), &antiaim);
 		SaveBind(&g_Binds[bind_aa_inverter], str("inverter"), &antiaim);
 
-		antiaim[str("desync_direction")] = vars.antiaim.desync_direction;
-		antiaim[str("desync_amount")] = vars.antiaim.desync_amount;
-		antiaim[str("manual_antiaim")] = vars.antiaim.manual_antiaim;
-		antiaim[str("ignore_attarget")] = vars.antiaim.ignore_attarget;
+		antiaim[str("modifier")] = vars.antiaim.modifier;
+		antiaim[str("modifieroffset")] = vars.antiaim.modifieroffset;
+		antiaim[str("desync")] = vars.antiaim.desync;
+		antiaim[str("lby")] = vars.antiaim.lbytarget;
+		antiaim[str("delta")] = vars.antiaim.delta;
 
+
+		antiaim[str("manual_antiaim")] = vars.antiaim.manual_antiaim;
 		SaveBind(&g_Binds[bind_manual_left], str("manual_left"), &antiaim);
 		SaveBind(&g_Binds[bind_manual_right], str("manual_right"), &antiaim);
 		SaveBind(&g_Binds[bind_manual_back], str("manual_back"), &antiaim);
 		SaveBind(&g_Binds[bind_manual_forward], str("manual_forward"), &antiaim);
 
 		auto& fakelag = antiaim[str("fakelag")]; {
-			fakelag[str("type")] = vars.antiaim.fakelag;
-			fakelag[str("when_standing")] = vars.antiaim.fakelag_when_standing;
-			fakelag[str("when_exploits")] = vars.antiaim.fakelag_when_exploits;
-			fakelag[str("on_peek")] = vars.antiaim.fakelag_on_peek;
-			fakelag[str("factor")] = vars.antiaim.fakelagfactor;
+			fakelag[str("type")] = vars.antiaim.fakelag.mode;
+			fakelag[str("factor")] = vars.antiaim.fakelag.min;
+			fakelag[str("randomization")] = vars.antiaim.fakelag.randomization;
 		}
 	}
 
@@ -838,23 +833,26 @@ void CConfig::Load(string cfg_name)
 
 	auto& antiaim = json[str("antiaim")]; {
 		LoadBool(&vars.antiaim.enable, str("enable"), antiaim);
-		LoadBool(&vars.antiaim.aa_on_use, str("aa_on_use"), antiaim);
-		LoadBool(&vars.antiaim.desync, str("desync"), antiaim);
 		LoadInt(&vars.antiaim.pitch, str("pitch"), antiaim);
 		LoadInt(&vars.antiaim.yaw, str("yaw"), antiaim);
-		LoadInt(&vars.antiaim.jitter_angle, str("jitter_angle"), antiaim);
-		LoadBool(&vars.antiaim.attarget, str("at_target"), antiaim);
-		LoadBool(&vars.antiaim.attarget_off_when_offsreen, str("attarget_off_when_offsreen"), antiaim);
+		LoadInt(&vars.antiaim.yawoffset, str("yawoffset"), antiaim);
+		LoadInt(&vars.antiaim.desync, str("desync"), antiaim);
 
 		LoadBind(&g_Binds[bind_fake_duck], str("fakeduck"), antiaim);
 		LoadBind(&g_Binds[bind_slow_walk], str("slowwalk"), antiaim);
-
 		LoadBind(&g_Binds[bind_aa_inverter], str("inverter"), antiaim);
-		LoadInt(&vars.antiaim.desync_direction, str("desync_direction"), antiaim);
-		LoadInt(&vars.antiaim.desync_amount, str("desync_amount"), antiaim);
+
+		LoadInt(&vars.antiaim.modifier, str("modifier"), antiaim);
+		LoadInt(&vars.antiaim.modifieroffset, str("modifieroffset"), antiaim);
+		LoadInt(&vars.antiaim.desync, str("desync"), antiaim);
+		LoadInt(&vars.antiaim.lbytarget, str("lby"), antiaim);
+		LoadInt(&vars.antiaim.delta, str("delta"), antiaim);
+
+
+
+
 
 		LoadBool(&vars.antiaim.manual_antiaim, str("manual_antiaim"), antiaim);
-		LoadBool(&vars.antiaim.ignore_attarget, str("ignore_attarget"), antiaim);
 
 		LoadBind(&g_Binds[bind_manual_left], str("manual_left"), antiaim);
 		LoadBind(&g_Binds[bind_manual_right], str("manual_right"), antiaim);
@@ -862,11 +860,9 @@ void CConfig::Load(string cfg_name)
 		LoadBind(&g_Binds[bind_manual_forward], str("manual_forward"), antiaim);
 
 		auto& fakelag = antiaim[str("fakelag")]; {
-			LoadInt(&vars.antiaim.fakelag, str("type"), fakelag);
-			LoadBool(&vars.antiaim.fakelag_when_standing, str("when_standing"), fakelag);
-			LoadBool(&vars.antiaim.fakelag_when_exploits, str("when_exploits"), fakelag);
-			LoadBool(&vars.antiaim.fakelag_on_peek, str("on_peek"), fakelag);
-			LoadInt(&vars.antiaim.fakelagfactor, str("factor"), fakelag);
+			LoadInt(&vars.antiaim.fakelag.mode, str("type"), fakelag);
+			LoadInt(&vars.antiaim.fakelag.min, str("factor"), fakelag);
+			LoadInt(&vars.antiaim.fakelag.randomization, str("randomization"), fakelag);
 		}
 	}
 

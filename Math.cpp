@@ -1,6 +1,26 @@
 #include "Math.h"
 
 namespace Math {
+	
+
+	bool WorldToScreen3(Vector& in, Vector& out) // (Vector &in, Vector &out)
+	{
+		const matrix& worldToScreen = interfaces.engine->WorldToScreenMatrix(); //Grab the world to screen matrix from CEngineClient::WorldToScreenMatrix
+
+		float w = worldToScreen[3][0] * in[0] + worldToScreen[3][1] * in[1] + worldToScreen[3][2] * in[2] + worldToScreen[3][3]; //Calculate the angle in compareson to the player's camera.
+		out.z = 0; //Screen doesn't have a 3rd dimension.
+
+		if (w > 0.001) //If the object is within view.
+		{
+			RECT ScreenSize = GetViewport();
+			float fl1DBw = 1 / w; //Divide 1 by the angle.
+			out.x = (ScreenSize.right / 2) + (0.5f * ((worldToScreen[0][0] * in[0] + worldToScreen[0][1] * in[1] + worldToScreen[0][2] * in[2] + worldToScreen[0][3]) * fl1DBw) * ScreenSize.right + 0.5f); //Get the X dimension and push it in to the Vector.
+			out.y = (ScreenSize.bottom / 2) - (0.5f * ((worldToScreen[1][0] * in[0] + worldToScreen[1][1] * in[1] + worldToScreen[1][2] * in[2] + worldToScreen[1][3]) * fl1DBw) * ScreenSize.bottom + 0.5f); //Get the Y dimension and push it in to the Vector.
+			return true;
+		}
+
+		return false;
+	}
 	Vector normalize(Vector angs)
 	{
 		while (angs.y < -180.0f)
@@ -212,6 +232,56 @@ namespace Math {
 			return true;
 		}
 		return false;
+	}
+
+	void WrapPoints(Matrix& points, Matrix& out, float NRad, Vector center) {
+		int Delta;
+		int Closest;
+		Vector Last;
+		for (auto i = 1; i <= points.size() + 1; i++)
+		{
+			Closest = 0;
+			Delta = INT_MAX;
+			Vector PPoint = Vector(std::sin(2.f * D3DX_PI * (i / static_cast<float>(64))), std::cos(2.f * D3DX_PI * (i / static_cast<float>(64))), 0.f) * NRad;
+			for (auto& Point : points) {
+				if (Point == Last)
+					continue;
+
+				auto delta = (Point - (PPoint + center)).LengthSqr();
+				if (delta < Delta) {
+					Delta = delta;
+					Closest = i - 1;
+					Last = Point;
+				}
+			}
+			out.push_back(points[Closest]);
+		}
+	}
+
+	void WrapPointsTranform(Matrix& points, Matrix& out, float NRad, Vector center) {
+		int Delta;
+		int Closest;
+		Vector Last;
+		for (auto i = 1; i <= points.size() + 1; i++)
+		{
+			Closest = 0;
+			Delta = INT_MAX;
+			Vector PPoint = Vector(std::sin(2.f * D3DX_PI * (i / static_cast<float>(64))), std::cos(2.f * D3DX_PI * (i / static_cast<float>(64))), 0.f) * NRad;
+			for (auto& Point : points) {
+				if (Point == Last)
+					continue;
+
+				auto delta = (Point - (PPoint + center)).LengthSqr();
+				if (delta < Delta) {
+					Delta = delta;
+					Closest = i - 1;
+					Last = Point;
+				}
+			}
+			Vector OutP;
+			WorldToScreen(points[Closest], OutP);
+			out.push_back(OutP);
+		}
 	}
 
 	bool WorldToScreen2(Vector& in, Vector& out) // (Vector &in, Vector &out)

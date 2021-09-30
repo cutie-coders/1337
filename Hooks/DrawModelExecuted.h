@@ -101,6 +101,48 @@ void __fastcall Hooked_DrawModelExecute(void* thisptr, int edx, void* ctx, const
 		static IMaterial* mat3 = interfaces.material_system->FindMaterial(str("particle/vistasmokev1/vistasmokev1_emods_impactdust"), str("Other textures"));
 		static IMaterial* mat4 = interfaces.material_system->FindMaterial(str("particle/vistasmokev1/vistasmokev1_fire"), str("Other textures"));
 
+		static auto InfMat = interfaces.material_system->FindMaterial("particle/fire_burning_character/fire_env_fire.vmt", "Other textures");
+		static auto InfMat2 = interfaces.material_system->FindMaterial("particle/fire_burning_character/fire_env_fire_depthblend.vmt", "Other textures");
+		static auto InfMat3 = interfaces.material_system->FindMaterial("particle/fire_burning_character/fire_burning_character_depthblend.vmt", "Other textures");
+		static auto InfMat4 = interfaces.material_system->FindMaterial("particle/fire_burning_character/fire_burning_character.vmt", "Other textures");
+		static auto InfMat5 = interfaces.material_system->FindMaterial("particle/fire_burning_character/fire_burning_character_nodepth.vmt", "Other textures");
+		static auto InfMat6 = interfaces.material_system->FindMaterial("particle/particle_flares/particle_flare_001.vmt", "Other textures");
+		static auto InfMat7 = interfaces.material_system->FindMaterial("particle/particle_flares/particle_flare_004.vmt", "Other textures");
+		static auto InfMat8 = interfaces.material_system->FindMaterial("particle/particle_flares/particle_flare_004b_mod_ob.vmt", "Other textures");
+		static auto InfMat9 = interfaces.material_system->FindMaterial("particle/particle_flares/particle_flare_004b_mod_z.vmt", "Other textures");
+		static auto InfMat10 = interfaces.material_system->FindMaterial("particle/fire_explosion_1/fire_explosion_1_bright.vmt", "Other textures");
+		static auto InfMat11 = interfaces.material_system->FindMaterial("particle/fire_explosion_1/fire_explosion_1b.vmt", "Other textures");
+		static auto InfMat12 = interfaces.material_system->FindMaterial("particle/fire_particle_4/fire_particle_4.vmt", "Other textures");
+		static auto InfMat13 = interfaces.material_system->FindMaterial("particle/fire_explosion_1/fire_explosion_1_oriented.vmt", "Other textures");
+
+		if(InfMat)
+			InfMat->SetMaterialVarFlag(MATERIAL_VAR_NO_DRAW, true);
+
+		if (InfMat2)
+			InfMat2->SetMaterialVarFlag(MATERIAL_VAR_NO_DRAW, true);
+		if (InfMat3)
+			InfMat3->SetMaterialVarFlag(MATERIAL_VAR_NO_DRAW, true);
+		if (InfMat4)
+			InfMat4->SetMaterialVarFlag(MATERIAL_VAR_NO_DRAW, true);
+		if (InfMat5)
+			InfMat5->SetMaterialVarFlag(MATERIAL_VAR_NO_DRAW, true);
+		if (InfMat6)
+			InfMat6->SetMaterialVarFlag(MATERIAL_VAR_NO_DRAW, true);
+		if (InfMat7)
+			InfMat7->SetMaterialVarFlag(MATERIAL_VAR_NO_DRAW, true);
+		if (InfMat8)
+			InfMat8->SetMaterialVarFlag(MATERIAL_VAR_NO_DRAW, true);
+		if (InfMat9)
+			InfMat9->SetMaterialVarFlag(MATERIAL_VAR_NO_DRAW, true);
+		if (InfMat10)
+			InfMat10->SetMaterialVarFlag(MATERIAL_VAR_NO_DRAW, true);
+		if (InfMat11)
+			InfMat11->SetMaterialVarFlag(MATERIAL_VAR_NO_DRAW, true);
+		if (InfMat12)
+			InfMat12->SetMaterialVarFlag(MATERIAL_VAR_NO_DRAW, true);
+		if (InfMat13)
+			InfMat13->SetMaterialVarFlag(MATERIAL_VAR_NO_DRAW, true);
+
 		mat1->SetMaterialVarFlag(MATERIAL_VAR_NO_DRAW, vars.visuals.remove & 2);
 		mat2->SetMaterialVarFlag(MATERIAL_VAR_NO_DRAW, vars.visuals.remove & 2);
 		mat3->SetMaterialVarFlag(MATERIAL_VAR_NO_DRAW, vars.visuals.remove & 2);

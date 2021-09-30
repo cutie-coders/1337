@@ -560,6 +560,9 @@
     </ClInclude>
     <ClInclude Include="Features\Rage\RageBackTracking.h" />
     <ClInclude Include="Features\Rage\cresolver.h" />
+    <ClInclude Include="IGrenadeWarning.h">
+      <Filter>Cheat\Features\Helpers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Menu.cpp">
@@ -779,6 +782,9 @@
       <Filter>javascript</Filter>
     </ClCompile>
     <ClCompile Include="Features\Rage\RageBackTracking.cpp" />
+    <ClCompile Include="IGrenadeWarning.cpp">
+      <Filter>Cheat\Features\Helpers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Library Include="server_api.lib">

@@ -99,6 +99,16 @@ public:
 	std::pair<Vector, Vector> taser_ranges[106];
 	std::vector<hitlog> custom_hitlog;
 	IBasePlayer* local;
+	bool DisableLagComp;
+	struct {
+		std::vector<Vector> Bounce;
+		std::vector<Vector> Path;
+		Vector EndPos;
+		bool Valid;
+		float ThrowTime;
+		int Type;
+		bool Finished;
+	} LocalGrenadePrediction ;
 	float impact_time;
 	std::mutex mtx;
 	std::deque<correction_data> c_data;
@@ -118,9 +128,13 @@ public:
 	Vector last_player_shot_pos;
 	float last_shoot_time[64];
 	int cl_move_shift;
+	int clskip;
 	bool isShifting;
 	int shift_amount;
+	int PPShift;
+	bool LegSwitch;
 	IBasePlayer* rage_target;
+	bool Peekingg;
 	int shift_timer;
 	bool need_recharge_rn;
 	bool is_local_alive;
@@ -232,6 +246,7 @@ public:
 	float resolved_yaw[65];
 	int imaginary_misses[65];
 	int actual_misses[65];
+	int maxmisses[65];
 	float weaponspread;
 	float curtime;
 	int tickcount;

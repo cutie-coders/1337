@@ -298,8 +298,65 @@ void CChams::AddHitmatrix(animation* record) {
 	Math::AngleMatrix(hit.info.angles, hit.info.origin, hit.model_to_world);
 }
 
+void CChams::AddDeathmatrix(animation* record) {
+
+	auto player = record->player;
+
+	int idx = player->EntIndex();
+
+	auto curBones = record->bones;
+	if (!curBones)
+		return;
+	auto& hit = m_DeathMatrix.emplace_back();
+
+	std::memcpy(hit.pBoneToWorld, curBones, player->GetBoneCache().Count() * sizeof(matrix));
+
+
+	int m_nSkin = FindInDataMap(player->GetPredDescMap(), str("m_nSkin"));
+	int m_nBody = FindInDataMap(player->GetPredDescMap(), str("m_nBody"));
+
+	hit.info.origin = player->GetAbsOrigin();
+	hit.info.angles = player->GetAbsAngles();
+	hit.alpha = 255.f;
+	hit.time = interfaces.global_vars->realtime;
+	auto renderable = player->GetClientRenderable();
+
+	if (!renderable)
+		return;
+
+	auto model = player->GetModel();
+
+	if (!model)
+		return;
+
+	auto hdr = interfaces.models.model_info->GetStudioModel(model);
+	if (!hdr)
+		return;
+
+	hit.state.m_pStudioHdr = hdr;
+	hit.state.m_pStudioHWData = interfaces.model_cache->GetHardwareData(model->studio);
+
+	hit.state.m_pRenderable = renderable;
+	hit.state.m_drawFlags = 0;
+
+	hit.info.pRenderable = renderable;
+	hit.info.pModel = model;
+	hit.info.pLightingOffset = nullptr;
+	hit.info.pLightingOrigin = nullptr;
+	hit.info.hitboxset = player->GetHitboxSet();
+	hit.info.skin = (int)(uintptr_t(player) + m_nSkin);
+	hit.info.body = (int)(uintptr_t(player) + m_nBody);
+	hit.info.entity_index = player->GetIndex();
+	hit.info.instance = getvfunc<ModelInstanceHandle_t(__thiscall*)(void*) >(renderable, 30)(renderable);
+	hit.info.flags = 0x1;
+
+	hit.info.pModelToWorld = &hit.model_to_world;
+	hit.state.m_pModelToWorld = &hit.model_to_world;
+	Math::AngleMatrix(hit.info.angles, hit.info.origin, hit.model_to_world);
+}
+
 void CChams::OnPostScreenEffects() {
-	if (m_Hitmatrix.empty())
+	if (m_Hitmatrix.empty() && m_DeathMatrix.empty())
 		return;
 
 	auto IsNullMaterial = [&]() {
@@ -326,65 +383,160 @@ void CChams::OnPostScreenEffects() {
 	if (!ctx)
 		return;
 
-	bool should_draw = false;
-	auto it = m_Hitmatrix.begin();
-	while (it != m_Hitmatrix.end()) {
 
-		if (!it->state.m_pModelToWorld || !it->state.m_pRenderable || !it->state.m_pStudioHdr || !it->state.m_pStudioHWData ||
-			!it->info.pRenderable || !it->info.pModelToWorld || !it->info.pModel) {
-			++it;
-			should_draw = false;
-			continue;
-		}
-		auto ent = interfaces.ent_list->GetClientEntity(it->info.entity_index);
-		if (!ent) {
-			it = m_Hitmatrix.erase(it);
-			should_draw = false;
-			continue;
-		}
+	if (vars.visuals.chams[enemy_visible].enable || vars.visuals.chams[enemy_xqz].enable) {
 
-		auto alpha = 1.0f;
-		auto delta = interfaces.global_vars->realtime - it->time;
-		if (delta > 0.0f) {
-			alpha -= delta;
-			if (delta > 1.0f) {
+		if (!m_DeathMatrix.empty()) {
+
+			auto it2 = m_DeathMatrix.begin();
+
+			while (it2 != m_DeathMatrix.end()) {
+
+				if (!it2->state.m_pModelToWorld || !it2->state.m_pRenderable || !it2->state.m_pStudioHdr || !it2->state.m_pStudioHWData ||
+					!it2->info.pRenderable || !it2->info.pModelToWorld || !it2->info.pModel) {
+					++it2;
+			
+					continue;
+				}
+				auto ent = interfaces.ent_list->GetClientEntity(it2->info.entity_index);
+				if (!ent || (ent->isAlive() && interfaces.global_vars->realtime > it2->time + 3.5f)) {
+					it2 = m_DeathMatrix.erase(it2);
+			
+					continue;
+				}
+
+				if (ent->isAlive()) {
+					++it2;
+
+					continue;
+				}
+
+				it2->alpha = (it2->time + 0.32f - interfaces.global_vars->realtime);
+				auto alpha = it2->alpha;
+				if (it2->alpha <= 0.f) {
+					it2 = m_DeathMatrix.erase(it2);
+				
+					continue;
+				}
+				
+			
+
+				
+
+				auto shot_struct = vars.visuals.chams[enemy_xqz];
+
+				shot_struct.material_color
+					= vars.visuals.chams[enemy_xqz].material_color.manage_alpha(vars.visuals.chams[enemy_xqz].material_color.get_alpha() * alpha);
+
+				shot_struct.glass_color
+					= vars.visuals.chams[enemy_xqz].glass_color.manage_alpha(vars.visuals.chams[enemy_xqz].glass_color.get_alpha() * alpha);
+
+				shot_struct.wireframe_color
+					= vars.visuals.chams[enemy_xqz].wireframe_color.manage_alpha(vars.visuals.chams[enemy_xqz].wireframe_color.get_alpha() * alpha);
+
+				shot_struct.metallic_color
+					= vars.visuals.chams[enemy_xqz].metallic_color.manage_alpha(vars.visuals.chams[enemy_xqz].metallic_color.get_alpha() * alpha);
+
+				shot_struct.glow_color[0]
+					= vars.visuals.chams[enemy_xqz].glow_color[0].manage_alpha(vars.visuals.chams[enemy_xqz].glow_color[0].get_alpha() * alpha);
+
+				shot_struct.glow_color[1]
+					= vars.visuals.chams[enemy_xqz].glow_color[1].manage_alpha(vars.visuals.chams[enemy_xqz].glow_color[1].get_alpha() * alpha);
+
+				DrawChams(shot_struct, it2->pBoneToWorld, true,
+					DrawModelExecute, interfaces.models.model_render, ctx, it2->state, it2->info);
+
+				shot_struct = vars.visuals.chams[enemy_visible];
+
+
+				shot_struct.material_color
+					= vars.visuals.chams[enemy_visible].material_color.manage_alpha(vars.visuals.chams[enemy_visible].material_color.get_alpha() * alpha);
+
+				shot_struct.glass_color
+					= vars.visuals.chams[enemy_visible].glass_color.manage_alpha(vars.visuals.chams[enemy_visible].glass_color.get_alpha() * alpha);
+
+				shot_struct.wireframe_color
+					= vars.visuals.chams[enemy_visible].wireframe_color.manage_alpha(vars.visuals.chams[enemy_visible].wireframe_color.get_alpha() * alpha);
+
+				shot_struct.metallic_color
+					= vars.visuals.chams[enemy_visible].metallic_color.manage_alpha(vars.visuals.chams[enemy_visible].metallic_color.get_alpha() * alpha);
+
+				shot_struct.glow_color[0]
+					= vars.visuals.chams[enemy_visible].glow_color[0].manage_alpha(vars.visuals.chams[enemy_visible].glow_color[0].get_alpha() * alpha);
+
+				shot_struct.glow_color[1]
+					= vars.visuals.chams[enemy_visible].glow_color[1].manage_alpha(vars.visuals.chams[enemy_visible].glow_color[1].get_alpha() * alpha);
+
+				DrawChams(shot_struct, it2->pBoneToWorld, false,
+					DrawModelExecute, interfaces.models.model_render, ctx, it2->state, it2->info);
+
+				++it2;
+			}
+		}
+	}
+
+	if (!m_Hitmatrix.empty()) {
+
+		bool should_draw = false;
+		auto it = m_Hitmatrix.begin();
+		while (it != m_Hitmatrix.end()) {
+
+			if (!it->state.m_pModelToWorld || !it->state.m_pRenderable || !it->state.m_pStudioHdr || !it->state.m_pStudioHWData ||
+				!it->info.pRenderable || !it->info.pModelToWorld || !it->info.pModel) {
+				++it;
+				should_draw = false;
+				continue;
+			}
+			auto ent = interfaces.ent_list->GetClientEntity(it->info.entity_index);
+			if (!ent) {
 				it = m_Hitmatrix.erase(it);
 				should_draw = false;
 				continue;
 			}
+
+			auto alpha = 1.0f;
+			auto delta = interfaces.global_vars->realtime - it->time;
+			if (delta > 0.0f) {
+				alpha -= delta;
+				if (delta > 1.0f) {
+					it = m_Hitmatrix.erase(it);
+					should_draw = false;
+					continue;
+				}
+			}
+			should_draw = true;
+
+			chams_t* shot_struct = new chams_t();
+			shot_struct->enable = should_draw && vars.visuals.chams[enemy_ragebot_shot].enable;
+			shot_struct->material = vars.visuals.chams[enemy_ragebot_shot].material;
+			shot_struct->overlay = vars.visuals.chams[enemy_ragebot_shot].overlay;
+			shot_struct->phong_amount = vars.visuals.chams[enemy_ragebot_shot].phong_amount;
+			shot_struct->rim_amount = vars.visuals.chams[enemy_ragebot_shot].rim_amount;
+
+			shot_struct->material_color
+				= vars.visuals.chams[enemy_ragebot_shot].material_color.manage_alpha(vars.visuals.chams[enemy_ragebot_shot].material_color.get_alpha() * alpha);
+
+			shot_struct->glass_color
+				= vars.visuals.chams[enemy_ragebot_shot].glass_color.manage_alpha(vars.visuals.chams[enemy_ragebot_shot].glass_color.get_alpha() * alpha);
+
+			shot_struct->wireframe_color
+				= vars.visuals.chams[enemy_ragebot_shot].wireframe_color.manage_alpha(vars.visuals.chams[enemy_ragebot_shot].wireframe_color.get_alpha() * alpha);
+
+			shot_struct->metallic_color
+				= vars.visuals.chams[enemy_ragebot_shot].metallic_color.manage_alpha(vars.visuals.chams[enemy_ragebot_shot].metallic_color.get_alpha() * alpha);
+
+			shot_struct->glow_color[0]
+				= vars.visuals.chams[enemy_ragebot_shot].glow_color[0].manage_alpha(vars.visuals.chams[enemy_ragebot_shot].glow_color[0].get_alpha() * alpha);
+
+			shot_struct->glow_color[1]
+				= vars.visuals.chams[enemy_ragebot_shot].glow_color[1].manage_alpha(vars.visuals.chams[enemy_ragebot_shot].glow_color[1].get_alpha() * alpha);
+
+			DrawChams(*shot_struct, it->pBoneToWorld, true,
+				DrawModelExecute, interfaces.models.model_render, ctx, it->state, it->info);
+
+			delete shot_struct;
+			++it;
 		}
-		should_draw = true;
-
-		chams_t* shot_struct = new chams_t();
-		shot_struct->enable = should_draw && vars.visuals.chams[enemy_ragebot_shot].enable;
-		shot_struct->material = vars.visuals.chams[enemy_ragebot_shot].material;
-		shot_struct->overlay = vars.visuals.chams[enemy_ragebot_shot].overlay;
-		shot_struct->phong_amount = vars.visuals.chams[enemy_ragebot_shot].phong_amount;
-		shot_struct->rim_amount = vars.visuals.chams[enemy_ragebot_shot].rim_amount;
-
-		shot_struct->material_color
-			= vars.visuals.chams[enemy_ragebot_shot].material_color.manage_alpha(vars.visuals.chams[enemy_ragebot_shot].material_color.get_alpha() * alpha);
-
-		shot_struct->glass_color
-			= vars.visuals.chams[enemy_ragebot_shot].glass_color.manage_alpha(vars.visuals.chams[enemy_ragebot_shot].glass_color.get_alpha() * alpha);
-
-		shot_struct->wireframe_color
-			= vars.visuals.chams[enemy_ragebot_shot].wireframe_color.manage_alpha(vars.visuals.chams[enemy_ragebot_shot].wireframe_color.get_alpha() * alpha);
-
-		shot_struct->metallic_color
-			= vars.visuals.chams[enemy_ragebot_shot].metallic_color.manage_alpha(vars.visuals.chams[enemy_ragebot_shot].metallic_color.get_alpha() * alpha);
-
-		shot_struct->glow_color[0]
-			= vars.visuals.chams[enemy_ragebot_shot].glow_color[0].manage_alpha(vars.visuals.chams[enemy_ragebot_shot].glow_color[0].get_alpha() * alpha);
-
-		shot_struct->glow_color[1]
-			= vars.visuals.chams[enemy_ragebot_shot].glow_color[1].manage_alpha(vars.visuals.chams[enemy_ragebot_shot].glow_color[1].get_alpha() * alpha);
-
-		DrawChams(*shot_struct, it->pBoneToWorld, true,
-			DrawModelExecute, interfaces.models.model_render, ctx, it->state, it->info);
-
-		delete shot_struct;
-		++it;
 	}
 }
 

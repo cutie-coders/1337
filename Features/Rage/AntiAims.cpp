@@ -11,33 +11,25 @@ bool CanExploit() {
 
 void CAntiAim::is_lby_update()
 {
-	CUserCmd* cmd = csgo->cmd;
-	float cur_time = csgo->curtime;
-	CCSGOPlayerAnimState* animstate = csgo->local->GetPlayerAnimState();
-	IBasePlayer* local = csgo->local;
-	if (!(local->GetFlags() & FL_ONGROUND))
-		return;
+	static float m_nTickBase;
+	m_nTickBase = csgo->local->GetTickBase();
+	float curtime = TICKS_TO_TIME(m_nTickBase);
+	static float UpdateTime;
 
-	if (local->GetVelocity().Length2D() > 0.1f) {
-		next_break = cur_time + .22f;
-		return; // well we dont break lby when moving :kappa:
+	Currently_Breaking = false;
+
+	if (!(csgo->local->GetFlags() & FL_ONGROUND)) {
+		return;
 	}
 
-	if (next_break == cur_time)
-	{
+	if (csgo->local->GetVelocity().Length() > 0.1f) {
+		UpdateTime = curtime + 0.22f;
+	}
+	if (UpdateTime < curtime) {
+		UpdateTime = curtime + 1.1f;
 		Currently_Breaking = true;
-		next_break = cur_time + .22f;
-		csgo->should_sidemove = false;
-		return;
 	}
-	else
-	{
-		Pre_Breaking = true;
-		Currently_Breaking = false;
-		next_break = cur_time - .22f;
-		csgo->should_sidemove = true;
-		return;
-	}
+
 
 }
 
@@ -85,35 +77,11 @@ IBasePlayer* GetNearestTarget(bool check = false)
 bool CanTriggerFakeLag() {
 
 	const bool disable_fakelag_on_exploit = []() {
-		if (vars.antiaim.fakelag_when_exploits)
-			return CanExploit();
-		else
-			return g_Binds[bind_double_tap].active || g_Binds[bind_hide_shots].active;
+		return g_Binds[bind_double_tap].active || g_Binds[bind_hide_shots].active;
 	}();
 
-	if (vars.antiaim.fakelag_on_peek && !disable_fakelag_on_exploit) {
-		auto predicted_eye_pos = csgo->eyepos + csgo->vecUnpredictedVel * (TICKS_TO_TIME(15));
 
-		IBasePlayer* best_ent = GetNearestTarget();
-		
-		if (best_ent) {
-			auto head_pos = best_ent->GetBonePos(best_ent->GetBoneCache().Base(), 8);
-
-			Ray_t ray;
-			ray.Init(predicted_eye_pos, head_pos);
-
-			trace_t trace;
-			CTraceFilterWorldAndPropsOnly filter;
-			interfaces.trace->TraceRay(ray, MASK_SHOT | CONTENTS_GRATE, &filter, &trace);
-			
-			return trace.fraction > 0.97f;
-		}
-		return false;
-	}
-
-	if (disable_fakelag_on_exploit
-		|| (csgo->local->GetVelocity().Length2D() < 10.f && !vars.antiaim.fakelag_when_standing)
-		|| vars.antiaim.fakelag == 0)
+	if (disable_fakelag_on_exploit || vars.antiaim.fakelag.mode == 0)
 		return false;
 
 	return true;
@@ -124,7 +92,7 @@ void CAntiAim::Fakelag()
 	if (!vars.antiaim.enable)
 		return;
 
-	if (vars.antiaim.fakelagfactor == 0)
+	if (vars.antiaim.fakelag.min == 0)
 		return;
 
 	if (csgo->game_rules->IsFreezeTime()
@@ -146,34 +114,34 @@ void CAntiAim::Fakelag()
 	}
 	else {
 
-		csgo->max_fakelag_choke = clamp(vars.antiaim.fakelagfactor, 1,
+		csgo->max_fakelag_choke = clamp(vars.antiaim.fakelag.min, 1,
 			((vars.misc.restrict_type == 0 || csgo->game_rules->IsValveDS()) ? 6 : 14));
 
-		switch (vars.antiaim.fakelag)
-		{
-		case 1:
-			csgo->send_packet = false;
-			break;
-		case 2:
-		{
-			if (csgo->cmd->command_number % 30 < csgo->max_fakelag_choke)
-				csgo->send_packet = false;
-			else
-				csgo->send_packet = csgo->client_state->iChokedCommands >= 1;
+	
+		csgo->send_packet = false;
+
+		if(vars.antiaim.fakelag.randomization != 0)
+			csgo->max_fakelag_choke -= clamp(rand() % vars.antiaim.fakelag.randomization,0, csgo->max_fakelag_choke);
+
+		
+
+		if (vars.antiaim.fakelag.mode == 1) {
+
+			if (csgo->client_state->iChokedCommands >= csgo->max_fakelag_choke)
+				csgo->send_packet = true;
+
 		}
-		break;
-		case 3:
-		{
+		else if (vars.antiaim.fakelag.mode == 2) {
+			auto tick_to_choke = std::min< int >(static_cast<int>(std::ceilf(64.f / (csgo->local->GetVelocity().Length2D() * interfaces.global_vars->interval_per_tick))), 16);
+
+			csgo->send_packet = csgo->client_state->iChokedCommands >= tick_to_choke;
+		}
+		else if (vars.antiaim.fakelag.mode == 3) {
+			csgo->send_packet = true;
 			float diff = (csgo->local->GetAbsOrigin() - origin).LengthSqr();
 			if (diff <= 4096.f)
 				csgo->send_packet = false;
 		}
-		break;
-		}
-
-		if (vars.antiaim.fakelag != 2 && 
-			csgo->client_state->iChokedCommands >= csgo->max_fakelag_choke)
-			csgo->send_packet = true;
 	}
 
 	if (csgo->send_packet)
@@ -192,10 +160,10 @@ void CAntiAim::Pitch(bool legit_aa)
 	switch (vars.antiaim.pitch)
 	{
 	case 1:
-		csgo->cmd->viewangles.x = vars.misc.antiuntrusted ? 89.f : 179.98f;
+		csgo->cmd->viewangles.x = 89.f;
 		break;
 	case 2:
-		csgo->cmd->viewangles.x = state->m_aim_pitch_max;
+		csgo->cmd->viewangles.x = -89.f;
 		break;
 	}
 }
@@ -217,53 +185,141 @@ void CAntiAim::Sidemove() {
 
 void CAntiAim::Yaw(bool legit_aa)
 {
-	if (vars.antiaim.attarget && !legit_aa)
-	{
-		auto best_ent = GetNearestTarget(vars.antiaim.attarget_off_when_offsreen);
-		if (best_ent)
-			csgo->cmd->viewangles.y = Math::CalculateAngle(csgo->local->GetOrigin(), best_ent->GetOrigin()).y;
+	if (!vars.antiaim.enable)
+		return;
+	bool check = (g_Binds[bind_manual_back].active
+			|| g_Binds[bind_manual_right].active
+			|| g_Binds[bind_manual_left].active
+			|| g_Binds[bind_manual_forward].active);
+
+
+	is_lby_update();
+
+	static bool Jitter = false;
+	static int Spin = 0;
+
+
+	csgo->should_sidemove = vars.antiaim.lbytarget != 0;
+
+
+
+
+	int CurSide = vars.antiaim.desync == 1 ? (g_Binds[bind_aa_inverter].active ? 1 : -1) : (Jitter ? 1 : -1);
+
+	if (vars.antiaim.desync == 3) {
+		CurSide = g_Binds[bind_aa_inverter].active ? 1 : -1;
+
+
+
+		if (csgo->need_to_recharge)
+			CurSide = Jitter;
+
+		if (legit_aa)
+			CurSide = Jitter;
+
+		if (csgo->Peekingg)
+			CurSide = Jitter;
+
+	
 	}
-
-	static bool sw = false;
-	static bool avoid_overlap_side = false;
-	static float last_angle = 0.f;
-	static bool once = false;
-	static bool twice = false;
-
-	bool inverted = g_Binds[bind_aa_inverter].active;
-
-	int side = csgo->SwitchAA ? 1 : -1;
-
+	else if (vars.antiaim.desync == 4) {
+		CurSide = (rand() % 2 == 1) ? -1 : 1;
+	}
 
 	if (legit_aa)
-		side *= -1;
-
-	const float desync_amount = legit_aa ? 60.f : 60.f * (vars.antiaim.desync_amount / 100.f);
+		CurSide *= -1;
 
 
-	float delay = csgo->curtime + (4.2 * 4);
+	float FinalDesync = 0.f;
 
-	if (vars.antiaim.enable) {
-		if (vars.antiaim.desync) {
-			if (Currently_Breaking) {
-				csgo->send_packet = false;
-				csgo->cmd->viewangles.y -= (vars.antiaim.desync_amount * 2) * -side;
-			}
-			else if (!csgo->send_packet) {
-				csgo->cmd->viewangles.y -= (vars.antiaim.desync_amount * 2) * side;
-			}
+	static float LBYSway = 0.f;
+	static bool LBYSwayDir = false;
+	switch (vars.antiaim.lbytarget) {
+	case 0:
+		FinalDesync = vars.antiaim.delta;
+		break;
+	case 1:
+		FinalDesync = vars.antiaim.delta * 2;
+		break;
+	case 2:
+		if ((vars.antiaim.delta * 2) != 0) {
+			FinalDesync = rand() % ((int)(vars.antiaim.delta * 2));
 		}
-		csgo->cmd->viewangles.y -= vars.antiaim.yaw_offset;
+		break;
 	}
 
+	if (Currently_Breaking) {
+		csgo->send_packet = false;
+		csgo->cmd->viewangles.y -= FinalDesync * -CurSide;
+	}
+	else if (!csgo->send_packet) {
+		csgo->cmd->viewangles.y -= FinalDesync * CurSide;
+	}
+
+
+
+	if (!legit_aa) {
+
+		if (!check) {
+
+			switch (vars.antiaim.yaw) {
+			case 1:
+				auto best_ent = GetNearestTarget(false);
+				if (best_ent)
+					csgo->cmd->viewangles.y = Math::CalculateAngle(csgo->local->GetOrigin(), best_ent->GetOrigin()).y;
+				break;
+			}
+			csgo->cmd->viewangles.y += vars.antiaim.yawoffset;
+		}
+		else {
+			if (vars.antiaim.manual_antiaim) {
+				if (g_Binds[bind_manual_forward].active)
+					csgo->cmd->viewangles.y += legit_aa ? -180.f : 180.f;
+				if (g_Binds[bind_manual_left].active)
+					csgo->cmd->viewangles.y += legit_aa ? -90.f : 90.f;
+				if (g_Binds[bind_manual_right].active)
+					csgo->cmd->viewangles.y -= legit_aa ? -90.f : 90.f;
+			}
+		}
+
+		switch (vars.antiaim.modifier) {
+		case 1:
+			csgo->cmd->viewangles.y += (Jitter ? vars.antiaim.modifieroffset : 0) * CurSide;
+			break;
+		case 2:
+			csgo->cmd->viewangles.y += Jitter ? -vars.antiaim.modifieroffset : vars.antiaim.modifieroffset;
+			break;
+
+		case 3:
+			Spin += vars.antiaim.modifieroffset;
+			if (Spin > 360)
+				Spin -= 360;
+
+			csgo->cmd->viewangles.y += Spin;
+			break;
+
+		case 4:
+			if(vars.antiaim.modifieroffset != 0) 
+				csgo->cmd->viewangles.y += (rand() % vars.antiaim.modifieroffset * 2) - vars.antiaim.modifieroffset;
+			break;
+		}
+	}
+
+	
+	csgo->cmd->viewangles.y = Math::NormalizeYaw(csgo->cmd->viewangles.y);
+
+
+
+
+	
+
 	if (csgo->send_packet)
-		sw = !sw;
-	else
-		last_angle = csgo->cmd->viewangles.y;
+		Jitter = !Jitter;
+
 }
 bool CAntiAim::ShouldAA()
 {
-	bool use_aa_on_e = !csgo->local->IsDefusing() && vars.antiaim.aa_on_use && csgo->cmd->buttons & IN_USE;
+
 
 	if (csgo->local->GetFlags() & FL_FROZEN)
 		return false;
@@ -275,18 +331,11 @@ bool CAntiAim::ShouldAA()
 		|| csgo->local->GetMoveType() == MOVETYPE_LADDER)
 		return false;
 
-	if (csgo->cmd->buttons & IN_USE && !use_aa_on_e)
+	if (csgo->TickShifted)
 		return false;
 
-	bool in_attack = [&]() {
-		bool atk = csgo->cmd->buttons & IN_ATTACK;
-		if (csgo->weapon->GetItemDefinitionIndex() == WEAPON_REVOLVER)
-			return g_Ragebot->m_revolver_fire && atk;
-		else
-			return atk;
-	}();
 
-	if (F::Shooting()/* || (CanExploit() && in_attack)*/)
+	if (F::Shooting() || (CanExploit() && csgo->cmd->buttons & IN_ATTACK))
 		return false;
 
 	return true;
@@ -327,16 +376,16 @@ void CAntiAim::Run()
 
 		csgo->should_stop_slide = false;
 	}
-	bool use_aa_on_e = !csgo->local->IsDefusing() && vars.antiaim.aa_on_use && csgo->cmd->buttons & IN_USE;
+	bool use_aa_on_e = csgo->cmd->buttons & IN_USE;
 
-	if (!vars.ragebot.enable && vars.legitbot.enable)
-		use_aa_on_e = true;
+	override_off_pitch = (csgo->cmd->buttons & IN_ATTACK) || g_Ragebot->shot;
+	override_off_yaw = override_off_pitch;
 
 	if (ShouldAA())
 	{
-		if (!override_off_pitch)
-			Pitch(use_aa_on_e);
-		if (!override_off_yaw)
-			Yaw(use_aa_on_e);
+		if(!use_aa_on_e)
+			Pitch(false);
+	
+		Yaw(use_aa_on_e);
 	}
 }

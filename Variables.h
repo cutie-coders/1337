@@ -93,45 +93,47 @@ struct CGlobalVariables
 		bool resolver;
 
 		bool dt_teleport;
-		bool dt_backwards_teleport;
+		bool defensivedt;
+		int defensivething;
+		bool AntiDefensive;
 		bool dt_defensive;
 		int recharge_time;
+		bool teleport;
+		bool clmove;
 		int dt_tickammount;
 		bool zeusbot;
+		bool avoidunsafehitboxes;
 		int zeuschance;
 
 		CWeaponConfig weapon[7];
 
 		int active_index;
 		bool more_ticks;
+		bool FastRecharge;
 	} ragebot;
 	struct
 	{
 		bool enable;
-		bool enable1;
+
 		int pitch;
 		int yaw;
-		bool attarget;
-		bool attarget_off_when_offsreen;
-		int desync_direction;
-		int desync_amount;
-		bool avoid_overlap;
+		int yawoffset;
+		int modifier;
+		int modifieroffset;
+		int desync;
+		int delta;
 
-		bool aa_on_use;
-		bool desync;
+		int lbytarget;
 
 		bool manual_antiaim;
-		bool ignore_attarget;
 
-		int fakelag;
-		bool fakelag_when_standing;
-		bool fakelag_when_exploits;
-		bool fakelag_on_peek;
-		int fakelagfactor;
-		int min, max;
-
-		int jitter_angle;
-		int yaw_offset;
+		struct {
+			
+			int mode;
+			int min;
+			int randomization;
+		}fakelag;
+	
 	} antiaim;
 	struct
 	{

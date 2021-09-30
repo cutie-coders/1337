@@ -290,7 +290,7 @@ void __stdcall Hooked_FrameStageNotify(ClientFrameStage_t curStage)
 	if (!interfaces.engine->IsConnected() || !interfaces.engine->IsInGame()) {
 		csgo->mapChanged = true;
 		csgo->is_connected = false;
-		c_Resolver->ClearHitInfo();
+
 	}
 	else csgo->is_connected = true;
 

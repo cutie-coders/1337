@@ -36,11 +36,14 @@ void InitRender(IDirect3DDevice9* pDevice)
 		cfg.OversampleH = 3;
 		cfg.OversampleV = 1;
 
-		fonts::esp_name = io.Fonts->AddFontFromMemoryTTF(OpenSans_Bold, sizeof(OpenSans_Bold), 14.f, &cfg, io.Fonts->GetGlyphRangesCyrillic());
+		fonts::esp_name = io.Fonts->AddFontFromMemoryTTF(Corbel, sizeof(Corbel), 11.f, &cfg, io.Fonts->GetGlyphRangesCyrillic());
 
-		fonts::esp_logs = io.Fonts->AddFontFromMemoryTTF(OpenSans_Bold, sizeof(OpenSans_Bold), 13.f, &cfg, io.Fonts->GetGlyphRangesCyrillic());
+		fonts::keybindsBig = io.Fonts->AddFontFromMemoryTTF(MSC900, sizeof(MSC900), 16.5f, &cfg, io.Fonts->GetGlyphRangesCyrillic());
+		fonts::Thingg = io.Fonts->AddFontFromMemoryTTF(MSC900, sizeof(MSC900), 29.f, &cfg, io.Fonts->GetGlyphRangesCyrillic());
 
-		fonts::esp_info = io.Fonts->AddFontFromMemoryTTF(OpenSans_Bold, sizeof(OpenSans_Bold), 12.f, &cfg, io.Fonts->GetGlyphRangesCyrillic());
+		fonts::esp_logs = io.Fonts->AddFontFromMemoryTTF(Corbel, sizeof(Corbel), 14.f, &cfg, io.Fonts->GetGlyphRangesCyrillic());
+
+		fonts::esp_info = io.Fonts->AddFontFromMemoryTTF(Corbel, sizeof(Corbel), 11.f, &cfg, io.Fonts->GetGlyphRangesCyrillic());
 
 		fonts::esp_icons = io.Fonts->AddFontFromMemoryCompressedTTF(
 			undefeated_compressed_data,
@@ -142,7 +145,7 @@ void render_rage()
 		ImGui::Text("AntiAim");
 		ImGui::Spacing();
 		
-		ImGui::Checkbox("Enable", &vars.antiaim.enable1);
+	
 	}
 	ImGui::EndChild(true);
 }
