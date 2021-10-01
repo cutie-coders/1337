@@ -123,7 +123,7 @@ bool __stdcall Hooked_CreateMove(float a, CUserCmd* cmd) {
 
 			g_Misc->FakeDuck();
 			//Ragebot::Get().DoQuickStop();
-
+			g_AntiAim->Initialize();
 			g_Ragebot->DropTarget();
 			g_Legit->AutoPistol();
 			g_AntiAim->Fakelag();
@@ -136,8 +136,6 @@ bool __stdcall Hooked_CreateMove(float a, CUserCmd* cmd) {
 			g_EnginePrediction->start(csgo->local, cmd);
 			// g_Animfix->
 			// g_Resolver->StoreAntifreestand();
-
-			g_AntiAim->Initialize();
 			run_callback("createmove");
 
 			g_NetData->RecordViewmodelValues();
