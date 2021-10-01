@@ -156,7 +156,6 @@ bool __stdcall Hooked_CreateMove(float a, CUserCmd* cmd) {
 			if (vars.ragebot.enable) {
 				g_Ragebot->in_ragebot = true;
 				g_Ragebot->Run();
-				g_Ragebot->
 				g_Ragebot->in_ragebot = false;
 			}
 			//g_Misc->UpdatePeek();
