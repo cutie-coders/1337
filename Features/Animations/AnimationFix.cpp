@@ -374,6 +374,11 @@ void CAnimationFix::Resolve(IBasePlayer* player)
 		return ReturnFinalGoalFeetYaw;
 	};
 
+	static auto HasShot = [](float SimTime, float ShotTime)
+	{
+		return ShotTime == SimTime;
+	};
+
 #pragma endregion
 
 	auto i = player->EntIndex();
@@ -382,6 +387,12 @@ void CAnimationFix::Resolve(IBasePlayer* player)
 	resolverInfo[i].Side = UpdateSide(player, resolverInfo[i].Relative,Layers);
 	resolverInfo[i].DesyncType = UpdateDesyncType(player, Layers);
 	resolverInfo[i].FixedLowerBodyYaw = Math::NormalizeYaw(remainderf(AnimState->m_abs_yaw, 360.f));
+
+	if (player->GetPlayerInfo().fakeplayer)
+		return;
+
+	if (HasShot(player->GetSimulationTime(), player->GetWeapon()->LastShotTime()))
+		return; // ez onshot fix $$$
 
 	float EyeYaw = remainderf(AnimState->m_eye_yaw, 360.f);
 	float Desync = 0.f;
