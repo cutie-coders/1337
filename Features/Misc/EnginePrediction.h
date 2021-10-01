@@ -75,7 +75,9 @@ public:
 	}
 
 	void update() {
-		interfaces.prediction->Update(csgo->client_state->iDeltaTick, csgo->client_state->iDeltaTick > 0,
+		if (csgo->client_state->iDeltaTick <= 0)
+			return;
+		interfaces.prediction->Update(csgo->client_state->iDeltaTick, true,
 			csgo->client_state->nLastCommandAck, csgo->client_state->nLastOutgoingCommand + csgo->client_state->iChokedCommands);
 	}
 
@@ -150,8 +152,8 @@ public:
 		interfaces.prediction->IsFirstTimePredicted = false;
 		interfaces.prediction->InPrediction = true;
 
-		if (m_cmd->impulse)
-			*reinterpret_cast<uint32_t*>((uintptr_t)player + 0x320C) = m_cmd->impulse;
+	//	if (m_cmd->impulse)
+	//		*reinterpret_cast<uint32_t*>((uintptr_t)player + 0x320C) = m_cmd->impulse;
 
 		m_cmd->buttons |= *reinterpret_cast<int*>((uintptr_t)player + 0x3334);
 		m_cmd->buttons &= ~(*reinterpret_cast<int*>((uintptr_t)player + 0x3330));

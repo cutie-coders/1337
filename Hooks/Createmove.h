@@ -41,14 +41,26 @@ bool __stdcall Hooked_CreateMove(float a, CUserCmd* cmd) {
 
 		if (csgo->need_to_recharge) {
 			cmd->tick_count = INT_MAX;
-			if (++csgo->skip_ticks >= 16)
-			{
-				csgo->skip_ticks = 0;
-				csgo->need_to_recharge = false;
-				*(bool*)(*pebp - 0x1C) = true;
+			if (csgo->morerecharge) {
+				if (++csgo->skip_ticks >= 16)
+				{
+					csgo->skip_ticks = 0;
+					csgo->need_to_recharge = false;
+					*(bool*)(*pebp - 0x1C) = true;
+				}
+				else
+					*(bool*)(*pebp - 0x1C) = false;
 			}
-			else
-				*(bool*)(*pebp - 0x1C) = false;
+			else {
+				if (++csgo->skip_ticks >= 15)
+				{
+					csgo->skip_ticks = 0;
+					csgo->need_to_recharge = false;
+					*(bool*)(*pebp - 0x1C) = true;
+				}
+				else
+					*(bool*)(*pebp - 0x1C) = false;
+			}
 			return false;
 		}
 
@@ -148,7 +160,7 @@ bool __stdcall Hooked_CreateMove(float a, CUserCmd* cmd) {
 				g_Ragebot->Run();
 				g_Ragebot->in_ragebot = false;
 			}
-
+			//g_Misc->UpdatePeek();
 			csgo->eyepos = csgo->local->GetEyePosition();
 
 			if (vars.legitbot.enable && vars.legitbot.backtrack) {
@@ -160,7 +172,7 @@ bool __stdcall Hooked_CreateMove(float a, CUserCmd* cmd) {
 				if (!g_AutoPeek->has_shot)
 					g_AntiAim->Sidemove();
 			}
-
+		
 			g_Misc->Doubletap();
 			g_Misc->Hideshots();
 

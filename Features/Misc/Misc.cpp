@@ -415,6 +415,108 @@ __forceinline void ResetValue()
 	csgo->skip_ticks = 0;
 	csgo->shift_amount = 0;
 }
+//#define LOCALPEEKHITBOXSIZE 60
+//void CMisc::UpdatePeek() {
+//
+//	if (!csgo->local->isAlive()) {
+//		csgo->Peekingg = false;
+//		csgo->PeekSide = PNONE;
+//		return;
+//	}
+//
+//
+//
+//	if (csgo->Peekingg) {
+//		csgo->PeekSide = PALL;
+//		return;
+//	}
+//
+//
+//
+//	IBasePlayer* target;
+//	if (csgo->rage_target)
+//		target = csgo->rage_target;
+//
+//	auto best_fov = INT_MAX;
+//	Vector localviewangles;
+//	interfaces.engine->GetViewAngles(localviewangles);
+//
+//	if (!target) {
+//
+//		for (auto i = 1; i < interfaces.global_vars->maxClients; i++)
+//		{
+//			auto e = interfaces.ent_list->GetClientEntity(i);
+//
+//			if (!e->IsValid() || e->IsDormant() || !e->isAlive())
+//				continue;
+//
+//
+//
+//
+//			auto fov = Math::GetFov(localviewangles, Math::CalculateAngle(csgo->local->GetEyePosition(), e->GetOrigin()));
+//
+//			if (fov < best_fov)
+//			{
+//				best_fov = fov;
+//				target = e;
+//			}
+//		}
+//	}
+//
+//
+//
+//
+//
+//	if (!target) {
+//		csgo->Peekingg = false;
+//		csgo->PeekSide = PNONE;
+//		return;
+//	}
+//
+//	float RelativeEAngle = Math::CalculateAngle(target->GetOrigin(), csgo->local->GetEyePosition()).y + 180;
+//	float LocalRelativeAngle = Math::CalculateAngle(csgo->local->GetEyePosition(), target->GetOrigin()).y + 180;
+//
+//	//setup Vectors
+//	Vector ETraceL;
+//	Vector ETraceR;
+//	Vector LTraceL;
+//	Vector LTraceR;
+//	Vector PStart = Vector(target->GetOrigin().x, target->GetOrigin().y, (target->GetOrigin().z + target->GetEyePosition().z) / 2);
+//	Vector PStartL = Vector(csgo->local->GetOrigin().x, csgo->local->GetOrigin().y, (csgo->local->GetOrigin().z + csgo->local->GetEyePosition().z) / 2);;
+//
+//	Math::AngleVectors(Vector(0, RelativeEAngle - 90, 0), ETraceL);
+//	Math::AngleVectors(Vector(0, RelativeEAngle + 90, 0), ETraceR);
+//
+//	Math::AngleVectors(Vector(0, LocalRelativeAngle - 90, 0), LTraceL);
+//	Math::AngleVectors(Vector(0, LocalRelativeAngle + 90, 0), LTraceR);
+//
+//	trace_t Left;
+//	trace_t Right;
+//
+//	g_AutoWall->TraceLine(PStartL + LTraceL * LOCALPEEKHITBOXSIZE, PStart + ETraceL * LOCALPEEKHITBOXSIZE, MASK_SOLID, csgo->local, &Left);
+//	g_AutoWall->TraceLine(PStartL + LTraceR * LOCALPEEKHITBOXSIZE, PStart + ETraceR * LOCALPEEKHITBOXSIZE, MASK_SOLID, csgo->local, &Right);
+//	bool left = Left.fraction != 1.0f;
+//	bool right = Right.fraction != 1.0f;
+//	if (!left && !right) { 
+//		csgo->Peekingg = false;
+//		csgo->PeekSide = PNONE;
+//	}
+//	else if (left && !right) { //left hit rigth not hit
+//		csgo->Peekingg = true;
+//		csgo->PeekSide = PRIGHT;
+//	}
+//	else if (!left && right) { //left didnt hit but right hit
+//		csgo->Peekingg = true;
+//		csgo->PeekSide = PLEFT;
+//	}
+//	else if (left && right) {
+//		csgo->Peekingg = true;
+//		csgo->PeekSide = PALL;
+//	}
+//	csgo->Peekingg = false;
+//	csgo->PeekSide = PNONE;
+//	
+//}
 
 bool CMisc::Doubletap()
 {
@@ -423,9 +525,9 @@ bool CMisc::Doubletap()
 	static int LastShot = 0;
 	static bool Recharged = false;
 	auto max_tickbase_shift = (vars.ragebot.more_ticks && csgo->weapon->isSniper()) ? vars.ragebot.dt_tickammount : csgo->weapon->GetMaxTickbaseShift();
-	if (!vars.ragebot.enable || !g_Binds[bind_double_tap].active || (csgo->game_rules->IsFreezeTime() || csgo->local->HasGunGameImmunity() || csgo->local->GetFlags() & FL_FROZEN)) {
+	if (!vars.ragebot.enable || g_Binds[bind_fakepeek].active || !g_Binds[bind_double_tap].active || (csgo->game_rules->IsFreezeTime() || csgo->local->HasGunGameImmunity() || csgo->local->GetFlags() & FL_FROZEN)) {
 		if (Recharged) {
-			csgo->cl_move_shift = 14;
+			csgo->cl_move_shift = vars.ragebot.slowidealtick ? 14 : 15;
 			Recharged = false;
 		}
 		return false;
@@ -443,6 +545,10 @@ bool CMisc::Doubletap()
 	if (!Recharged) {
 		if (csgo->fixed_tickbase > LastShot + (vars.ragebot.clmove ? 42 : 33)) {
 			csgo->need_to_recharge = true;
+			if (vars.ragebot.clmove && !g_Binds[bind_peek_assist].active)
+				csgo->morerecharge = true;
+			else
+				csgo->morerecharge = false;
 			Recharged = true;
 		}
 	}
@@ -461,6 +567,19 @@ bool CMisc::Doubletap()
 		LastShot = csgo->fixed_tickbase;
 	}
 
+	bool shoulddefensive = vars.ragebot.defensivedt;
+
+
+	if (vars.ragebot.defensivething & 8) {
+		if (csgo->local->GetVelocity().Length2D() <= 9.f) 
+			shoulddefensive = false;
+		
+	}
+
+	if (vars.ragebot.defensivething & 16) {
+		if (!csgo->Peekingg)
+			shoulddefensive = false;
+	}
 
 	if ((can_dt && is_firing || ((csgo->cmd->buttons & IN_ATTACK || csgo->cmd->buttons & IN_ATTACK2) && csgo->weapon->IsKnife())) && Recharged)
 	{
@@ -499,10 +618,10 @@ bool CMisc::Doubletap()
 		LastShot = csgo->fixed_tickbase;
 		Recharged = false;
 	}
-	else if(vars.ragebot.defensivedt)
+	else if(shoulddefensive)
 		csgo->PPShift = (vars.ragebot.defensivething & 4) ? 16 : 14;
 
-	if(vars.ragebot.defensivedt && ((vars.ragebot.defensivething & 1 && g_Binds[bind_peek_assist].active) || vars.ragebot.defensivething & 2))
+	if(shoulddefensive && ((vars.ragebot.defensivething & 1 && g_Binds[bind_peek_assist].active) || vars.ragebot.defensivething & 2))
 		csgo->PPShift = (vars.ragebot.defensivething & 4) ? 16 : 14;
 
 	return true;
@@ -527,62 +646,13 @@ bool CMisc::IsFinalTick()
 	return false;
 }
 
-void CMisc::Hideshots()
-{
-	hs_shot = false;
-	hs_works = false;
-	hide_shots_enabled = false;
-	if (g_Binds[bind_double_tap].active)
+void CMisc::Hideshots() {
+
+	if (g_Binds[bind_double_tap].active || !g_Binds[bind_hide_shots].active || !vars.ragebot.enable)
 		return;
 
-	hide_shots_enabled = true;
-
-	if (!vars.ragebot.enable)
-	{
-		hide_shots_enabled = false;
-		hide_shots_key = false;
-
-		//ResetValue();
-
-		return;
-	}
-
-	if (!g_Binds[bind_hide_shots].active)
-	{
-		hide_shots_enabled = false;
-		hide_shots_key = false;
-		ResetValue();
-
-		return;
-	}
-
-	//if (csgo->skip_ticks == 0) {
-	//	csgo->need_to_recharge = true;
-	//	return;
-	//}
-
-	if (!g_Binds[bind_double_tap].active) {
-		if (csgo->fake_duck || csgo->game_rules->IsFreezeTime() || csgo->local->HasGunGameImmunity() || csgo->local->GetFlags() & FL_FROZEN)
-		{
-			hide_shots_enabled = false;
-			ResetValue();
-			return;
-		}
-	}
 	
-	hs_works = true;
-
-	if (!csgo->weapon->IsMiscWeapon() && csgo->weapon->GetItemDefinitionIndex() != weapon_revolver) {
-		if (csgo->send_packet
-			&& (g_Ragebot->IsAbleToShoot() && csgo->cmd->buttons & IN_ATTACK)) {
-			csgo->shift_amount = 6;
-			hs_shot = true;
-		}
-		else {
-			if (!g_Ragebot->shot)
-				csgo->cmd->buttons &= ~IN_ATTACK;
-		}
-	}
+	
 }
 
 void CMisc::UpdateDormantTime() {
@@ -714,6 +784,11 @@ void CMisc::ProcessMissedShots()
 			if (!spread && !sp_spread) {
 				csgo->actual_misses[snapshot.entity->GetIndex()]++;
 				csgo->maxmisses[snapshot.entity->GetIndex()]++;
+				g_Animfix->ResolveState[snapshot.entity->EntIndex()].LastMiss++; //reset resolve
+				if (g_Animfix->ResolveState[snapshot.entity->EntIndex()].LastMiss >= 2) {
+					g_Animfix->ResolveState[snapshot.entity->EntIndex()].LastMiss = 0;
+					g_Animfix->ResolveState[snapshot.entity->EntIndex()].LastHit = false;
+				}
 			}
 
 			if (vars.visuals.eventlog & 4) {

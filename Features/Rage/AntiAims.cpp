@@ -188,9 +188,9 @@ void CAntiAim::Yaw(bool legit_aa)
 	if (!vars.antiaim.enable)
 		return;
 	bool check = (g_Binds[bind_manual_back].active
-			|| g_Binds[bind_manual_right].active
-			|| g_Binds[bind_manual_left].active
-			|| g_Binds[bind_manual_forward].active);
+		|| g_Binds[bind_manual_right].active
+		|| g_Binds[bind_manual_left].active
+		|| g_Binds[bind_manual_forward].active);
 
 
 	is_lby_update();
@@ -200,14 +200,38 @@ void CAntiAim::Yaw(bool legit_aa)
 
 
 	csgo->should_sidemove = vars.antiaim.lbytarget != 0;
+	/*
+	if (g_Binds[bind_fakepeek].active) {
+		if (csgo->local->GetVelocity().Length2D() >= 7.f)
+			return;
+	
+		csgo->cmd->viewangles.y += 180;
+		if (Jitter)
+			csgo->cmd->viewangles.y -= 180;
+
+		if (Currently_Breaking) {
+			csgo->send_packet = false;
+			csgo->cmd->viewangles.y -= 116 * -(Jitter ? 1 : - 1);
+			
+			csgo->cl_move_shift = 16;
+		
+			
+		}
+		else if (!csgo->send_packet) {
+			csgo->cmd->viewangles.y -= 116 * (Jitter ? 1 : -1);
+		}
+
+	
 
 
+		goto AAEND;
+	}*/
 
 
-	int CurSide = vars.antiaim.desync == 1 ? (g_Binds[bind_aa_inverter].active ? 1 : -1) : (Jitter ? 1 : -1);
+	int CurSide = vars.antiaim.desync == 1 ? (g_Binds[bind_aa_inverter].active ? -1 : 1) : (Jitter ? 1 : -1);
 
 	if (vars.antiaim.desync == 3) {
-		CurSide = g_Binds[bind_aa_inverter].active ? 1 : -1;
+		CurSide = g_Binds[bind_aa_inverter].active ? -1 : 1;
 
 
 
@@ -225,7 +249,33 @@ void CAntiAim::Yaw(bool legit_aa)
 	else if (vars.antiaim.desync == 4) {
 		CurSide = (rand() % 2 == 1) ? -1 : 1;
 	}
-
+	/*
+	static int FreeStandSide;
+	
+	switch (vars.antiaim.freestand) {
+	case 1:
+		if (csgo->PeekSide != PNONE || csgo->PeekSide != PALL) {
+			FreeStandSide = csgo->PeekSide == PLEFT ? 1 : -1;
+		}
+		if (csgo->PeekSide != PNONE) {
+			CurSide = FreeStandSide;
+		}
+		break; //fr
+	case 2:
+		if (csgo->PeekSide != PNONE || csgo->PeekSide != PALL) {
+			FreeStandSide = csgo->PeekSide == PLEFT ? -1 : 1;
+		}
+		if (csgo->PeekSide != PNONE) {
+			CurSide = FreeStandSide;
+		}
+		break; //afr
+	case 3:
+		if (csgo->Peekingg) {
+			CurSide = Jitter;
+		}
+		break; //ajit
+	}
+	*/
 	if (legit_aa)
 		CurSide *= -1;
 
@@ -304,6 +354,8 @@ void CAntiAim::Yaw(bool legit_aa)
 			break;
 		}
 	}
+
+	AAEND:
 
 	
 	csgo->cmd->viewangles.y = Math::NormalizeYaw(csgo->cmd->viewangles.y);

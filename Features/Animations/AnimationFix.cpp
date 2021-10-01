@@ -134,11 +134,7 @@ void CAnimationFix::Resolve(IBasePlayer* player)
 		return del;
 	};
 
-
-
-
-
-	static auto UpdateSide = [](IBasePlayer* ent, float Relative) -> int {
+	static auto StaticSideDetection = [](IBasePlayer* ent, float Relative) -> int {
 		Vector src3D, dst3D, forward, right, up, src, dst;
 		float back_two, right_two, left_two;
 		trace_t tr;
@@ -172,7 +168,29 @@ void CAnimationFix::Resolve(IBasePlayer* player)
 		else
 			return -1;
 	};
+
+
+
+	static auto UpdateSide = [](IBasePlayer* ent, float Relative, CAnimationLayer* layers) -> int {
+		if (ent->GetVelocity().Length2D() > 0.f) {
+			if (layers[6].m_flPlaybackRate <= 0.03f) {
+				return 1;
+			}
+			else {
+				return -1;
+			}
+		}
+		else {
+			return StaticSideDetection(ent, Relative); //layer 6 cant be used unlelss moving :<
+		}
+	};
 	static auto UpdateDesyncType = [](IBasePlayer* player, CAnimationLayer* layers) -> DesyncType {
+		if (vars.ragebot.resolver == 1) {
+			return SMART;
+		}
+		else if (vars.ragebot.resolver == 2) {
+			return BUILDSERVERABSYAW;
+		}
 		if (!(player->GetFlags() & FL_ONGROUND))
 		{
 			return INAIR;
@@ -186,7 +204,7 @@ void CAnimationFix::Resolve(IBasePlayer* player)
 
 		if (player->GetVelocity().Length2D() >= 5.f && player->GetVelocity().Length2D() < 95.f)
 		{
-			return SLOWWALK;
+			return LBYREVERSE;
 		
 		}
 
@@ -203,12 +221,165 @@ void CAnimationFix::Resolve(IBasePlayer* player)
 		return LBYREVERSE;
 	};
 
+	static auto GetSmoothedVelocity = [](float min_delta, Vector a, Vector b) -> Vector {
+		Vector delta = a - b;
+		float Length = delta.Length();
+
+		if (Length <= min_delta)
+		{
+			Vector result;
+
+			if (-min_delta <= Length)
+				return a;
+			else
+			{
+				float FLRadius = 1.0f / (Length + FLT_EPSILON);
+				return b - ((delta * FLRadius) * min_delta);
+			}
+		}
+		else
+		{
+			float FLRadius = 1.0f / (Length + FLT_EPSILON);
+			return b + ((delta * FLRadius) * min_delta);
+		}
+	};
+
+	static auto AngleMod = [](float a) -> float
+	{
+		return (360.f / 65536) * ((int)(a * (65536.f / 360.0f)) & 65535);
+	};
+	static auto ApproachAngle = [](float target, float value, float CorrectedSpeed) -> float
+	{
+		target = AngleMod(target);
+		value = AngleMod(value);
+
+		float delta = target - value;
+
+		// Speed is assumed to be positive
+		if (CorrectedSpeed < 0)
+			CorrectedSpeed = -CorrectedSpeed;
+
+		if (delta < -180)
+			delta += 360;
+		else if (delta > 180)
+			delta -= 360;
+
+		if (delta > CorrectedSpeed)
+			value += CorrectedSpeed;
+		else if (delta < -CorrectedSpeed)
+			value -= CorrectedSpeed;
+		else
+			value = target;
+
+		return value;
+	};
+
+	static auto ResolveFromAnimstate = [](IBasePlayer* m_player, float MaxRotationLBY) -> float
+	{
+		//setup important vars
+		Vector VelocityVec = m_player->GetVelocity();
+		auto AnimState = m_player->GetPlayerAnimState();
+		float EyeYaw = MaxRotationLBY;
+		float ReturnFinalGoalFeetYaw = 0.f;
+
+		//get imoprtant delta
+		float PDelta = Math::AngleDiff(EyeYaw, ReturnFinalGoalFeetYaw);
+
+	
+
+	
+		//setup velocity
+		if (VelocityVec.LengthSqr() > std::powf(1.2f * 260.0f, 2.f))
+		{
+			Vector NormalizedVelocity = VelocityVec.Normalized();
+			VelocityVec = NormalizedVelocity * (1.2f * 260.0f);
+		}
+
+		float ChokedTime = AnimState->m_last_update_increment;
+		float DuckAmmount = std::clamp(m_player->GetDuckAmount() + AnimState->m_duck_additional, 0.0f, 1.0f);
+		float AnimDuck = AnimState->m_anim_duck_amount;
+		float ChokedTime6 = ChokedTime * 6.0f;
+		float PDuckAmmount;
+
+
+		if ((DuckAmmount - AnimDuck) <= ChokedTime6) {
+			if (-ChokedTime6 <= (DuckAmmount - AnimDuck))
+				PDuckAmmount = DuckAmmount;
+			else
+				PDuckAmmount = AnimDuck - ChokedTime6;
+		}
+		else {
+			PDuckAmmount = AnimDuck + ChokedTime6;
+		}
+
+		float FinalDuckAmmount = std::clamp(PDuckAmmount, 0.0f, 1.0f);
+		Vector PAnimVel = GetSmoothedVelocity(ChokedTime * 2000.0f, VelocityVec, m_player->GetVelocity());
+		float CorrectedSpeed = std::fminf(PAnimVel.Length(), 260.0f);
+
+		float MaxMovementSpeed = 260.0f;
+
+		//fix desync based on weapon speed and cur speed
+		IBaseCombatWeapon	* Weap = m_player->GetWeapon();
+
+		if (Weap && Weap->GetCSWpnData())
+			MaxMovementSpeed = std::fmaxf(Weap->GetCSWpnData()->m_flMaxSpeedAlt, 0.001f);
+
+		float Run = CorrectedSpeed / (MaxMovementSpeed * 0.520f);
+		float Duck = CorrectedSpeed / (MaxMovementSpeed * 0.340f);
+
+		Run = std::clamp(Run, 0.0f, 1.0f);
+		//add ground fraction to improve resolve on running targets
+		float FixedYawD = (((AnimState->m_walk_run_transition * -0.30000001) - 0.19999999) * Run) + 1.0f;
+		//fix duck and fix desync on duck
+		if (FinalDuckAmmount > 0.0f)
+		{
+			float Duck = std::clamp(Duck, 0.0f, 1.0f);
+			FixedYawD += (FinalDuckAmmount * Duck) * (0.5f - FixedYawD);
+		}
+
+		const float MaxDesyncL = -58.f;
+		const float MaxDesyncR = 58.f;
+
+		float LMYaw = MaxDesyncL * FixedYawD;
+		float LRYaw = MaxDesyncR * FixedYawD;
+		//setup max desync
+		if (PDelta <= LRYaw)
+		{
+			if (LMYaw > PDelta)
+				ReturnFinalGoalFeetYaw = fabs(LMYaw) + EyeYaw;
+		}
+		else
+		{
+			ReturnFinalGoalFeetYaw = EyeYaw - fabs(LRYaw);
+		}
+
+		ReturnFinalGoalFeetYaw = Math::NormalizeYaw(ReturnFinalGoalFeetYaw);
+		//do some valve shit here
+		if (CorrectedSpeed > 0.1f || fabs(VelocityVec.z) > 100.0f)
+		{
+			ReturnFinalGoalFeetYaw = ApproachAngle(
+				EyeYaw,
+				ReturnFinalGoalFeetYaw,
+				((AnimState->m_walk_run_transition * 20.0f) + 30.0f)
+				* ChokedTime);
+		}
+		else
+		{
+			ReturnFinalGoalFeetYaw = ApproachAngle(
+				m_player->GetLBY(),
+				ReturnFinalGoalFeetYaw,
+				ChokedTime * 100.0f);
+		}
+
+		return ReturnFinalGoalFeetYaw;
+	};
+
 #pragma endregion
 
 	auto i = player->EntIndex();
 	resolverInfo[i].CurrentMiss = csgo->actual_misses[i];
 	resolverInfo[i].Relative = GetBackwardYaw(player);
-	resolverInfo[i].Side = UpdateSide(player, resolverInfo[i].Relative);
+	resolverInfo[i].Side = UpdateSide(player, resolverInfo[i].Relative,Layers);
 	resolverInfo[i].DesyncType = UpdateDesyncType(player, Layers);
 	resolverInfo[i].FixedLowerBodyYaw = Math::NormalizeYaw(remainderf(AnimState->m_abs_yaw, 360.f));
 
@@ -267,6 +438,15 @@ void CAnimationFix::Resolve(IBasePlayer* player)
 	case LOWDELTABRUTEFORCE: //this is important later
 
 		break;
+	case SMART:
+		if (!ResolveState[i].LastHit) {
+			resolverInfo[i].DesyncDelta = GetFixedDesyncDelta(player, 43.f);
+		}
+		else
+		{
+			resolverInfo[i].DesyncDelta = ResolveState[i].LastDelta;
+		}
+		break;
 	}
 	if (g_Binds[bind_force_safepoint].active) {
 	
@@ -275,9 +455,20 @@ void CAnimationFix::Resolve(IBasePlayer* player)
 		resolverInfo[i].DesyncDelta = Desync;
 	}
 	resolverInfo[i].ResolvedLowerBodyAngle = EyeYaw + resolverInfo[i].DesyncDelta * resolverInfo[i].Side;
-	resolverInfo[i].ResolvedLowerBodyAngle -= (((resolverInfo[i].CurrentMiss % 5) / 4) * resolverInfo[i].DesyncDelta) * resolverInfo[i].Side;
-
+	resolverInfo[i].ResolvedLowerBodyAngle -= (resolverInfo[i].DesyncDelta - (((resolverInfo[i].CurrentMiss % 5) / 4) * resolverInfo[i].DesyncDelta)) * resolverInfo[i].Side;
 	resolverInfo[i].ResolvedLowerBodyAngle = Math::NormalizeYaw(resolverInfo[i].ResolvedLowerBodyAngle);
+
+	if (resolverInfo[i].DesyncType == BUILDSERVERABSYAW) {
+		if(player->GetVelocity().Length2D() <= 6.f)
+			resolverInfo[i].ResolvedLowerBodyAngle = ResolveFromAnimstate(player, EyeYaw + AnimState->m_aim_yaw_max);
+		else
+			resolverInfo[i].ResolvedLowerBodyAngle = ResolveFromAnimstate(player, EyeYaw + AnimState->m_aim_yaw_max * resolverInfo[i].Side); //note to rxvan u can remove side detection here cuz u might miss wrong sided due to it !!
+		
+	
+			
+	
+		
+	}
 }
 
 
@@ -448,7 +639,7 @@ void CAnimationFix::animation_info::UpdateAnims(animation* record, animation* fr
 
 		if (ticks_to_simulate <= 1)
 		{
-			// set velocity and layers.
+			// set VelocityVec and layers.
 			record->velocity = player->GetVelocity();
 
 			// apply record.

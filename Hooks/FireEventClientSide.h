@@ -167,6 +167,8 @@ IBasePlayer* GetPlayer(int ID)
 
 void ClearMissedShots(IGameEvent* game_event)
 {
+	memset(csgo->actual_misses, 0, sizeof(csgo->actual_misses));
+	memset(csgo->imaginary_misses, 0, sizeof(csgo->imaginary_misses));
 	memset(csgo->maxmisses, 0, sizeof(csgo->maxmisses));
 }
 
@@ -181,19 +183,24 @@ void player_hurt(IGameEvent* game_event) {
 	int entityid = interfaces.engine->GetPlayerForUserID(attackerid);
 	if (entityid == interfaces.engine->GetLocalPlayer())
 	{
-		if (vars.visuals.hitmarker_sound) {
+	
+		if (!vars.visuals.hitmarker_sound) {
 			switch (vars.visuals.hitmarker_sound_type) {
-			case 0:
+			case 1:
 				interfaces.engine->ClientCmd_Unrestricted(str("play buttons/arena_switch_press_02.wav"), 0);
 				break;
-			case 1:
+			case 2:
 				interfaces.engine->ClientCmd_Unrestricted(str("play resource/warning.wav"), 0);
 				break;
-			case 2:
+			case 3:
 				PlaySoundA(default_sound, NULL, SND_ASYNC | SND_MEMORY);
 				break;
-			case 3:
+			case 4:
 				PlaySoundA(cod_sound, NULL, SND_ASYNC | SND_MEMORY);
+				break;
+			case 5:
+				interfaces.engine->ClientCmd_Unrestricted(str("flick.wav"), 0);
+
 				break;
 			}
 		}
@@ -217,6 +224,11 @@ void player_hurt(IGameEvent* game_event) {
 	}
 	snapshot.damage = game_event->GetInt(str("dmg_health"));
 	snapshot.hitgroup_hit = game_event->GetInt(str("hitgroup"));
+	int i = snapshot.entity->EntIndex();
+	g_Animfix->ResolveState[i].LastHit = true;
+	g_Animfix->ResolveState[i].LastDelta = resolverInfo[i].DesyncDelta;
+
+	g_Animfix->ResolveState[i].LastDelta -= (resolverInfo[i].DesyncDelta - (((resolverInfo[i].CurrentMiss % 5) / 4) * resolverInfo[i].DesyncDelta));
 }
 
 void bullet_impact(IGameEvent* game_event) {

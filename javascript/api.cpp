@@ -97,7 +97,7 @@ namespace js_variables {
 		bools[str("ragebot.enable")] = &vars.ragebot.enable;
 		bools[str("ragebot.silent")] = &vars.ragebot.silent;
 		bools[str("ragebot.autoshoot")] = &vars.ragebot.autoshoot;
-		bools[str("ragebot.resolver")] = &vars.ragebot.resolver;
+
 		bools[str("ragebot.dt_teleport")] = &vars.ragebot.dt_teleport;
 		bools[str("ragebot.zeusbot")] = &vars.ragebot.zeusbot;
 

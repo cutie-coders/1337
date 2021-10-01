@@ -116,34 +116,34 @@ void __fastcall Hooked_DrawModelExecute(void* thisptr, int edx, void* ctx, const
 		static auto InfMat13 = interfaces.material_system->FindMaterial("particle/fire_explosion_1/fire_explosion_1_oriented.vmt", "Other textures");
 
 		if(InfMat)
-			InfMat->SetMaterialVarFlag(MATERIAL_VAR_NO_DRAW, true);
+			InfMat->SetMaterialVarFlag(MATERIAL_VAR_WIREFRAME, true);
 
 		if (InfMat2)
-			InfMat2->SetMaterialVarFlag(MATERIAL_VAR_NO_DRAW, true);
+			InfMat2->SetMaterialVarFlag(MATERIAL_VAR_WIREFRAME, true);
 		if (InfMat3)
-			InfMat3->SetMaterialVarFlag(MATERIAL_VAR_NO_DRAW, true);
+			InfMat3->SetMaterialVarFlag(MATERIAL_VAR_WIREFRAME, true);
 		if (InfMat4)
-			InfMat4->SetMaterialVarFlag(MATERIAL_VAR_NO_DRAW, true);
+			InfMat4->SetMaterialVarFlag(MATERIAL_VAR_WIREFRAME, true);
 		if (InfMat5)
-			InfMat5->SetMaterialVarFlag(MATERIAL_VAR_NO_DRAW, true);
+			InfMat5->SetMaterialVarFlag(MATERIAL_VAR_WIREFRAME, true);
 		if (InfMat6)
-			InfMat6->SetMaterialVarFlag(MATERIAL_VAR_NO_DRAW, true);
+			InfMat6->SetMaterialVarFlag(MATERIAL_VAR_WIREFRAME, true);
 		if (InfMat7)
-			InfMat7->SetMaterialVarFlag(MATERIAL_VAR_NO_DRAW, true);
+			InfMat7->SetMaterialVarFlag(MATERIAL_VAR_WIREFRAME, true);
 		if (InfMat8)
-			InfMat8->SetMaterialVarFlag(MATERIAL_VAR_NO_DRAW, true);
+			InfMat8->SetMaterialVarFlag(MATERIAL_VAR_WIREFRAME, true);
 		if (InfMat9)
-			InfMat9->SetMaterialVarFlag(MATERIAL_VAR_NO_DRAW, true);
+			InfMat9->SetMaterialVarFlag(MATERIAL_VAR_WIREFRAME, true);
 		if (InfMat10)
-			InfMat10->SetMaterialVarFlag(MATERIAL_VAR_NO_DRAW, true);
+			InfMat10->SetMaterialVarFlag(MATERIAL_VAR_WIREFRAME, true);
 		if (InfMat11)
-			InfMat11->SetMaterialVarFlag(MATERIAL_VAR_NO_DRAW, true);
+			InfMat11->SetMaterialVarFlag(MATERIAL_VAR_WIREFRAME, true);
 		if (InfMat12)
-			InfMat12->SetMaterialVarFlag(MATERIAL_VAR_NO_DRAW, true);
+			InfMat12->SetMaterialVarFlag(MATERIAL_VAR_WIREFRAME, true);
 		if (InfMat13)
-			InfMat13->SetMaterialVarFlag(MATERIAL_VAR_NO_DRAW, true);
+			InfMat13->SetMaterialVarFlag(MATERIAL_VAR_WIREFRAME, true);
 
-		mat1->SetMaterialVarFlag(MATERIAL_VAR_NO_DRAW, vars.visuals.remove & 2);
+		mat1->SetMaterialVarFlag(MATERIAL_VAR_WIREFRAME, vars.visuals.remove & 2);
 		mat2->SetMaterialVarFlag(MATERIAL_VAR_NO_DRAW, vars.visuals.remove & 2);
 		mat3->SetMaterialVarFlag(MATERIAL_VAR_NO_DRAW, vars.visuals.remove & 2);
 		mat4->SetMaterialVarFlag(MATERIAL_VAR_NO_DRAW, vars.visuals.remove & 2);

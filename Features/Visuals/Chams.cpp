@@ -399,7 +399,7 @@ void CChams::OnPostScreenEffects() {
 					continue;
 				}
 				auto ent = interfaces.ent_list->GetClientEntity(it2->info.entity_index);
-				if (!ent || (ent->isAlive() && interfaces.global_vars->realtime > it2->time + 3.5f)) {
+				if (!ent || (ent->isAlive() && interfaces.global_vars->realtime > it2->time + 1.0f)) {
 					it2 = m_DeathMatrix.erase(it2);
 			
 					continue;
@@ -411,7 +411,7 @@ void CChams::OnPostScreenEffects() {
 					continue;
 				}
 
-				it2->alpha = (it2->time + 0.32f - interfaces.global_vars->realtime);
+				it2->alpha = (it2->time + 0.50f - interfaces.global_vars->realtime);
 				auto alpha = it2->alpha;
 				if (it2->alpha <= 0.f) {
 					it2 = m_DeathMatrix.erase(it2);

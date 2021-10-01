@@ -1,7 +1,16 @@
 #pragma once
 #include "../../Hooks/hooks.h"
+
+enum PeekSide {
+	PNONE = 0,
+	PLEFT = -1,
+	PRIGHT = 1,
+	PALL = 2
+};
+
 class CMisc {
 public:
+	//void UpdatePeek();
 	bool in_doubletap = false;
 	bool double_tap_enabled = false;
 	bool recharging_double_tap = false;

@@ -128,6 +128,7 @@ public:
 	Vector last_player_shot_pos;
 	float last_shoot_time[64];
 	int cl_move_shift;
+	int PeekSide;
 	int clskip;
 	bool isShifting;
 	int shift_amount;
@@ -135,6 +136,7 @@ public:
 	bool LegSwitch;
 	IBasePlayer* rage_target;
 	bool Peekingg;
+	bool morerecharge;
 	int shift_timer;
 	bool need_recharge_rn;
 	bool is_local_alive;

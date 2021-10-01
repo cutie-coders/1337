@@ -296,12 +296,21 @@ void CVisuals::DrawLocalVisuals()
 		return;
 
 
-	if (!vars.ragebot.AntiDefensive) {
-		CLLagComp->SetValue(1);
-		csgo->DisableLagComp = false;
+	if (vars.ragebot.AntiDefensive) {
+		if (csgo->weapon) {
+		
+			CLLagComp->SetValue(0);
+			csgo->DisableLagComp = true;
+			
+		}
+		else {
+			CLLagComp->SetValue(1);
+			csgo->DisableLagComp = false;
+		}
+
 	}
 	else {
-		CLLagComp->SetValue(0);
+		CLLagComp->SetValue(1);
 		csgo->DisableLagComp = false;
 	}
 
@@ -488,6 +497,9 @@ void renderInferno(const InfernoInfo_t& info) {
 		g_Render->_drawList->AddPolyline(points.data(), points.size(), color_t(170, 170, 255, 180).u32(), true, 1.f);
 	};
 
+
+
+
 	static auto polyobject = [](vector<Vector> Points,int Count,float Rad, Vector cen) {
 		Vector Temp;
 		Vector w2s;
@@ -511,12 +523,8 @@ void renderInferno(const InfernoInfo_t& info) {
 				points.push_back(ImVec2(w2s.x, w2s.y));
 
 		}
-		int Auto = 1;
-		for (auto& point : points) {
-			g_Render->DrawLine(point.x,point.y,points[(Auto % Count)].x, points[(Auto % Count)].y, color_t(170, 170, 255, 120),2.f);
-			Auto++;
-		}
-		g_Render->_drawList->AddConvexPolyFilled(points.data(), points.size(), color_t(170, 170, 255, 40).u32());
+
+		//g_Render->_drawList->AddConvexPolyFilled(points.data(), points.size(), color_t(170, 170, 255, 40).u32());
 		g_Render->_drawList->AddPolyline(points.data(), points.size(), color_t(170, 170, 255, 150).u32(), true, 2.f);
 	};
 
@@ -1116,15 +1124,13 @@ void CVisuals::StoreOtherInfo()
 						int m_fireCount = entity->m_fireCount();  //0x13A8
 						inferno.entity_origin = inferno_origin;
 						inferno.PPoints.push_back(inferno_origin);
-						inferno.PRads.push_back(35.f);
 						inferno.range = 0.f;
 						Vector average_vector = Vector(0, 0, 0);
-						//	std::vector<Vector> points;
 						for (int i = 0; i <= m_fireCount; i++) {
 	
 							Vector fire_origin = Vector(m_fireXDelta[i], m_fireYDelta[i], m_fireZDelta[i]);
 					
-							float delta = fire_origin.Length2D() + 14.4f;
+							float delta = fire_origin.LengthSqr();
 							if (delta > inferno.range)
 								inferno.range = delta;
 
@@ -1132,150 +1138,20 @@ void CVisuals::StoreOtherInfo()
 							if (fire_origin == Vector(0, 0, 0))
 								continue;
 
-							Vector fire_origin2 = Vector(m_fireXDelta[i], m_fireYDelta[i], 0);
-							Ray_t pray;
-							pray.Init((inferno_origin + fire_origin2) + Vector(0, 0, 40), (inferno_origin + fire_origin2) - Vector(0, 0, 1000));
-							static CTraceFilterWorldAndPropsOnly tracefilter;
-							CGameTrace tr;
-							interfaces.trace->TraceRay(pray, MASK_SOLID, &tracefilter, &tr);
-							inferno.PPoints.push_back(tr.endpos);
-							inferno.PRads.push_back((fire_origin2 * 0.22f).Length2D() + 15.f);
-							inferno.points.push_back(fire_origin + inferno_origin);
+							Vector fire_origin2 = Vector(m_fireXDelta[i], m_fireYDelta[i], m_fireZDelta[i]);
+							Vector POrigin = inferno_origin + (fire_origin2 * 1.3f);
+					
+							inferno.PPoints.push_back(POrigin);
 						}
 
-						static auto get_angle = [](Vector point) {
-							auto a = (point);
-							Vector b = Vector(a.Length2D(), 0.f, 0.f);
-
-							if (a.y < 0.f)
-								return float(PI * 2.f) - (acos((a.x * b.x + a.y * b.y + a.z * b.z) / (a.Length() * b.Length())));
-
-							return acos((a.x * b.x + a.y * b.y + a.z * b.z) / (a.Length() * b.Length()));
-						};
-
-						//std::sort(inferno.points.begin(), inferno.points.end(), [&](Vector a, Vector b) {
-						//	/*a -= inferno_origin;
-						//	b -= inferno_origin;*/
-						//	return get_angle(a - inferno_origin) > get_angle(b - inferno_origin); // atan2(a.y, a.x) > atan2(b.y, b.x);
-						//});
-
-
-						/*static auto getAngleBetweenVectors = [](Vector startPoint0, Vector endPoint0, Vector startPoint1, Vector endPoint1)
-						{
-							Vector vec0{ endPoint0.x - startPoint0.x, endPoint0.y - startPoint0.y, 0.f },
-								vec1{ endPoint1.x - startPoint1.x, endPoint1.y - startPoint1.y, 0.f };
-							double scalarProd = vec0.x * vec1.x + vec0.y * vec1.y,
-								len0 = hypot(vec0.x, vec0.y),
-								len1 = hypot(vec1.x, vec1.y);
-							return acos(scalarProd / (len0 * len1));
-						};*/
-
-						/*if (inferno.points.size() > 3)
-						{
-							Vector inferno_origin_clone = inferno_origin,
-								first_point = inferno.points[0] - inferno_origin,
-								last_point = inferno.points[inferno.points.size() - 1] - inferno_origin;
-							double angle = (atan2(first_point.y, first_point.x) + atan2(last_point.y, last_point.x)) / 2.f;
-							inferno_origin_clone.x -= cos(angle) * 50.f;
-							inferno_origin_clone.y -= sin(angle) * 50.f;
-							inferno.points.insert(inferno.points.end(), inferno_origin_clone);
-						}*/
+						inferno.range = sqrtf(inferno.range) + 14.5f;
 
 						if (m_fireCount <= 1)
 							inferno.origin = inferno_origin;
 						else
 							inferno.origin = (average_vector / m_fireCount) + inferno_origin;
 
-						//static auto orient = [](Vector a, Vector b, Vector c) -> int
-						//{
-						//	int v = (b.y - a.y) * (c.x - b.x) - (b.x - a.x) * (c.y - b.y);
-						//	if (v == 0)
-						//		return 0; // colinear
-						//	return (v > 0) ? 1 : 2; // clock or counterclock wise
-						//};
-
-						//static auto convexHull = [](std::vector<Vector> points) -> std::vector<Vector>
-						//{
-						//	int m = points.size();
-						//	if (m < 3)//at least three points required
-						//		return points;
-						//	int* n = new int[m];
-						//	for (int i = 0; i < m; i++)
-						//		n[i] = -1;
-						//	int l = 0;//initialize result.
-						//	for (int i = 1; i < m; i++)
-						//		if (points[i].x < points[l].x)
-						//			l = i; //find left most point
-						//	int p = l, q;
-						//	do {
-						//		q = (p + 1) % m;
-						//		for (int i = 0; i < m; i++)
-						//			if (orient(points[p], points[i], points[q]) == 2)
-						//				q = i;
-						//		n[p] = q;
-						//		p = q;
-						//	} while (p != l);
-						//	std::vector<Vector> newPoints;
-						//	for (int i = 0; i < m; i++) {
-						//		if (n[i] != -1)
-						//			newPoints.push_back(points[i]);
-						//	}
-						//	delete[] n;
-						//	
-						//	return newPoints;
-						//};
-
-						//inferno.points = convexHull(inferno.points);
-						//inferno.points.insert(inferno.points.begin(), inferno_origin);
-
-						//if (inferno.points.size() > 3)
-						//{
-						//	int startPointIndex = -1;
-						//	{
-						//		double minX = INFINITY, maxY = -INFINITY;
-						//		for (size_t i = 0, pointsCount = inferno.points.size(); i < pointsCount; ++i) {
-						//			Vector point = inferno.points[i];
-						//			if (point.y > maxY)
-						//				maxY = point.y;
-						//			else if ((point.y == maxY) && (point.x < minX))
-						//				minX = point.x;
-						//			else
-						//				continue;
-						//			startPointIndex = i;
-						//		}
-						//	}
-
-						//	if (startPointIndex != -1)
-						//	{
-						//		for (;;) {
-						//			bool doBreak = true;
-						//			for (size_t i = startPointIndex, its = i; i < its + inferno.points.size(); ++i) {
-						//				size_t pointsCount = inferno.points.size();
-						//				if (pointsCount <= 3)
-						//					break;
-						//				size_t n = (i + 1) % pointsCount;
-						//				Vector point = inferno.points[i % pointsCount],
-						//					nextPoint = inferno.points[n],
-						//					nextNextPoint = inferno.points[(i + 2) % pointsCount];
-						//				bool cond0 = (getAngleBetweenVectors(point, inferno.origin, point, nextPoint) <= getAngleBetweenVectors(point, inferno.origin, point, nextNextPoint)), // angle less
-						//					cond1 = ((atan2(point.y, point.x) == atan2(nextPoint.y, nextPoint.x)) && (hypot(point.x, point.y) >= hypot(nextPoint.x, nextPoint.y))); // on the same axis and closer to the center
-						//				if (cond0 || cond1) {
-						//					inferno.points.erase(inferno.points.begin() + n);
-						//					doBreak = false;
-						//				}
-						//			}
-						//			if (doBreak)
-						//				break;
-						//		}
-						//	}
-						//}
-
-						/*for (auto& point : inferno.points)
-						{
-							double angle = atan2(point.y - inferno_origin.y, point.x - inferno_origin.x);
-							point.x += cos(angle) * 50.f;
-							point.y += sin(angle) * 50.f;
-						}*/
+					
 					}
 					else {
 						switch (class_id) {

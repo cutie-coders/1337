@@ -799,7 +799,7 @@ void CConfig::Load(string cfg_name)
 		LoadBool(&vars.ragebot.silent, str("silent"), ragebot);
 		LoadInt(&vars.ragebot.fov, str("fov"), ragebot);
 		LoadInt(&vars.ragebot.autoscope, str("auto_scope"), ragebot);
-		LoadBool(&vars.ragebot.resolver, str("resolver"), ragebot);
+		LoadInt(&vars.ragebot.resolver, str("resolver"), ragebot);
 		LoadBool(&vars.ragebot.zeusbot, str("zeusbot"), ragebot);
 		LoadInt(&vars.ragebot.zeuschance, str("zeuschance"), ragebot);
 		LoadBind(&g_Binds[bind_override_dmg], str("override_dmg"), ragebot);

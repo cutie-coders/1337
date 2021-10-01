@@ -5,6 +5,8 @@ VisualStudioVersion = 16.0.31515.178
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cheat", "1337.vcxproj", "{9D8C6E55-5931-4C6C-945B-27864A3A393D}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "csgoInjector", "Injector\csgoInjector.vcxproj", "{8275AC55-0684-4A06-B8BA-03F21C128F5B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Beta|x64 = Beta|x64
@@ -24,6 +26,18 @@ Global
 		{9D8C6E55-5931-4C6C-945B-27864A3A393D}.Release|x64.ActiveCfg = Release|Win32
 		{9D8C6E55-5931-4C6C-945B-27864A3A393D}.Release|x86.ActiveCfg = Release|Win32
 		{9D8C6E55-5931-4C6C-945B-27864A3A393D}.Release|x86.Build.0 = Release|Win32
+		{8275AC55-0684-4A06-B8BA-03F21C128F5B}.Beta|x64.ActiveCfg = Debug|x64
+		{8275AC55-0684-4A06-B8BA-03F21C128F5B}.Beta|x64.Build.0 = Debug|x64
+		{8275AC55-0684-4A06-B8BA-03F21C128F5B}.Beta|x86.ActiveCfg = Debug|Win32
+		{8275AC55-0684-4A06-B8BA-03F21C128F5B}.Beta|x86.Build.0 = Debug|Win32
+		{8275AC55-0684-4A06-B8BA-03F21C128F5B}.Debug|x64.ActiveCfg = Debug|x64
+		{8275AC55-0684-4A06-B8BA-03F21C128F5B}.Debug|x64.Build.0 = Debug|x64
+		{8275AC55-0684-4A06-B8BA-03F21C128F5B}.Debug|x86.ActiveCfg = Debug|Win32
+		{8275AC55-0684-4A06-B8BA-03F21C128F5B}.Debug|x86.Build.0 = Debug|Win32
+		{8275AC55-0684-4A06-B8BA-03F21C128F5B}.Release|x64.ActiveCfg = Release|x64
+		{8275AC55-0684-4A06-B8BA-03F21C128F5B}.Release|x64.Build.0 = Release|x64
+		{8275AC55-0684-4A06-B8BA-03F21C128F5B}.Release|x86.ActiveCfg = Release|Win32
+		{8275AC55-0684-4A06-B8BA-03F21C128F5B}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

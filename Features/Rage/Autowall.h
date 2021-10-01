@@ -71,7 +71,7 @@ private:
 	bool HandleBulletPenetration(CCSWeaponInfo* info, FireBulletData_t& data, bool extracheck = false, Vector point = Vector(0, 0, 0));
 	bool BreakableEntity(IBasePlayer* entity);
 	bool TraceToExit(CGameTrace& enterTrace, CGameTrace& exitTrace, Vector startPosition, Vector direction);
-	void TraceLine(Vector& start, Vector& end, unsigned int mask, IBasePlayer* ignore, CGameTrace* trace);
+
 	void ClipTrace(Vector& start, Vector& end, IBasePlayer* e, unsigned int mask, CTraceFilter* filter, CGameTrace* old_trace);
 
 	float HitgroupDamage(int iHitGroup);
@@ -86,5 +86,6 @@ public:
 		scanned_points.clear();
 	}
 	bool CanHitFloatingPoint(const Vector& point, const Vector& source);
+	void TraceLine(Vector& start, Vector& end, unsigned int mask, IBasePlayer* ignore, CGameTrace* trace);
 	ReturnInfo_t Think(Vector pos, IBasePlayer* target, int specific_hitgroup = -1, Vector eye_pos = csgo->eyepos, IBasePlayer* start_ent = csgo->local);
 };

@@ -4,7 +4,7 @@
 #include <thread>
 #include <mutex>
 #include "cresolver.h"
-
+#include "../../hitsounds.h"
 std::vector<ShotSnapshot> shot_snapshots;
 
 CWeaponConfig CRagebot::CurrentSettings() {
@@ -1583,7 +1583,9 @@ void CRagebot::Run()
 	csgo->Peekingg = false;
 	if (hitbox != -1 && target_index != -1 && best_anims && current_aim_position != Vector(0, 0, 0))
 	{
-		csgo->Peekingg = true;
+		if (!csgo->Peekingg) {
+			csgo->Peekingg = true;
+		}
 		csgo->rage_target = interfaces.ent_list->GetClientEntity(target_index);
 		ShouldWork = true;
 		bool can_shoot_if_fakeduck = true;
@@ -1730,13 +1732,33 @@ void CRagebot::Run()
 					g_Chams->AddDeathmatrix(best_anims);
 					
 				}
+				if (vars.visuals.hitmarker_sound) {
+					switch (vars.visuals.hitmarker_sound_type) {
+					case 1:
+						interfaces.engine->ClientCmd_Unrestricted(str("play buttons/arena_switch_press_02.wav"), 0);
+						break;
+					case 2:
+						interfaces.engine->ClientCmd_Unrestricted(str("play resource/warning.wav"), 0);
+						break;
+					case 3:
+						PlaySoundA(default_sound, NULL, SND_ASYNC | SND_MEMORY);
+						break;
+					case 4:
+						PlaySoundA(cod_sound, NULL, SND_ASYNC | SND_MEMORY);
+						break;
+					case 5:
+						interfaces.engine->ClientCmd_Unrestricted(str("play flick.wav"), 0);
+
+						break;
+					}
+				}
 				if (!vars.ragebot.silent)
 					interfaces.engine->SetViewAngles(csgo->cmd->viewangles);
 			}
 		}
 		auto max_tickbase_shift = (vars.ragebot.more_ticks && csgo->weapon->isSniper()) ? vars.ragebot.dt_tickammount : csgo->weapon->GetMaxTickbaseShift();
 		if (g_Binds[bind_double_tap].active && !g_Binds[bind_peek_assist].active && max_tickbase_shift >= 12) {
-			if (csgo->fixed_tickbase < DoubletapFix) {
+			if (csgo->fixed_tickbase < DoubletapFix && vars.ragebot.improvespeed) {
 				csgo->cmd->viewangles = Math::CalculateAngle(csgo->local->GetEyePosition(), current_aim_position);
 				csgo->cmd->viewangles -= csgo->local->GetPunchAngle() * interfaces.cvars->FindVar(str("weapon_recoil_scale"))->GetFloat();
 				csgo->cmd->buttons |= IN_ATTACK;

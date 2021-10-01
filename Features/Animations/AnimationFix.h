@@ -14,7 +14,9 @@ enum DesyncType {
 	LBY,
 	LOWDELTABRUTEFORCE,
 	INAIR,
-	SLOWWALK
+	SLOWWALK,
+	SMART,
+	BUILDSERVERABSYAW
 };
 struct History
 {
@@ -36,6 +38,12 @@ struct Info
 	bool Resolved;
 	float Relative;
 	float DesyncDelta;
+};
+
+struct SmartResolver {
+	bool LastHit;
+	int LastMiss;
+	float LastDelta;
 };
 
 
@@ -105,7 +113,7 @@ struct animation
 class CAnimationFix
 {
 public:
-
+	SmartResolver ResolveState[65];
 
 
 	void Resolve(IBasePlayer* player);

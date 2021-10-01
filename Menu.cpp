@@ -257,7 +257,11 @@ namespace ragebot_tab
 				settings->add_element(new c_keybind(str("Override damage"),
 					&g_Binds[bind_override_dmg], enable_rage));
 
-				settings->add_element(new c_checkbox(str("Resolver"), &vars.ragebot.resolver,
+				settings->add_element(new c_combo(str("Resolver"), &vars.ragebot.resolver, {
+					"Animations",
+					"Neverlose",
+					"Skeet"
+					},
 					enable_rage));
 			}
 			break;
@@ -269,6 +273,10 @@ namespace ragebot_tab
 					return vars.ragebot.enable && vars.misc.restrict_type == 1;
 					}));
 
+				settings->add_element(new c_checkbox(str("Improve Speed"), &vars.ragebot.improvespeed, []() {
+					return enable_rage() && (g_Binds[bind_double_tap].key > 0 || g_Binds[bind_double_tap].active);
+					}));
+
 				settings->add_element(new c_checkbox(str("Teleport"), &vars.ragebot.clmove, []() {
 					return enable_rage() && (g_Binds[bind_double_tap].key > 0 || g_Binds[bind_double_tap].active);
 					}));	
@@ -276,6 +284,11 @@ namespace ragebot_tab
 				settings->add_element(new c_checkbox(str("Ideal Tick"), &vars.ragebot.teleport, []() {
 				return enable_rage() && (g_Binds[bind_double_tap].key > 0 || g_Binds[bind_double_tap].active);
 					}));
+
+				settings->add_element(new c_checkbox(str("Slow Ideal Tick"), &vars.ragebot.slowidealtick, []() { //eh 
+					return enable_rage() && (g_Binds[bind_double_tap].key > 0 || g_Binds[bind_double_tap].active) && vars.ragebot.teleport;
+					})); //Ghetto fix for scout autopeek
+
 
 				settings->add_element(new c_checkbox(str("Teleport Boost"), &vars.ragebot.dt_teleport, []() {
 					return enable_rage() && (g_Binds[bind_double_tap].key > 0 || g_Binds[bind_double_tap].active);
@@ -288,7 +301,9 @@ namespace ragebot_tab
 				settings->add_element(new c_multicombo(str("Defensive Flags"), &vars.ragebot.defensivething, {
 					str("On Shot [ Ideal Tick ]"),
 					str("On Shot [ Normal ]"),
-					str("Max Defensive")
+					str("Max Defensive"),
+					str("Adaptive"),
+					str("Peek Only")
 					}, []() { //eh 
 					return enable_rage() && (g_Binds[bind_double_tap].key > 0 || g_Binds[bind_double_tap].active) && vars.ragebot.defensivedt;
 					}));
@@ -354,7 +369,7 @@ namespace ragebot_tab
 
 
 				settings->add_element(new c_slider(str("Modifier"), &vars.antiaim.modifieroffset,
-					-180, 180, []() {
+					0, 180, []() {
 						return enable_antiaim() && vars.antiaim.modifier > 0;
 					}));
 
@@ -365,6 +380,14 @@ namespace ragebot_tab
 			str("Dynamic"),
 			str("Random")
 					}, []() { return enable_antiaim(); }));
+
+	//			settings->add_element(new c_combo(str("Desync Peek"), &vars.antiaim.freestand, {
+//			str("Disabled"),
+		//	str("Peek Desync"),
+			//str("Peek Real"),
+		//	str("Jitter")
+				//	}, []() { return enable_antiaim(); }));
+
 
 				settings->add_element(new c_combo(str("Lower Body Yaw Target"), &vars.antiaim.lbytarget, {
 		str("Offset"),
@@ -380,6 +403,9 @@ namespace ragebot_tab
 					0, 60, []() {
 						return enable_antiaim() && vars.antiaim.desync > 0;
 					}));
+
+				//settings->add_element(new c_keybind(str("Fake Peek"), &g_Binds[bind_fakepeek],
+				//	[]() { return enable_antiaim(); }));
 
 				settings->add_element(new c_keybind(str("Inverter"), &g_Binds[bind_aa_inverter],
 					[]() { return enable_antiaim() && vars.antiaim.desync; }));
@@ -1344,13 +1370,13 @@ namespace visuals_tab
 					return vars.visuals.hitmarker > 0;
 				}));
 
-			settings->add_element(new c_checkbox(str("Hit sound"),
-				&vars.visuals.hitmarker_sound));
+		
 
-			settings->add_element(new c_combo(str("Sound type"),
-				&vars.visuals.hitmarker_sound_type, { str("Default"), str("Warning"), str("Click"), str("COD") }, []() {
-					return vars.visuals.hitmarker_sound;
-				}));
+			settings->add_element(new c_combo(str("Hitsound"),
+				&vars.visuals.hitmarker_sound_type, { str("None"), str("Default"), str("Warning"), str("Click"), str("COD"), str("Flick") }));
+
+			settings->add_element(new c_checkbox(str("Force Hitsound On Shot"),
+				&vars.visuals.hitmarker_sound));
 			break;
 		case 7:
 			settings->add_element(new c_text(str("WORLD ESP"), 25, nullptr, color_t(127, 127, 127)));

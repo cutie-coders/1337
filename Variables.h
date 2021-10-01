@@ -90,8 +90,8 @@ struct CGlobalVariables
 		int fov;
 		bool autoshoot;
 		int autoscope;
-		bool resolver;
-
+		int resolver;
+		bool improvespeed;
 		bool dt_teleport;
 		bool defensivedt;
 		int defensivething;
@@ -104,7 +104,8 @@ struct CGlobalVariables
 		bool zeusbot;
 		bool avoidunsafehitboxes;
 		int zeuschance;
-
+		bool slowidealtick;
+		bool morerecharge;
 		CWeaponConfig weapon[7];
 
 		int active_index;
@@ -124,7 +125,7 @@ struct CGlobalVariables
 		int delta;
 
 		int lbytarget;
-
+		int freestand;
 		bool manual_antiaim;
 
 		struct {
@@ -320,7 +321,7 @@ enum binds_enum_t
 	bind_slow_walk,
 	bind_third_person,
 	bind_peek_assist,
-
+	bind_fakepeek,
 	bind_max
 };
 
