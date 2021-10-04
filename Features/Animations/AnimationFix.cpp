@@ -225,7 +225,6 @@ void CAnimationFix::Resolve(IBasePlayer* player)
 		{
 			resolverRecord[player->EntIndex()].BreakLBY = false;
 			return LBYREVERSE;
-		Math::
 		}
 
 		if (player->GetVelocity().Length2D() >= 95.f && player->GetVelocity().Length2D() < INT_MAX)
