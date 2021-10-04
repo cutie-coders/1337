@@ -16,7 +16,8 @@ enum DesyncType {
 	INAIR,
 	SLOWWALK,
 	SMART,
-	BUILDSERVERABSYAW
+	BUILDSERVERABSYAW,
+	ANIMSTATE
 };
 struct History
 {

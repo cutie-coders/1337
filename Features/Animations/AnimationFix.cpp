@@ -201,6 +201,7 @@ void CAnimationFix::Resolve(IBasePlayer* player)
 			case 0:
 				break;
 			case 1:
+				return ANIMSTATE;
 				break;
 			case 2:
 				return SMART;
@@ -497,6 +498,9 @@ void CAnimationFix::Resolve(IBasePlayer* player)
 		{
 			resolverInfo[i].DesyncDelta = ResolveState[i].LastDelta;
 		}
+		break;
+	case ANIMSTATE:
+		GetFixedDesyncDelta(player, ResolveFromAnimstate(player, GetMaxDesyncDelta(player)));
 		break;
 	}
 	if (g_Binds[bind_force_safepoint].active) {
