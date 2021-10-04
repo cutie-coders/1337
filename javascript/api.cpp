@@ -136,7 +136,7 @@ namespace js_variables {
 
 
 
-		bools[str("misc.bunnyhop")] = &vars.misc.bunnyhop;
+		ints[str("misc.bunnyhop")] = &vars.misc.bunnyhop;
 		bools[str("misc.autostrafe")] = &vars.misc.autostrafe;
 		bools[str("misc.knifebot")] = &vars.misc.knifebot;
 		bools[str("misc.antiuntrusted")] = &vars.misc.antiuntrusted;

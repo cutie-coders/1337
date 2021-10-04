@@ -262,7 +262,7 @@ struct CGlobalVariables
 
 	struct
 	{
-		bool bunnyhop;
+		int bunnyhop;
 		bool autostrafe;
 		bool knifebot;
 		int restrict_type;
