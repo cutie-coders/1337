@@ -640,7 +640,7 @@ bool CMisc::IsFinalTick()
 		|| csgo->local->GetFlags() & FL_FROZEN)
 		return true;
 
-	if ((csgo->shift_amount == 1 || csgo->shift_amount == 0) && !csgo->is_shifting)
+	if ((csgo->cl_move_shift < 1 ))
 		return true;
 
 	return false;

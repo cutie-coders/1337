@@ -29,8 +29,8 @@ bool __stdcall Hooked_CreateMove(float a, CUserCmd* cmd) {
 	csgo->shift_amount = 0;
 	if (!g_Misc->IsFinalTick()) {
 		cmd->buttons &= ~IN_ATTACK; // Prevent shooting during our teleport-shift commands
-		//csgo->send_packet = false;
-		//return false;
+		csgo->send_packet = false;
+		return false;
 	}
 	g_Misc->Clantag();
 	g_Misc->ProcessMissedShots();
@@ -270,7 +270,7 @@ bool __stdcall Hooked_CreateMove(float a, CUserCmd* cmd) {
 		csgo->ForceOffAA = false;
 		csgo->should_draw_taser_range = false;
 	}
-	if (csgo->cl_move_shift > 0) {
+	if (csgo->cl_move_shift > 0 && csgo->local->isAlive()) {
 		csgo->last_sendpacket = false;
 		*(bool*)(*pebp - 0x1C) = false;
 	}
