@@ -86,6 +86,9 @@ void CAnimationFix::Resolve(IBasePlayer* player)
 		return;
 
 
+	if (player->GetPlayerInfo().fakeplayer)
+		return;
+
 	auto Layers = player->GetAnimOverlays();
 	auto AnimState = player->GetPlayerAnimState();
 #pragma region LambdaFunction
@@ -185,11 +188,27 @@ void CAnimationFix::Resolve(IBasePlayer* player)
 		}
 	};
 	static auto UpdateDesyncType = [](IBasePlayer* player, CAnimationLayer* layers) -> DesyncType {
-		if (vars.ragebot.resolver == 1) {
+		/*if (vars.ragebot.resolver == 1) {
 			return SMART;
 		}
 		else if (vars.ragebot.resolver == 2) {
 			return BUILDSERVERABSYAW;
+		}*/
+		if (vars.ragebot.resolver != 0)
+		{
+			switch (vars.ragebot.resolver)
+			{
+			case 0:
+				break;
+			case 1:
+				return ANIMSTATE;
+				break;
+			case 2:
+				return SMART;
+				break;
+			case 3:
+				return BUILDSERVERABSYAW;
+			}
 		}
 		if (!(player->GetFlags() & FL_ONGROUND))
 		{
@@ -197,6 +216,7 @@ void CAnimationFix::Resolve(IBasePlayer* player)
 		
 		}
 		if (layers[3].m_flWeight == 0.0f && layers[3].m_flCycle == 0.0f) {
+			resolverRecord[player->EntIndex()].BreakLBY = true;
 			return LBYREVERSE;
 			
 		}
@@ -204,21 +224,23 @@ void CAnimationFix::Resolve(IBasePlayer* player)
 
 		if (player->GetVelocity().Length2D() >= 5.f && player->GetVelocity().Length2D() < 95.f)
 		{
+			resolverRecord[player->EntIndex()].BreakLBY = false;
 			return LBYREVERSE;
-		
 		}
 
 		if (player->GetVelocity().Length2D() >= 95.f && player->GetVelocity().Length2D() < INT_MAX)
 		{
+			resolverRecord[player->EntIndex()].BreakLBY = false;
 			return MOVING;
 			 
 		}
 
 		if (player->GetVelocity().Length2D() < 5.f) {
+			resolverRecord[player->EntIndex()].BreakLBY = true;
 			return LBY;
 			 
 		}
-		return LBYREVERSE;
+		return NONE;
 	};
 
 	static auto GetSmoothedVelocity = [](float min_delta, Vector a, Vector b) -> Vector {
@@ -388,9 +410,6 @@ void CAnimationFix::Resolve(IBasePlayer* player)
 	resolverInfo[i].DesyncType = UpdateDesyncType(player, Layers);
 	resolverInfo[i].FixedLowerBodyYaw = Math::NormalizeYaw(remainderf(AnimState->m_abs_yaw, 360.f));
 
-	if (player->GetPlayerInfo().fakeplayer)
-		return;
-
 	if (HasShot(player->GetSimulationTime(), player->GetWeapon()->LastShotTime()))
 		return; // ez onshot fix $$$
 
@@ -426,15 +445,10 @@ void CAnimationFix::Resolve(IBasePlayer* player)
 		resolverInfo[i].DesyncDelta = Desync;
 		break;
 	case INAIR:
-		if (player->GetGroundEntity() != 0) {
-			//resolverInfo[i].ResolvedLowerBodyAngle = EyeYaw + 22.3f * resolverInfo[i].Side;
-			resolverInfo[i].DesyncDelta = GetFixedDesyncDelta(player, 22.3f);
-		}
-		else {
-			//	resolverInfo[i].ResolvedLowerBodyAngle = EyeYaw + 38.9f * resolverInfo[i].Side;
-			resolverInfo[i].DesyncDelta = GetFixedDesyncDelta(player, 38.9f);
-		}
-
+		if (player->GetVelocity().Length2D() >= 30.f)
+			resolverInfo[i].DesyncDelta = GetFixedDesyncDelta(player, 15.f);
+		else
+			resolverInfo[i].DesyncDelta = GetFixedDesyncDelta(player, 5.f);
 		break;
 	case SLOWWALK:
 		if (player->GetVelocity().Length2D() >= 49.f) {
@@ -447,16 +461,46 @@ void CAnimationFix::Resolve(IBasePlayer* player)
 		}
 		break;
 	case LOWDELTABRUTEFORCE: //this is important later
-
+		switch (resolverInfo[i].CurrentMiss % 4)
+		{
+		case 0:
+			resolverInfo[i].DesyncDelta = GetFixedDesyncDelta(player, 10.f);
+			break;
+		case 1:
+			resolverInfo[i].DesyncDelta = GetFixedDesyncDelta(player, 20.f);
+			break;
+		case 2:
+			resolverInfo[i].DesyncDelta = GetFixedDesyncDelta(player, 15.f);
+			break;
+		case 3:
+			resolverInfo[i].DesyncDelta = GetFixedDesyncDelta(player, 30.f);
+			break;
+		}
 		break;
 	case SMART:
 		if (!ResolveState[i].LastHit) {
-			resolverInfo[i].DesyncDelta = GetFixedDesyncDelta(player, 43.f);
+			if (!(player->GetFlags() & FL_ONGROUND))
+			{
+				resolverInfo[i].DesyncDelta = GetFixedDesyncDelta(player, 10.f);
+			}
+			if (player->GetVelocity().Length2D() >= 40.f)
+			{
+				resolverInfo[i].DesyncDelta = GetFixedDesyncDelta(player, 38.f);
+			}
+			if (resolverRecord[i].BreakLBY)
+			{
+				resolverInfo[i].DesyncDelta = GetFixedDesyncDelta(player, 56.5f);
+			}
+			else
+				resolverInfo[i].DesyncDelta = GetFixedDesyncDelta(player, 48.f);
 		}
 		else
 		{
 			resolverInfo[i].DesyncDelta = ResolveState[i].LastDelta;
 		}
+		break;
+	case ANIMSTATE:
+		GetFixedDesyncDelta(player, ResolveFromAnimstate(player, GetMaxDesyncDelta(player)));
 		break;
 	}
 	if (g_Binds[bind_force_safepoint].active) {

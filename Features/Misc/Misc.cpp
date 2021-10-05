@@ -58,7 +58,7 @@ void CMisc::FixMovement(CUserCmd* cmd, Vector& ang) {
 		bool pressed_move_key = cmd->buttons & IN_FORWARD || cmd->buttons & IN_MOVELEFT || cmd->buttons & IN_BACK || cmd->buttons & IN_MOVERIGHT || cmd->buttons & IN_JUMP;
 		if (!wpn_info)
 			return;
-		if (pressed_move_key)
+		if (pressed_move_key || !(csgo->local->GetFlags() & FL_ONGROUND))
 			return;
 		auto velocity = csgo->local->GetVelocity();
 		float speed = velocity.Length2D();

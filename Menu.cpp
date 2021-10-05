@@ -258,6 +258,7 @@ namespace ragebot_tab
 					&g_Binds[bind_override_dmg], enable_rage));
 
 				settings->add_element(new c_combo(str("Resolver"), &vars.ragebot.resolver, {
+					"Disabled",
 					"Animations",
 					"Neverlose",
 					"Skeet"
