@@ -1014,7 +1014,7 @@ void CConfig::Load(string cfg_name)
 	auto& misc = json[str("misc")]; {
 		LoadBool(&vars.misc.antiuntrusted, str("anti_untrusted"), misc);
 		LoadInt(&vars.misc.slidewalk, str("slidewalk"), misc);
-		LoadBool(&vars.misc.bunnyhop, str("bunnyhop"), misc);
+		LoadInt(&vars.misc.bunnyhop, str("bunnyhop"), misc);
 		LoadBool(&vars.misc.autostrafe, str("autostrafe"), misc);
 		LoadBool(&vars.misc.knifebot, str("knifebot"), misc);
 		LoadInt(&vars.misc.restrict_type, str("restrict_type"), misc);

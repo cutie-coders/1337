@@ -1559,8 +1559,15 @@ namespace misc_tab {
 			settings->add_element(new c_checkbox(str("Auto jump"),
 				&vars.misc.bunnyhop));
 
-			settings->add_element(new c_checkbox(str("Auto strafe"),
-				&vars.misc.autostrafe));
+			//settings->add_element(new c_checkbox(str("Auto strafe"),
+			//	&vars.misc.autostrafe));
+			settings->add_element(new c_combo(str("Auto strafe"), &vars.misc.autostrafe, {
+			str("Off"),
+			str("Default"),
+			str("Movement"),
+			str("Legit"),
+			str("Forward only")
+				}, nullptr));
 
 			settings->add_element(new c_combo(str("Leg Movement"), &vars.misc.slidewalk, {
 			str("Off"),
